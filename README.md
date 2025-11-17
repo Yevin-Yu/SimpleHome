@@ -1,6 +1,6 @@
-# EasyBrowserHome 🌐
+# SimpleHome 🌐
 
-欢迎访问 [EasyBrowserHome](https://yuwb.cn/nav)！这是一个功能丰富的在线主页，旨在提供便捷的浏览体验和个性化的导航服务。
+欢迎访问 [SimpleHome](https://yuwb.cn/i)！这是一个功能丰富的在线主页，旨在提供便捷的浏览体验和个性化的导航服务。
 
 <div align="center">
     <img alt="logo" height="350" width="575" src="https://yuwb.cn/images/easy-browser-home.png"/>
@@ -24,7 +24,7 @@
 
 ## 使用方法 🚀
 
-1. 访问 [EasyBrowserHome](https://yuwb.cn/nav)
+1. 访问 [SimpleHome](https://yuwb.cn/i)
 2. 注册或登录你的账户（如果需要）。 🔑
 3. 根据需要配置你的导航列表、待办事项和笔记。 🛠️
 4. 自定义主题和背景图片，享受个性化的浏览体验。 🌈
