@@ -1,19 +1,21 @@
 :root {
     --default-color: #c14343;
     --hover-color: #c35c5c;
-    --shadow-color:#e1e9f6;
+    --shadow-color: #e1e9f6;
 
     --default-bgColor: #f8fbff;
 
-    --text-color:#333;
+    --text-color: #333;
+    --text-color2: #fefefe;
 }
 
 :root.dark-theme {
     --default-color: #c14343;
     --hover-color: #652121;
-    --shadow-color:#0b0f13;
+    --shadow-color: #0b0f13;
 
-    --default-bgColor: #1a1e24;
+    --default-bgColor: #30353c;
 
-    --text-color:#fefefe;
+    --text-color: #fefefe;
+    --text-color2: #333;
 }

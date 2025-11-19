@@ -1,6 +1,8 @@
 <template>
     <div class="simple-home">
-        <div class="header"></div>
+        <div class="header">
+            <ShButton>耶温</ShButton>
+        </div>
         <div class="logo ">
             <h1>Simple Home</h1>
         </div>
@@ -11,11 +13,12 @@
     </div>
 </template>
 <script setup>
+import ShButton from "@/views/components/sh-button.vue";
 import { ref } from "vue";
 const searchKey = ref("");
 const searchHandler = () => {
     const query = encodeURIComponent(searchKey.value);
-    window.open(`https://www.google.com/search?q=${query}`, "_blank");
+    window.open(`https://www.bing.com/search?q=${query}`, "_blank");
 };
 
 </script>
@@ -28,6 +31,10 @@ const searchHandler = () => {
 
     .header {
         height: 60px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        padding: 0 14px;
     }
 
     .logo {
