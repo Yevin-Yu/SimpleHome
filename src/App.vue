@@ -1,11 +1,9 @@
-<script setup lang="ts">
-import { RouterView } from "vue-router";
-</script>
-
 <template>
     <RouterView />
 </template>
-
+<script setup lang="ts">
+import { RouterView } from "vue-router";
+</script>
 <style>
 html,
 body,
@@ -13,14 +11,6 @@ body,
     width: 100%;
     height: 100%;
     overflow: hidden;
-}
-
-#app {
-    overflow: hidden;
-    background-color: var(--bgColor);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    background-image: url(/app-bg.png);
+    background-color: var(--default-bgColor);
 }
 </style>

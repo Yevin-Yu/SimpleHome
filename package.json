@@ -1,6 +1,6 @@
 {
-  "name": "easy-browser-home",
-  "version": "4.0.7",
+  "name": "simple-home",
+  "version": "5.0.0",
   "private": true,
   "type": "module",
   "scripts": {

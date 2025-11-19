@@ -14,14 +14,3 @@ export function isMobile(): boolean {
         (navigator.userAgent.indexOf("Android") !== -1 && navigator.userAgent.indexOf("Mobile") !== -1)
     );
 }
-
-
-/**
- * 判断是否登录
- * 通过检查 localStorage 中是否存在 token 来判断用户是否登录
- * 如果存在 token，则认为用户已登录，否则认为用户未登录
- * */
-export function isLogin(): boolean {
-    const token = localStorage.getItem("token");
-    return token !== null && token !== "";
-}
