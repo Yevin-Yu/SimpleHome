@@ -1,7 +1,7 @@
 <template>
     <div class="simple-home">
         <div class="header">
-            <ShButton>耶温</ShButton>
+            <ShButton @click="settingHandler">耶温</ShButton>
         </div>
         <div class="logo ">
             <h1>Simple Home</h1>
@@ -10,15 +10,25 @@
             <input type="search" v-model="searchKey" @keyup.enter="searchHandler">
         </div>
         <div class="footer"></div>
+        <!-- 设置模块 -->
+        <SettingsModule ref="settingRef" />
     </div>
 </template>
 <script setup>
-import ShButton from "@/views/components/sh-button.vue";
+import ShButton from "@/components/sh-button.vue";
+import SettingsModule from "@/views/components/SettingsModule.vue";
 import { ref } from "vue";
+// 搜索功能
 const searchKey = ref("");
 const searchHandler = () => {
     const query = encodeURIComponent(searchKey.value);
     window.open(`https://www.bing.com/search?q=${query}`, "_blank");
+};
+// 打开设置模块
+const settingRef = ref(null);
+const settingHandler = (e) => {
+    e.stopPropagation();
+    settingRef.value.isShow = !settingRef.value.isShow;
 };
 
 </script>

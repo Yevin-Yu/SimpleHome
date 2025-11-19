@@ -4,9 +4,12 @@
     --shadow-color: #e1e9f6;
 
     --default-bgColor: #f8fbff;
+    --default-bgColor2: #f1f5ff;
 
     --text-color: #333;
     --text-color2: #fefefe;
+
+    --border-color:#ccd6eb;
 }
 
 :root.dark-theme {
@@ -15,7 +18,10 @@
     --shadow-color: #0b0f13;
 
     --default-bgColor: #30353c;
+    --default-bgColor2: #232831;
 
     --text-color: #fefefe;
     --text-color2: #333;
+
+    --border-color:#283344;
 }
