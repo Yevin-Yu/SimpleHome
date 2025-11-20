@@ -3,13 +3,18 @@
         <div class="container">
             <h3>设置</h3>
             <div class="content">
-                搜索引擎设置：Google，Bing，DuckDuckGo
+                <div class="setting-item">
+                    <label>搜索引擎：</label>
+                    <ShRadio v-model="searchEngine" value="bing" label="Bing" />
+                    <ShRadio v-model="searchEngine" value="google" label="Google" />
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import ShRadio from "@/components/sh-radio.vue";
 const isShow = ref(false);
 
 // 点击其他区域关闭设置模块
@@ -26,6 +31,12 @@ const handleClickOutside = (e) => {
         isShow.value = false;
     }
 }
+
+// 从本地存储读取搜索引擎
+const searchEngine = ref(localStorage.getItem("sh-se") || "bing");
+watch(searchEngine, (newVal) => {
+    localStorage.setItem("sh-se", newVal);
+})
 
 // 暴露给父组件使用
 defineExpose({
@@ -53,6 +64,7 @@ defineExpose({
         border-radius: 4px;
         box-shadow: 0px 0px px var(--shadow-color);
         overflow-y: auto;
+
     }
 
     h3 {
@@ -69,6 +81,12 @@ defineExpose({
         margin: 10px 0;
         overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    .setting-item {
+        font-size: 16px;
+        color: var(--text-color);
+        padding-left: 12px;
     }
 }
 </style>

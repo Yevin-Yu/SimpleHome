@@ -20,9 +20,10 @@ import SettingsModule from "@/views/components/SettingsModule.vue";
 import { ref } from "vue";
 // 搜索功能
 const searchKey = ref("");
+const searchEngine = ref(localStorage.getItem("sh-se") || "bing");
 const searchHandler = () => {
     const query = encodeURIComponent(searchKey.value);
-    window.open(`https://www.bing.com/search?q=${query}`, "_blank");
+    window.open(`https://www.${searchEngine.value}.com/search?q=${query}`, "_blank");
 };
 // 打开设置模块
 const settingRef = ref(null);
