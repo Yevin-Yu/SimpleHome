@@ -12,11 +12,14 @@
         <div class="footer"></div>
         <!-- 设置模块 -->
         <SettingsModule ref="settingRef" />
+        <!-- 收藏夹模块 -->
+        <FavoritesModule ref="favoritesRef" />
     </div>
 </template>
 <script setup>
 import ShButton from "@/components/sh-button.vue";
 import SettingsModule from "@/views/components/SettingsModule.vue";
+import FavoritesModule from "@/views/components/FavoritesModule.vue";
 import { ref } from "vue";
 // 搜索功能
 const searchKey = ref("");
@@ -39,6 +42,7 @@ const settingHandler = (e) => {
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 
     .header {
         height: 60px;
@@ -59,6 +63,7 @@ const settingHandler = (e) => {
             margin-top: auto;
             font-size: 42px;
             text-shadow: 2px 2px 0px var(--shadow-color);
+            user-select: none;
         }
     }
 
