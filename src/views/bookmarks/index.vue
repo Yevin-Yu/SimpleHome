@@ -50,52 +50,7 @@ onMounted(() => {
     document.title = "书签管理 - SimpleHome";
 });
 
-// 书签列表
-const tabsData = ref([
-    {
-        title: "耶温",
-        children: [
-            {
-                title: "百度",
-                url: "https://www.baidu.com"
-            },
-            {
-                title: "UI库",
-                children: [
-                    {
-                        title: "Element",
-                        url: "https://www.baidu.com"
-                    },
-                    {
-                        title: "React",
-                        url: "https://www.baidu.com"
-                    }
-                ]
-            },
-            {
-                title: "谷歌",
-                url: "https://www.google.com"
-            }
-        ]
-    },
-    {
-        title: "开发",
-        children: [
-            {
-                title: "GitHub",
-                url: "https://www.github.com"
-            },
-            {
-                title: "Gitee",
-                url: "https://www.gitee.com"
-            }
-        ]
-    },
-    {
-        title: 'Simple Home',
-        url: 'https://yuwb.cn/sh'
-    }
-])
+
 
 
 // 书签解析器
@@ -202,22 +157,27 @@ const BookmarkParser = {
     }
 }
 
+// 书签列表
+const tabsData = ref([])
 // 响应式数据
 const selectedFile = ref(null)
 const showResult = ref(false)
 const parsing = ref(false)
 const copied = ref(false)
 const fileInput = ref(null)
-
 const bookmarksData = ref({
     flat: [],
     structured: null,
-    stats: {
-        total: 0,
-        folders: 0,
-        parsedAt: null
-    }
 })
+
+// 读取本地书签数据
+const localBookmarks = localStorage.getItem('sh_bookmarks');
+if (localBookmarks) {
+    bookmarksData.value = JSON.parse(localBookmarks);
+    tabsData.value = bookmarksData.value.structured[0].children;
+}
+
+
 
 // 计算属性
 const formattedJSON = computed(() => {

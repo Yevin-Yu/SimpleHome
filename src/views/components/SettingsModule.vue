@@ -65,8 +65,8 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 // 导入设置 新窗口打开页面
 const handleImportBookmarks = () => {
-    const url = `${window.location.origin}${router.resolve('/bookmarks').href}`
-    window.open(url, '_blank')
+    const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
+    window.open(url, '_blank');
 }
 
 // 暴露给父组件使用
