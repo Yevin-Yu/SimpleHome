@@ -1,12 +1,26 @@
 <template>
     <div class="settings-module" ref="settingsModuleRef" v-if="isShow">
         <div class="container">
+            <!-- <h3>应用</h3>
+            <div class="app">
+                <sh-tag @click="handleImportBookmarks" size="small">热点新闻</sh-tag>
+            </div> -->
             <h3>设置</h3>
             <div class="content">
                 <div class="setting-item">
-                    <label>搜索引擎：</label>
+                    <label>主题：</label>
+                    <ShRadio v-model="theme" value="light-theme" label="浅色" />
+                    <ShRadio v-model="theme" value="dark-theme" label="深色" />
+                </div>
+                <div class="setting-item">
+                    <label>搜索：</label>
                     <ShRadio v-model="searchEngine" value="bing" label="Bing" />
                     <ShRadio v-model="searchEngine" value="google" label="Google" />
+                </div>
+                <div class="setting-item">
+                    <label>书签：</label>
+                    <sh-tag @click="handleImportBookmarks" size="small">导入设置</sh-tag>
+                    <p class="tips">提示：空格键 与 鼠标左击 上下滑动，可以打开关闭书签</p>
                 </div>
             </div>
         </div>
@@ -15,6 +29,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import ShRadio from "@/components/sh-radio.vue";
+import shTag from "@/components/sh-tag.vue";
 const isShow = ref(false);
 
 // 点击其他区域关闭设置模块
@@ -38,6 +53,22 @@ watch(searchEngine, (newVal) => {
     localStorage.setItem("sh-se", newVal);
 })
 
+// 切换主题
+import { useTheme } from "@/Hooks/useTheme";
+const { theme, setTheme } = useTheme();
+watch(theme, (newVal) => {
+    setTheme(newVal);
+})
+
+// 导入router
+import { useRouter } from "vue-router";
+const router = useRouter();
+// 导入设置 新窗口打开页面
+const handleImportBookmarks = () => {
+    const url = `${window.location.origin}${router.resolve('/bookmarks').href}`
+    window.open(url, '_blank')
+}
+
 // 暴露给父组件使用
 defineExpose({
     isShow,
@@ -60,11 +91,10 @@ defineExpose({
     .container {
         width: 100%;
         height: 100%;
-        background-color: var(--default-bgColor2);
         border-radius: 4px;
         box-shadow: 0px 0px px var(--shadow-color);
         overflow-y: auto;
-
+        scrollbar-width: none;
     }
 
     h3 {
@@ -87,6 +117,12 @@ defineExpose({
         font-size: 16px;
         color: var(--text-color);
         padding-left: 12px;
+        margin-bottom: 12px;
+    }
+
+    .tips {
+        line-height: 24px;
+        font-size: 12px;
     }
 }
 </style>

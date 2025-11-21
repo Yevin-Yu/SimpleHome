@@ -11,9 +11,14 @@
         </div>
         <div class="footer"></div>
         <!-- 设置模块 -->
-        <SettingsModule ref="settingRef" />
+        <Transition name="fade">
+            <SettingsModule ref="settingRef" />
+        </Transition>
         <!-- 收藏夹模块 -->
-        <FavoritesModule ref="favoritesRef" />
+        <!-- fade  scale  slide-->
+        <Transition name="rotate">
+            <FavoritesModule ref="favoritesRef" />
+        </Transition>
     </div>
 </template>
 <script setup>
@@ -37,6 +42,8 @@ const settingHandler = (e) => {
 
 </script>
 <style scoped lang="less">
+@import url("@/styles/animation.css");
+
 .simple-home {
     width: 100%;
     height: 100%;
@@ -85,6 +92,12 @@ const settingHandler = (e) => {
             outline: none;
             box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
             background-color: var(--default-bgColor);
+            transition: 0.2s;
+        }
+
+        input:focus,
+        input:hover {
+            transform: scale(1.02);
         }
     }
 

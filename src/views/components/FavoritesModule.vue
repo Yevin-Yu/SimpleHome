@@ -107,12 +107,13 @@ onBeforeUnmount(() => {
 .favorites-module {
     width: calc(100% - 24px);
     max-width: 800px;
-    height: 400px;
+    height: 50%;
+    max-height: 420px;
     position: absolute;
-    top: 12px;
-    right: 50%;
+    top: 50%;
+    left: 50%;
     padding: 12px;
-    transform: translateX(50%);
+    transform: translate(-50%, -50%);
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
