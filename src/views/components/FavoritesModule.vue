@@ -1,23 +1,28 @@
 <template>
-    <div v-if="isShow" class="favorites-module">
-        <sh-tag @click="goToLink(item.url)" v-for="item in favorites" :key="item.id">{{ item.title }}</sh-tag>
+    <div v-if="isShow" class="favorites-module" ref="favoritesModule">
+        <div class="bookmarks">
+            <sh-tag @click="goToLink(item.url)" v-for="item in favorites" :key="item.id">{{ item.title }}</sh-tag>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from "vue";
-import ShTag from "@/components/sh-tag.vue";
+import shTag from "@/components/sh-tag.vue";
 const isShow = ref(false);
-const favorites = ref([
-    { id: 1, title: "百度", url: "https://www.baidu.com" },
-    { id: 2, title: "谷歌", url: "https://www.google.com" },
-    { id: 3, title: "必应", url: "https://www.bing.com" },
-]);
+const favorites = ref([]);
+// 收藏夹模块元素
+const favoritesModule = ref(null);
+// 从本地存储加载收藏夹
+
+const bookmarks = localStorage.getItem("sh_bookmarks");
+if (bookmarks) {
+    favorites.value = JSON.parse(bookmarks).flat;
+}
+
 // 跳转链接
 const goToLink = (url) => {
     window.open(url, "_blank");
-    // 隐藏收藏夹
-    isShow.value = false;
 }
 
 // 触发向上事件
@@ -62,6 +67,8 @@ const onTouchStart = (event) => {
 }
 
 const onTouchMove = (event) => {
+    // 如果收藏夹模块包含事件目标则不响应
+    if (favoritesModule.value && favoritesModule.value.contains(event.target)) return
     const diff = event.touches[0].clientY - startYMouse
     if (diff < -10) {
         handleScrollUp(event)
@@ -117,5 +124,13 @@ onBeforeUnmount(() => {
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+
+}
+
+.bookmarks {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 </style>

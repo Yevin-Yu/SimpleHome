@@ -1,7 +1,7 @@
 <template>
     <div class="simple-home">
         <div class="header">
-            <ShButton @click="settingHandler">耶温</ShButton>
+            <shButton @click="settingHandler">耶温</shButton>
         </div>
         <div class="logo ">
             <h1>Simple Home</h1>
@@ -22,7 +22,7 @@
     </div>
 </template>
 <script setup>
-import ShButton from "@/components/sh-button.vue";
+import shButton from "@/components/sh-button.vue";
 import SettingsModule from "@/views/components/SettingsModule.vue";
 import FavoritesModule from "@/views/components/FavoritesModule.vue";
 import { ref } from "vue";

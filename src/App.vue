@@ -3,6 +3,9 @@
 </template>
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+// 切换主题
+import { useTheme } from "@/Hooks/useTheme";
+useTheme();
 </script>
 <style>
 html,

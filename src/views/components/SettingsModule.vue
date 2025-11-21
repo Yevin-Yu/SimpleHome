@@ -3,23 +3,23 @@
         <div class="container">
             <!-- <h3>应用</h3>
             <div class="app">
-                <sh-tag @click="handleImportBookmarks" size="small">热点新闻</sh-tag>
+                <shTag @click="handleImportBookmarks" size="small">热点新闻</shTag>
             </div> -->
             <h3>设置</h3>
             <div class="content">
                 <div class="setting-item">
                     <label>主题：</label>
-                    <ShRadio v-model="theme" value="light-theme" label="浅色" />
-                    <ShRadio v-model="theme" value="dark-theme" label="深色" />
+                    <shRadio v-model="theme" value="light-theme" label="浅色" />
+                    <shRadio v-model="theme" value="dark-theme" label="深色" />
                 </div>
                 <div class="setting-item">
                     <label>搜索：</label>
-                    <ShRadio v-model="searchEngine" value="bing" label="Bing" />
-                    <ShRadio v-model="searchEngine" value="google" label="Google" />
+                    <shRadio v-model="searchEngine" value="bing" label="Bing" />
+                    <shRadio v-model="searchEngine" value="google" label="Google" />
                 </div>
                 <div class="setting-item">
                     <label>书签：</label>
-                    <sh-tag @click="handleImportBookmarks" size="small">导入设置</sh-tag>
+                    <shTag @click="handleImportBookmarks" size="small">导入设置</shTag>
                     <p class="tips">提示：空格键 与 鼠标左击 上下滑动，可以打开关闭书签</p>
                 </div>
             </div>
@@ -29,7 +29,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import ShRadio from "@/components/sh-radio.vue";
-import shTag from "@/components/sh-tag.vue";
+import ShTag from "@/components/sh-tag.vue";
 const isShow = ref(false);
 
 // 点击其他区域关闭设置模块

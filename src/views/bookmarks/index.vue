@@ -1,90 +1,102 @@
 <template>
-    <div class="bookmark-parser">
-        <div class="header">
-            <h1>浏览器收藏夹解析工具</h1>
-            <p class="subtitle">上传Chrome或Edge导出的收藏夹HTML文件，将其转换为JSON格式</p>
-        </div>
-
-        <div class="main-container">
-            <!-- 上传区域 -->
-            <div class="upload-area" :class="{ 'upload-area--highlight': isDragOver }" @click="triggerFileInput"
-                @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop">
-                <div class="upload-icon">{{ uploadIcon }}</div>
-                <p class="upload-text">{{ uploadText }}</p>
-                <p class="upload-hint">支持Chrome和Edge浏览器导出的书签HTML文件</p>
-                <input type="file" ref="fileInput" class="file-input" accept=".html" @change="handleFileChange">
-            </div>
-
-            <!-- 操作按钮 -->
-            <div class="action-buttons">
-                <button class="btn btn-primary" :disabled="!selectedFile || parsing" @click="parseBookmarks">
-                    <span class="btn-icon">🔍</span>
-                    {{ parsing ? '解析中...' : '解析收藏夹' }}
-                </button>
-                <button class="btn btn-secondary" @click="resetApp">
-                    <span class="btn-icon">🔄</span>
-                    重置
-                </button>
-            </div>
-
-            <!-- 结果显示区域 -->
-            <div class="result-section" v-if="showResult">
-                <div class="result-header">
-                    <h2>解析结果</h2>
-                    <div class="stats-info">
-                        共解析出 {{ bookmarksData.stats.total }} 个书签，{{ bookmarksData.stats.folders }} 个文件夹
-                    </div>
-                </div>
-
-                <div class="alert alert-success" v-if="showResult">
-                    <span class="alert-icon">✅</span>
-                    解析成功！
-                </div>
-
-                <div class="json-container">
-                    {{ formattedJSON }}
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn btn-primary" @click="downloadJSON">
-                        <span class="btn-icon">💾</span>
-                        下载JSON文件
-                    </button>
-                    <button class="btn btn-secondary" @click="copyToClipboard">
-                        <span class="btn-icon" v-if="!copied">📋</span>
-                        <span class="btn-icon" v-else>✅</span>
-                        {{ copied ? '已复制' : '复制到剪贴板' }}
-                    </button>
-                </div>
-            </div>
-
-            <!-- 使用说明 -->
-            <div class="instructions">
-                <h3>使用说明</h3>
-                <ol>
-                    <li>在Chrome或Edge浏览器中导出收藏夹为HTML文件</li>
-                    <li>Chrome: 点击右上角三个点 → 书签 → 书签管理器 → 三个点 → 导出书签</li>
-                    <li>Edge: 点击右上角三个点 → 收藏夹 → 管理收藏夹 → 三个点 → 导出收藏夹</li>
-                    <li>上传导出的HTML文件，点击"解析收藏夹"按钮</li>
-                    <li>解析完成后，您可以查看、复制或下载JSON格式的书签数据</li>
-                </ol>
+    <div class="bookmarks">
+        <h1 class="title">书签管理 - SimpleHome</h1>
+        <div class="current-bookmarks">
+            <h3>当前书签 [右击可以新增、删除、编辑]</h3>
+            <div class="bookmarks-tree">
+                <sh-tree v-for="child in tabsData" :key="child.title" :item="child" />
             </div>
         </div>
-
-        <div class="footer">
-            <p>© 2023 浏览器收藏夹解析工具 | 本工具完全在浏览器端运行，不会上传您的数据</p>
+        <div class="upload-bookmarks">
+            <div class="left-upload">
+                <div class="upload-area" @click="triggerFileInput" @dragover="handleDragOver"
+                    @dragleave="handleDragLeave" @drop="handleDrop">
+                    <div class="upload-icon">{{ uploadIcon }}</div>
+                    <p class="upload-text"> {{ uploadText }}</p>
+                    <p class="upload-hint">支持Chrome和Edge浏览器导出的书签HTML文件</p>
+                    <input type="file" ref="fileInput" class="file-input" accept=".html" @change="handleFileChange">
+                </div>
+            </div>
+            <div class="right-button">
+                <sh-button class="parse-button" @click="parseBookmarks">解析数据</sh-button>
+                <sh-button class="parse-button" @click="previewBookmarks">查看书签</sh-button>
+                <sh-button class="apply-button" @click="applyBookmarks">应用数据</sh-button>
+            </div>
         </div>
-
-        <!-- 加载遮罩 -->
-        <div class="loading-overlay" v-if="parsing">
-            <div class="loading-spinner"></div>
-            <p>正在解析收藏夹...</p>
+        <div class="bookmarks-result">
+            <h3>解析结果</h3>
+            <div class="json-container">
+                {{ formattedJSON }}
+            </div>
+        </div>
+        <div class="bookmarks-notes">
+            <h3>使用说明</h3>
+            <ol>
+                <li>在Chrome或Edge浏览器中导出收藏夹为HTML文件</li>
+                <li>Chrome: 点击右上角三个点 → 书签 → 书签管理器 → 三个点 → 导出书签</li>
+                <li>Edge: 点击右上角三个点 → 收藏夹 → 管理收藏夹 → 三个点 → 导出收藏夹</li>
+                <li>上传导出的HTML文件，点击"解析数据"按钮</li>
+                <li>解析完成后，您可以查看、应用书签数据</li>
+            </ol>
         </div>
     </div>
 </template>
-
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import shTree from "@/components/sh-tree.vue";
+import shButton from "@/components/sh-button.vue";
+// 修改网页标题
+import { onMounted, ref, computed, nextTick } from "vue";
+onMounted(() => {
+    document.title = "书签管理 - SimpleHome";
+});
+
+// 书签列表
+const tabsData = ref([
+    {
+        title: "耶温",
+        children: [
+            {
+                title: "百度",
+                url: "https://www.baidu.com"
+            },
+            {
+                title: "UI库",
+                children: [
+                    {
+                        title: "Element",
+                        url: "https://www.baidu.com"
+                    },
+                    {
+                        title: "React",
+                        url: "https://www.baidu.com"
+                    }
+                ]
+            },
+            {
+                title: "谷歌",
+                url: "https://www.google.com"
+            }
+        ]
+    },
+    {
+        title: "开发",
+        children: [
+            {
+                title: "GitHub",
+                url: "https://www.github.com"
+            },
+            {
+                title: "Gitee",
+                url: "https://www.gitee.com"
+            }
+        ]
+    },
+    {
+        title: 'Simple Home',
+        url: 'https://yuwb.cn/sh'
+    }
+])
+
 
 // 书签解析器
 const BookmarkParser = {
@@ -98,18 +110,10 @@ const BookmarkParser = {
         const bookmarks = []
 
         links.forEach(link => {
-            const name = link.textContent.trim()
+            const title = link.textContent.trim()
             const url = link.getAttribute('href')
-            const addDate = link.getAttribute('add_date')
-            const icon = link.getAttribute('icon')
-
-            if (name && url) {
-                bookmarks.push({
-                    name,
-                    url,
-                    addDate: addDate ? new Date(parseInt(addDate) * 1000).toISOString() : null,
-                    icon: icon || null
-                })
+            if (title && url) {
+                bookmarks.push({ title, url })
             }
         })
 
@@ -124,7 +128,7 @@ const BookmarkParser = {
         // 递归解析文件夹和书签
         function parseNode(node) {
             const result = {
-                name: '',
+                title: '',
                 type: '',
                 children: []
             }
@@ -133,11 +137,8 @@ const BookmarkParser = {
             if (node.tagName === 'DT') {
                 const folder = node.querySelector('h3')
                 if (folder) {
-                    result.name = folder.textContent.trim()
+                    result.title = folder.textContent.trim()
                     result.type = 'folder'
-                    result.addDate = folder.getAttribute('add_date') ?
-                        new Date(parseInt(folder.getAttribute('add_date')) * 1000).toISOString() : null
-
                     // 递归处理子节点
                     const dl = node.querySelector('dl')
                     if (dl) {
@@ -152,12 +153,9 @@ const BookmarkParser = {
                     // 处理书签 (A元素)
                     const link = node.querySelector('a')
                     if (link) {
-                        result.name = link.textContent.trim()
+                        result.title = link.textContent.trim()
                         result.type = 'bookmark'
                         result.url = link.getAttribute('href')
-                        result.addDate = link.getAttribute('add_date') ?
-                            new Date(parseInt(link.getAttribute('add_date')) * 1000).toISOString() : null
-                        result.icon = link.getAttribute('icon') || null
                     } else {
                         return null
                     }
@@ -188,27 +186,6 @@ const BookmarkParser = {
         return null
     },
 
-    // 计算文件夹数量
-    countFolders(node) {
-        if (!node) return 0
-
-        let count = 0
-        if (node.type === 'folder') {
-            count = 1
-            if (node.children) {
-                node.children.forEach(child => {
-                    count += BookmarkParser.countFolders(child)
-                })
-            }
-        } else if (Array.isArray(node)) {
-            node.forEach(child => {
-                count += BookmarkParser.countFolders(child)
-            })
-        }
-
-        return count
-    },
-
     // 解析书签HTML文件
     parse(htmlString) {
         try {
@@ -218,11 +195,6 @@ const BookmarkParser = {
             return {
                 flat: flatBookmarks,
                 structured: structuredBookmarks,
-                stats: {
-                    total: flatBookmarks.length,
-                    folders: this.countFolders(structuredBookmarks),
-                    parsedAt: new Date().toISOString()
-                }
             }
         } catch (error) {
             throw new Error(`解析失败: ${error.message}`)
@@ -234,7 +206,6 @@ const BookmarkParser = {
 const selectedFile = ref(null)
 const showResult = ref(false)
 const parsing = ref(false)
-const isDragOver = ref(false)
 const copied = ref(false)
 const fileInput = ref(null)
 
@@ -270,17 +241,14 @@ const triggerFileInput = () => {
 
 const handleDragOver = (e) => {
     e.preventDefault()
-    isDragOver.value = true
 }
 
 const handleDragLeave = (e) => {
     e.preventDefault()
-    isDragOver.value = false
 }
 
 const handleDrop = (e) => {
     e.preventDefault()
-    isDragOver.value = false
 
     const files = e.dataTransfer.files
     if (files.length > 0) {
@@ -307,9 +275,7 @@ const handleFileSelection = (file) => {
 
 const parseBookmarks = async () => {
     if (!selectedFile.value) return
-
     parsing.value = true
-
     try {
         const htmlContent = await readFileAsText(selectedFile.value)
         bookmarksData.value = BookmarkParser.parse(htmlContent)
@@ -356,43 +322,6 @@ const resetApp = () => {
     }
 }
 
-const downloadJSON = () => {
-    if (!bookmarksData.value.structured) return
-
-    const dataStr = JSON.stringify(bookmarksData.value, null, 2)
-    const dataBlob = new Blob([dataStr], { type: 'application/json' })
-
-    const url = URL.createObjectURL(dataBlob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'bookmarks.json'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-
-    showMessage('success', 'JSON文件下载成功！')
-}
-
-const copyToClipboard = async () => {
-    if (!bookmarksData.value.structured) return
-
-    const jsonString = JSON.stringify(bookmarksData.value, null, 2)
-
-    try {
-        await navigator.clipboard.writeText(jsonString)
-        copied.value = true
-        showMessage('success', '已复制到剪贴板！')
-
-        // 3秒后重置复制状态
-        setTimeout(() => {
-            copied.value = false
-        }, 3000)
-    } catch (err) {
-        showMessage('error', '复制失败: ' + err)
-    }
-}
-
 const showMessage = (type, message) => {
     // 创建消息元素
     const messageEl = document.createElement('div')
@@ -409,324 +338,181 @@ const showMessage = (type, message) => {
         }
     }, 3000)
 }
+
+const previewBookmarks = () => {
+    tabsData.value = bookmarksData.value.structured[0].children
+}
+
+const applyBookmarks = () => {
+    // 应用书签数据到本地存储
+    localStorage.setItem('sh_bookmarks', JSON.stringify(bookmarksData.value))
+}
 </script>
-
-<style scoped>
-.bookmark-parser {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-    color: white;
-}
-
-.header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.header .subtitle {
-    font-size: 1.1rem;
-    opacity: 0.9;
-}
-
-.main-container {
+<style scoped lang="less">
+.bookmarks {
     width: 100%;
-    max-width: 1000px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    padding: 30px;
-    margin-top: 20px;
+    height: 100%;
+    background-color: var(--default-bgColor);
+    overflow-y: auto;
+
+    .title {
+        font-size: 24px;
+        font-weight: normal;
+        color: var(--default-color);
+        text-align: center;
+        margin-bottom: 12px;
+        line-height: 48px;
+    }
 }
 
-.upload-area {
-    border: 3px dashed #6a11cb;
-    border-radius: 10px;
-    padding: 40px 20px;
-    text-align: center;
-    margin-bottom: 30px;
-    transition: all 0.3s;
-    background: #f8f9fa;
-    cursor: pointer;
-}
-
-.upload-area:hover {
-    background: #e9ecef;
-    border-color: #2575fc;
-}
-
-.upload-area--highlight {
-    background: #e3f2fd;
-    border-color: #2196f3;
-}
-
-.upload-icon {
-    font-size: 50px;
-    color: #6a11cb;
-    margin-bottom: 15px;
-}
-
-.upload-text {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #495057;
-    font-weight: 500;
-}
-
-.upload-hint {
-    color: #6c757d;
-    font-size: 14px;
-}
-
-.file-input {
-    display: none;
-}
-
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 50px;
+h3 {
+    margin: 0;
+    padding: 6px;
     font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    display: inline-flex;
-    align-items: center;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 12px;
+}
+
+.current-bookmarks {
+    width: calc(100% - 24px);
+    max-width: 800px;
+    margin: 0 auto;
+    height: 40%;
+    max-height: 420px;
+    padding: 12px;
+    background-color: var(--default-bgColor);
+    border: 2px solid var(--default-color);
+    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+
+    .bookmarks-tree {
+        width: 100%;
+        height: calc(100% - 48px);
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+}
+
+.upload-bookmarks {
+    width: calc(100% - 24px);
+    max-width: 800px;
+    margin: 0 auto 24px;
+
+    padding: 12px;
+    margin-top: 24px;
+    background-color: var(--default-bgColor);
+    border: 2px solid var(--default-color);
+    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+    display: flex;
     justify-content: center;
-    font-weight: 500;
-    min-width: 140px;
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.btn:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.btn-primary {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    color: white;
-}
-
-.btn-secondary {
-    background: linear-gradient(to right, #8e9eab, #eef2f3);
-    color: #495057;
-}
-
-.btn-icon {
-    margin-right: 8px;
-    font-size: 18px;
-}
-
-.result-section {
-    margin-top: 30px;
-}
-
-.result-header {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
+    flex-wrap: wrap;
+
+    .left-upload,
+    .right-button {
+        flex: 2;
+        min-width: 300px;
+        height: 260px;
+    }
+
+    .left-upload {
+        margin: 0 6px 6px 6px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .upload-area {
+            width: 320px;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background-color: var(--default-bgColor2);
+            box-shadow: 2px 2px 0px var(--shadow-color);
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--default-color);
+            text-shadow: 2px 2px 0px var(--shadow-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .upload-hint {
+            color: var(--text-color);
+            font-size: 12px;
+        }
+
+        .file-input {
+            display: none;
+        }
+    }
+
+    .right-button {
+        flex: 1;
+        padding: 48px 24px;
+        font-size: 14px;
+        margin-left: 6px;
+        color: var(--text-color);
+        margin: 0 6px 6px 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
 }
 
-.result-header h2 {
-    font-size: 1.5rem;
-    color: #495057;
+.bookmarks-notes {
+
+    width: calc(100% - 24px);
+    max-width: 800px;
+    margin: 0 auto 24px;
+    padding: 12px;
+    margin-top: 24px;
+    background-color: var(--default-bgColor);
+    border: 2px solid var(--default-color);
+    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+
+    ol {
+        li {
+            line-height: 24px;
+            font-size: 12px;
+            color: var(--text-color);
+        }
+    }
 }
 
-.stats-info {
-    color: #6c757d;
-    font-size: 14px;
-}
-
-.alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-}
-
-.alert-success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert-icon {
-    margin-right: 8px;
-    font-size: 18px;
+.bookmarks-result {
+    width: calc(100% - 24px);
+    max-width: 800px;
+    margin: 0 auto 24px;
+    padding: 12px;
+    margin-top: 24px;
+    background-color: var(--default-bgColor);
+    border: 2px solid var(--default-color);
+    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
 }
 
 .json-container {
-    background: #f8f9fa;
+    background: var(--default-bgColor2);
+    color: var(--text-color);
     border-radius: 8px;
     padding: 20px;
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
     font-family: 'Courier New', monospace;
     font-size: 14px;
     white-space: pre-wrap;
     word-break: break-all;
     line-height: 1.4;
-}
-
-.instructions {
-    background: #e3f2fd;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 30px;
-    border-left: 5px solid #2196f3;
-}
-
-.instructions h3 {
-    color: #1976d2;
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-}
-
-.instructions ol {
-    margin-left: 20px;
-}
-
-.instructions li {
-    margin-bottom: 8px;
-    color: #455a64;
-    line-height: 1.5;
-}
-
-.footer {
-    margin-top: 30px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-}
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    z-index: 1000;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.3);
-    border-top: 5px solid white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* 消息样式 */
-.message {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    z-index: 1001;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    animation: slideIn 0.3s ease-out;
-}
-
-.message-success {
-    background: #28a745;
-}
-
-.message-error {
-    background: #dc3545;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@media (max-width: 768px) {
-    .main-container {
-        padding: 20px;
-    }
-
-    .header h1 {
-        font-size: 2rem;
-    }
-
-    .upload-area {
-        padding: 30px 15px;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .btn {
-        width: 100%;
-        max-width: 300px;
-    }
-
-    .result-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
 }
 </style>
