@@ -18,8 +18,8 @@ defineProps({
     cursor: pointer;
     display: inline-block;
     margin: 4px 8px;
-    padding: 4px 12px;
     font-size: 14px;
+    padding: 6px 16px;
     color: var(--text-color3);
     background-color: var(--default-bgColor2);
     font-size: 12px;

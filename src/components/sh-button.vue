@@ -1,27 +1,49 @@
 <template>
-    <button class="sh-button">
+    <button class="sh-button" :class="size">
         <slot></slot>
     </button>
 </template>
+<script setup>
+// 接收size
+defineProps({
+    size: {
+        type: String,
+        default: 'medium'
+    }
+})
+</script>
 <style scoped lang="less">
 .sh-button {
-    background-color: var(--default-color);
-    color: var(--text-color2);
     border: none;
     outline: none;
-    box-shadow: 2px 2px 0px var(--shadow-color);
     padding: 6px 16px;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
+    color: var(--sh-button-color);
+    background-color: var(--sh-button-bg-color);
+    box-shadow: 2px 2px 0px var(--sh-button-shadow-color);
 }
 
 .sh-button:hover {
-    background-color: var(--hover-color);
-    color: var(--text-color);
+    color: var(--sh-button-hover-color);
+    background-color: var(--sh-button-hover-bg-color);
 }
 
-.sh-button:active {
-    background-color: var(--default-color);
-    color: var(--text-color);
+.sh-button.small {
+    font-size: 12px;
+    padding: 4px 12px;
+    box-shadow: 1.5px 1.5px 0px var(--sh-button-shadow-color);
+}
+
+.sh-button.medium {
+    font-size: 14px;
+    padding: 6px 16px;
+    box-shadow: 2px 2px 0px var(--sh-button-shadow-color);
+}
+
+.sh-button.large {
+    font-size: 16px;
+    padding: 8px 20px;
+    box-shadow: 3px 3px 0px var(--sh-button-shadow-color);
 }
 </style>

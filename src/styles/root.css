@@ -15,6 +15,15 @@
     --text-color5: #eee;
 
     --border-color: #ccd6eb;
+
+
+    /* sh-button */
+    --sh-button-color: #030101;
+    --sh-button-bg-color: #c14343;
+    --sh-button-shadow-color: #e0e9f6;
+    --sh-button-hover-color: #303539;
+    --sh-button-hover-bg-color: #e0e9f6;
+
 }
 
 [data-theme="dark-theme"] {
@@ -34,4 +43,11 @@
     --text-color5: #555;
 
     --border-color: #283344;
+
+    /* sh-button */
+    --sh-button-color: #070202;
+    --sh-button-bg-color: #652120;
+    --sh-button-shadow-color: #0b0f13;
+    --sh-button-hover-color: #bccad8;
+    --sh-button-hover-bg-color: #252c36;
 }
