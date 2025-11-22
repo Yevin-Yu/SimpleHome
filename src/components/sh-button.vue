@@ -17,9 +17,11 @@
 
 .sh-button:hover {
     background-color: var(--hover-color);
+    color: var(--text-color);
 }
 
 .sh-button:active {
     background-color: var(--default-color);
+    color: var(--text-color);
 }
 </style>

@@ -2,13 +2,17 @@
     --default-color: #c14343;
     --hover-color: #c35c5c;
     --shadow-color: #e1e9f6;
+    --shadow-color2: rgb(201, 209, 221);
 
     --default-bgColor: #f8fbff;
     --default-bgColor2: #f1f5ff;
+    --default-bgColor3: #e3ecfd;
 
     --text-color: #333;
     --text-color2: #fefefe;
     --text-color3: #ea4262;
+    --text-color4: #555;
+    --text-color5: #eee;
 
     --border-color: #ccd6eb;
 }
@@ -17,13 +21,17 @@
     --default-color: #c14343;
     --hover-color: #652121;
     --shadow-color: #0b0f13;
+    --shadow-color2: #0b1727;
 
     --default-bgColor: #30353c;
     --default-bgColor2: #232831;
+    --default-bgColor3: #1a2739;
 
     --text-color: #fefefe;
     --text-color2: #333;
     --text-color3: #ea4262;
+    --text-color4: #eee;
+    --text-color5: #555;
 
     --border-color: #283344;
 }
