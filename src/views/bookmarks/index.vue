@@ -19,8 +19,11 @@
             </div>
             <div class="right-button">
                 <sh-button class="parse-button" @click="parseBookmarks">解析数据</sh-button>
+                <p>解析上传的书签HTML文件，查看解析结果</p>
                 <sh-button class="parse-button" @click="previewBookmarks">查看书签</sh-button>
+                <p>根据解析结果，预览书签数据</p>
                 <sh-button class="apply-button" @click="applyBookmarks">应用数据</sh-button>
+                <p>根据解析结果，应用书签数据</p>
             </div>
         </div>
         <div class="bookmarks-result">
@@ -46,12 +49,11 @@ import shTree from "@/components/sh-tree.vue";
 import shButton from "@/components/sh-button.vue";
 // 修改网页标题
 import { onMounted, ref, computed, nextTick } from "vue";
+import { useMessage } from '@/Hooks/useMessage'
+const { showMessage } = useMessage()
 onMounted(() => {
     document.title = "书签管理 - SimpleHome";
 });
-
-
-
 
 // 书签解析器
 const BookmarkParser = {
@@ -161,9 +163,6 @@ const BookmarkParser = {
 const tabsData = ref([])
 // 响应式数据
 const selectedFile = ref(null)
-const showResult = ref(false)
-const parsing = ref(false)
-const copied = ref(false)
 const fileInput = ref(null)
 const bookmarksData = ref({
     flat: [],
@@ -226,21 +225,22 @@ const handleFileChange = (e) => {
 const handleFileSelection = (file) => {
     if (file.type === 'text/html' || file.name.endsWith('.html')) {
         selectedFile.value = file
-        showMessage('success', `已选择文件: ${file.name}`)
+        showMessage(`已选择文件: ${file.name}`)
     } else {
-        showMessage('error', '请选择有效的HTML文件！')
+        showMessage('请选择有效的HTML文件！')
         resetApp()
     }
 }
 
 const parseBookmarks = async () => {
-    if (!selectedFile.value) return
-    parsing.value = true
+    if (!selectedFile.value) {
+        showMessage('请先上传有效的HTML文件！')
+        return
+    }
     try {
         const htmlContent = await readFileAsText(selectedFile.value)
         bookmarksData.value = BookmarkParser.parse(htmlContent)
-        showResult.value = true
-        showMessage('success', '解析成功！')
+        showMessage('解析成功！')
 
         // 滚动到结果区域
         await nextTick()
@@ -249,9 +249,7 @@ const parseBookmarks = async () => {
             resultSection.scrollIntoView({ behavior: 'smooth' })
         }
     } catch (error) {
-        showMessage('error', '解析失败: ' + error.message)
-    } finally {
-        parsing.value = false
+        showMessage('解析失败: ' + error.message)
     }
 }
 
@@ -266,46 +264,34 @@ const readFileAsText = (file) => {
 
 const resetApp = () => {
     selectedFile.value = null
-    showResult.value = false
-    copied.value = false
     if (fileInput.value) {
         fileInput.value.value = ''
     }
     bookmarksData.value = {
         flat: [],
         structured: null,
-        stats: {
-            total: 0,
-            folders: 0,
-            parsedAt: null
-        }
     }
 }
 
-const showMessage = (type, message) => {
-    // 创建消息元素
-    const messageEl = document.createElement('div')
-    messageEl.className = `message message-${type}`
-    messageEl.textContent = message
-
-    // 添加到页面
-    document.body.appendChild(messageEl)
-
-    // 3秒后移除
-    setTimeout(() => {
-        if (messageEl.parentNode) {
-            messageEl.parentNode.removeChild(messageEl)
-        }
-    }, 3000)
-}
 
 const previewBookmarks = () => {
+    // 预览书签数据
+    if (!bookmarksData.value.structured?.length) {
+        showMessage('请先解析数据！')
+        return
+    }
     tabsData.value = bookmarksData.value.structured[0].children
+    showMessage('已更新预览书签数据！')
 }
 
 const applyBookmarks = () => {
+    if (!bookmarksData.value.structured?.length && !bookmarksData.value.flat?.length) {
+        showMessage('请先解析数据！')
+        return
+    }
     // 应用书签数据到本地存储
     localStorage.setItem('sh_bookmarks', JSON.stringify(bookmarksData.value))
+    showMessage('书签数据已应用到本地存储！')
 }
 </script>
 <style scoped lang="less">
@@ -338,7 +324,7 @@ h3 {
     width: calc(100% - 24px);
     max-width: 800px;
     margin: 0 auto;
-    height: 40%;
+    height: 50%;
     max-height: 420px;
     padding: 12px;
     background-color: var(--default-bgColor);
@@ -419,7 +405,7 @@ h3 {
 
     .right-button {
         flex: 1;
-        padding: 48px 24px;
+        padding: 36px 24px;
         font-size: 14px;
         margin-left: 6px;
         color: var(--text-color);
@@ -428,11 +414,16 @@ h3 {
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
+
+        p {
+            line-height: 32px;
+            font-size: 12px;
+            color: var(--text-color);
+        }
     }
 }
 
 .bookmarks-notes {
-
     width: calc(100% - 24px);
     max-width: 800px;
     margin: 0 auto 24px;
@@ -467,9 +458,9 @@ h3 {
     color: var(--text-color);
     border-radius: 8px;
     padding: 20px;
-    max-height: 400px;
+    height: 400px;
     overflow-y: auto;
-    font-family: 'Courier New', monospace;
+    font-family: Consolas, 'Courier New', monospace;
     font-size: 14px;
     white-space: pre-wrap;
     word-break: break-all;

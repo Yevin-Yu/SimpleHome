@@ -14,12 +14,30 @@
 
 
 input[type="search"]::-webkit-search-cancel-button {
-    -webkit-appearance: none;
-    appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input[type="search"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+
+.sh-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  cursor: pointer;
+  display: inline-block;
+  margin: 4px 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--text-color3);
+  background-color: var(--default-bgColor2);
+  box-shadow: 0 4px 0px var(--shadow-color);
+  user-select: none;
+  z-index: 9999;
 }

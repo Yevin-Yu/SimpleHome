@@ -1,10 +1,10 @@
 <template>
     <div class="settings-module" ref="settingsModuleRef" v-if="isShow">
         <div class="container">
-            <!-- <h3>应用</h3>
+            <h3>应用</h3>
             <div class="app">
-                <shTag @click="handleImportBookmarks" size="small">热点新闻</shTag>
-            </div> -->
+                <shTag @click="goApp('https://yevin-yu.github.io/hot-news/')" size="small">热点新闻</shTag>
+            </div>
             <h3>设置</h3>
             <div class="content">
                 <div class="setting-item">
@@ -45,6 +45,11 @@ const handleClickOutside = (e) => {
     if (!settingsModuleRef.value.contains(e.target)) {
         isShow.value = false;
     }
+}
+
+// 跳转应用
+const goApp = (url) => {
+    window.open(url, '_blank');
 }
 
 // 从本地存储读取搜索引擎
