@@ -1,7 +1,7 @@
 <template>
     <div class="simple-home">
         <div class="header">
-            <shButton @click="settingHandler">耶温</shButton>
+            <sh-button @click="settingHandler">耶温</sh-button>
         </div>
         <div class="logo ">
             <h1>Simple Home</h1>

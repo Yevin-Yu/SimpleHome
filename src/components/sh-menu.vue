@@ -53,9 +53,8 @@ defineExpose({ show, hide })
 <style scoped>
 .context-menu {
     position: absolute;
-    background: var(--default-bgColor3);
-    box-shadow: 2px 2px 0px var(--shadow-color2);
-    color: var(--text-color);
+    background: var(--sh-menu-bg-color);
+    box-shadow: 2px 2px 0px var(--sh-menu-shadow-color);
     z-index: 1000;
     min-width: 100px;
 }
@@ -63,19 +62,18 @@ defineExpose({ show, hide })
 .menu-list {
     list-style: none;
     margin: 0;
-    padding: 4px 0;
+    padding: 4px 4px;
 }
 
 .menu-item {
     padding: 6px 12px;
     cursor: pointer;
     font-size: 14px;
-    color: var(--text-color4);
-
+    color: var(--sh-menu-color);
 }
 
 .menu-item:hover {
-    background: var(--hover-color);
-    color: var(--text-color5);
+    background: var(--sh-menu-hover-bg-color);
+    color: var(--sh-menu-hover-color);
 }
 </style>
