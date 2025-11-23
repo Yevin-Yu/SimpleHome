@@ -19,7 +19,8 @@
     /* base */
     --default-color: #c14343;
     --border-color: #ccd6eb;
-
+    --theme-color-text: #ea4262;
+    --shadow-color: #e1e9f6;
     /* sh-button */
     --sh-button-color: #030101;
     --sh-button-bg-color: var(--default-color);
@@ -36,6 +37,10 @@
     --sh-radio-color: var(--sh-button-hover-bg-color);
     --sh-radio-border-color: var(--border-color);
     --sh-radio-checked-bg-color: var(--default-color);
+    /* sh-tag */
+    --sh-tag-color: var(--theme-color-text);
+    --sh-tag-bg-color: #f1f5ff;
+    --sh-tag-shadow-color: var(--shadow-color);
 }
 
 [data-theme="dark-theme"] {
@@ -60,6 +65,7 @@
     /* base */
     --default-color: #652120;
     --border-color: #283344;
+    --shadow-color: #0b0f13;
     /* sh-button */
     --sh-button-color: #070202;
     --sh-button-shadow-color: #0b0f13;
@@ -70,4 +76,6 @@
     --sh-menu-bg-color: #1a2739;
     --sh-menu-shadow-color: #0b1727;
     /* sh-radio */
+    /* sh-tag */
+    --sh-tag-bg-color: #232831;
 }
