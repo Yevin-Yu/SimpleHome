@@ -3,19 +3,21 @@
         <div class="container">
             <h3>应用</h3>
             <div class="app">
-                <shTag @click="goApp('https://yevin-yu.github.io/hot-news/')" size="small">热点新闻</shTag>
+                <shTag v-for="item in appList" :key="item.url" @click="goApp(item.url)" size="small">{{ item.name }}
+                </shTag>
             </div>
             <h3>设置</h3>
             <div class="content">
                 <div class="setting-item">
                     <label>主题：</label>
+                    <sh-radio v-model="theme" size="small" value="auto" label="自动" />
                     <sh-radio v-model="theme" size="small" value="light-theme" label="浅色" />
                     <sh-radio v-model="theme" size="small" value="dark-theme" label="深色" />
                 </div>
                 <div class="setting-item">
                     <label>搜索：</label>
-                    <sh-radio v-model="searchEngine" size="small" value="bing" label="Bing" />
-                    <sh-radio v-model="searchEngine" size="small" value="google" label="Google" />
+                    <sh-radio v-model="engine" size="small" value="bing" label="Bing" />
+                    <sh-radio v-model="engine" size="small" value="google" label="Google" />
                 </div>
                 <div class="setting-item">
                     <label>书签：</label>
@@ -27,12 +29,13 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { storeToRefs } from "pinia";
 import ShRadio from "@/components/sh-radio.vue";
 import ShTag from "@/components/sh-tag.vue";
-const isShow = ref(false);
 
-// 点击其他区域关闭设置模块
+// 设置弹窗 点击其他区域关闭设置模块
+const isShow = ref(false);
 const settingsModuleRef = ref(null);
 onMounted(() => {
     document.addEventListener("click", handleClickOutside);
@@ -47,23 +50,26 @@ const handleClickOutside = (e) => {
     }
 }
 
-// 跳转应用
+// 推荐应用
+const appList = [
+    {
+        name: '热点新闻',
+        url: 'https://yevin-yu.github.io/hot-news/',
+    },
+]
 const goApp = (url) => {
     window.open(url, '_blank');
 }
 
-// 从本地存储读取搜索引擎
-const searchEngine = ref(localStorage.getItem("sh-se") || "bing");
-watch(searchEngine, (newVal) => {
-    localStorage.setItem("sh-se", newVal);
-})
+// 搜索引擎
+import { useSearchStore } from "@/stores/useSearchStore";
+const searchStore = useSearchStore()
+const { engine } = storeToRefs(searchStore)
 
 // 切换主题
-import { useTheme } from "@/Hooks/useTheme";
-const { theme, setTheme } = useTheme();
-watch(theme, (newVal) => {
-    setTheme(newVal);
-})
+import { useThemeStore } from "@/stores/useThemeStore";
+const themeStore = useThemeStore();
+const { theme } = storeToRefs(themeStore);
 
 // 导入router
 import { useRouter } from "vue-router";
