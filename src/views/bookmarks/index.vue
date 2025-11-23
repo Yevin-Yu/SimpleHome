@@ -4,7 +4,9 @@
         <div class="current-bookmarks">
             <h3>当前书签 [右击可以新增、删除、编辑]</h3>
             <div class="bookmarks-tree">
-                <sh-tree v-for="child in tabsData" :key="child.title" :item="child" />
+                <sh-tree @treeContextmenu="handleContextMenu" v-for="child in tabsData" :key="child.title" :item="child"
+                    :items="tabsData" />
+                <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
         </div>
         <div class="upload-bookmarks">
@@ -47,6 +49,7 @@
 <script setup>
 import shTree from "@/components/sh-tree.vue";
 import shButton from "@/components/sh-button.vue";
+import shMenu from "@/components/sh-menu.vue";
 // 修改网页标题
 import { onMounted, ref, computed, nextTick } from "vue";
 import { useMessage } from '@/Hooks/useMessage'
@@ -54,6 +57,30 @@ const { showMessage } = useMessage()
 onMounted(() => {
     document.title = "书签管理 - SimpleHome";
 });
+
+// 处理右击事件
+const menu = ref(null)
+const menuItems = [
+    { label: '编辑', action: 'edit' },
+    { label: '删除', action: 'del' },
+    { label: '新增书签', action: 'new-bookmark' },
+    { label: '新增文件夹', action: 'new-folder' },
+]
+const currentItem = ref(null)
+const currentItems = ref([])
+const handleContextMenu = (e, item, items) => {
+    menu.value.show(e.clientX, e.clientY)
+    currentItem.value = item
+    currentItems.value = items
+}
+function onMenuSelect(selected) {
+    // 根据选中的 action 处理业务逻辑
+    switch (selected.action) {
+        case 'del':
+            currentItems.value.children = currentItems.value.children.filter(item => item !== currentItem.value)
+            break
+    }
+}
 
 // 书签解析器
 const BookmarkParser = {
@@ -158,7 +185,6 @@ const BookmarkParser = {
         }
     }
 }
-
 // 书签列表
 const tabsData = ref([])
 // 响应式数据
@@ -175,37 +201,28 @@ if (localBookmarks) {
     bookmarksData.value = JSON.parse(localBookmarks);
     tabsData.value = bookmarksData.value.structured[0].children;
 }
-
-
-
 // 计算属性
 const formattedJSON = computed(() => {
     return JSON.stringify(bookmarksData.value.structured, null, 2)
 })
-
 const uploadIcon = computed(() => {
     return selectedFile.value ? '✅' : '📁'
 })
-
 const uploadText = computed(() => {
     return selectedFile.value
         ? `已选择文件: ${selectedFile.value.name}`
         : '点击或拖拽文件到此处上传'
 })
-
 // 方法
 const triggerFileInput = () => {
     fileInput.value?.click()
 }
-
 const handleDragOver = (e) => {
     e.preventDefault()
 }
-
 const handleDragLeave = (e) => {
     e.preventDefault()
 }
-
 const handleDrop = (e) => {
     e.preventDefault()
 
@@ -214,14 +231,12 @@ const handleDrop = (e) => {
         handleFileSelection(files[0])
     }
 }
-
 const handleFileChange = (e) => {
     const files = e.target.files
     if (files.length > 0) {
         handleFileSelection(files[0])
     }
 }
-
 const handleFileSelection = (file) => {
     if (file.type === 'text/html' || file.name.endsWith('.html')) {
         selectedFile.value = file
@@ -231,7 +246,6 @@ const handleFileSelection = (file) => {
         resetApp()
     }
 }
-
 const parseBookmarks = async () => {
     if (!selectedFile.value) {
         showMessage('请先上传有效的HTML文件！')
@@ -252,7 +266,6 @@ const parseBookmarks = async () => {
         showMessage('解析失败: ' + error.message)
     }
 }
-
 const readFileAsText = (file) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
@@ -261,7 +274,6 @@ const readFileAsText = (file) => {
         reader.readAsText(file)
     })
 }
-
 const resetApp = () => {
     selectedFile.value = null
     if (fileInput.value) {
@@ -273,7 +285,7 @@ const resetApp = () => {
     }
 }
 
-
+// 数据操作
 const previewBookmarks = () => {
     // 预览书签数据
     if (!bookmarksData.value.structured?.length) {
@@ -283,7 +295,6 @@ const previewBookmarks = () => {
     tabsData.value = bookmarksData.value.structured[0].children
     showMessage('已更新预览书签数据！')
 }
-
 const applyBookmarks = () => {
     if (!bookmarksData.value.structured?.length && !bookmarksData.value.flat?.length) {
         showMessage('请先解析数据！')

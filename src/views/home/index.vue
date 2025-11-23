@@ -51,8 +51,8 @@ const onSearchHandler = (key) => {
 import shMenu from '@/components/sh-menu.vue'
 const menu = ref(null)
 const menuItems = [
-    { label: '删除当前项', action: 'current' },
-    { label: '删除所有', action: 'clear' },
+    { label: '删除', action: 'current' },
+    { label: '清空历史', action: 'clear' },
 ]
 // 搜索记录右击弹出菜单
 const currentItem = ref(null)

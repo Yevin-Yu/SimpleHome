@@ -1,10 +1,16 @@
 <template>
     <div class="sh-tree">
-        <sh-tag v-if="!hasChildren" size="small">{{ item.title }}</sh-tag>
-        <sh-button v-else class="tabs-item-title" size="small">{{ item.title }}</sh-button>
+        <!-- 右击事件 -->
+        <sh-tag @contextmenu.prevent="onShowMenu($event, item, items)" v-if="!hasChildren" size="small">
+            {{ item.title }}
+        </sh-tag>
+        <sh-button @contextmenu.prevent="onShowMenu($event, item, items)" v-else class="tabs-item-title" size="small">
+            {{ item.title }}
+        </sh-button>
         <!-- 子节点（递归） -->
         <div v-if="hasChildren" class="sh-tree-child">
-            <shTree v-for="child in item.children" :key="child.title" :item="child" />
+            <shTree @treeContextmenu="handleContextMenu" v-for="child in item.children" :key="child.title" :item="child"
+                :items="item" />
         </div>
     </div>
 </template>
@@ -19,25 +25,36 @@ interface TabItem {
     title: string
     children?: TabItem[]
 }
-const props = defineProps<{ item: TabItem }>()
+const props = defineProps<{ item: TabItem, items: TabItem }>()
 const hasChildren = computed(() => !!props.item.children?.length)
+
+const emit = defineEmits(['treeContextmenu'])
+// 右击事件
+const onShowMenu = (e: MouseEvent, item: TabItem, items: TabItem) => {
+    emit('treeContextmenu', e, item, items)
+}
+// 回传右击事件
+const handleContextMenu = (e: MouseEvent, item: TabItem, items: TabItem) => {
+    emit('treeContextmenu', e, item, items)
+}
 </script>
 
 <style scoped>
-.sh-tree {}
-
 .sh-tree-child {
     padding-left: 24px;
 }
+
 .tabs-item-title {
     margin-top: 8px;
     margin-bottom: 4px;
 }
-.sh-button{
+
+.sh-button {
     font-size: 12px;
     padding: 4px 12px
 }
-.sh-tag{
+
+.sh-tag {
     margin-left: 0;
 }
 </style>

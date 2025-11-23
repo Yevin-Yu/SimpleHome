@@ -67,9 +67,9 @@ defineExpose({ show, hide })
 }
 
 .menu-item {
-    padding: 6px 12px;
+    padding: 4px 10px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--sh-menu-color);
     border-radius: 2px;
 }
