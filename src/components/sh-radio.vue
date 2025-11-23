@@ -1,6 +1,6 @@
 <template>
-    <label @click="handleClick">
-        <div class="sh-radio" :class="{ 'sh-radio-checked': value === modelValue }"></div>
+    <label @click="handleClick" :class="size" class="sh-radio">
+        <div class="sh-radio-check" :class="{ 'sh-radio-checked': value === modelValue }"></div>
         <span>{{ label }}</span>
     </label>
 </template>
@@ -18,6 +18,10 @@ const props = defineProps({
     modelValue: {
         type: String,
         default: ""
+    },
+    size: {
+        type: String,
+        default: 'medium'
     }
 })
 
@@ -30,24 +34,43 @@ const handleClick = () => {
 </script>
 <style scoped lang="less">
 .sh-radio {
+    cursor: pointer;
+}
+
+.sh-radio-check {
     display: inline-block;
     vertical-align: middle;
     margin: 0 4px;
     width: 24px;
     height: 24px;
-    background-color: #e1e9f6;
+    background-color: var(--sh-radio-color);
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 1.5px solid transparent;
     transition: 0.3s;
 }
 
-.sh-radio:hover {
+.sh-radio-check:hover {
     transform: scale(1.05);
-    border-color: #b5c2d8;
+    border-color: var(--sh-radio-border-color);
 }
 
 
 .sh-radio-checked {
-    background-color: var(--default-color);
+    background-color: var(--sh-radio-checked-bg-color);
+}
+
+.small .sh-radio-check {
+    width: 20px;
+    height: 20px;
+}
+
+.medium .sh-radio-check {
+    width: 24px;
+    height: 24px;
+}
+
+.large .sh-radio-check {
+    width: 28px;
+    height: 28px;
 }
 </style>

@@ -18,6 +18,8 @@
 
     /* base */
     --default-color: #c14343;
+    --border-color: #ccd6eb;
+
     /* sh-button */
     --sh-button-color: #030101;
     --sh-button-bg-color: var(--default-color);
@@ -30,6 +32,10 @@
     --sh-menu-shadow-color: #c7d1de;
     --sh-menu-hover-color: var(--sh-button-color);
     --sh-menu-hover-bg-color: var(--sh-button-bg-color);
+    /* sh-radio */
+    --sh-radio-color: var(--sh-button-hover-bg-color);
+    --sh-radio-border-color: var(--border-color);
+    --sh-radio-checked-bg-color: var(--default-color);
 }
 
 [data-theme="dark-theme"] {
@@ -38,7 +44,8 @@
     --shadow-color: #0b0f13;
     --shadow-color2: #0b1727;
 
-    --default-bgColor: #30353c;
+    /* #1a1e24 */
+    --default-bgColor: #1a1e24;
     --default-bgColor2: #232831;
     --default-bgColor3: #1a2739;
 
@@ -52,6 +59,7 @@
 
     /* base */
     --default-color: #652120;
+    --border-color: #283344;
     /* sh-button */
     --sh-button-color: #070202;
     --sh-button-shadow-color: #0b0f13;
@@ -61,4 +69,5 @@
     --sh-menu-color: #ddd;
     --sh-menu-bg-color: #1a2739;
     --sh-menu-shadow-color: #0b1727;
+    /* sh-radio */
 }

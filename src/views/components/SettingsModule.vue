@@ -9,13 +9,13 @@
             <div class="content">
                 <div class="setting-item">
                     <label>主题：</label>
-                    <shRadio v-model="theme" value="light-theme" label="浅色" />
-                    <shRadio v-model="theme" value="dark-theme" label="深色" />
+                    <sh-radio v-model="theme" size="small" value="light-theme" label="浅色" />
+                    <sh-radio v-model="theme" size="small" value="dark-theme" label="深色" />
                 </div>
                 <div class="setting-item">
                     <label>搜索：</label>
-                    <shRadio v-model="searchEngine" value="bing" label="Bing" />
-                    <shRadio v-model="searchEngine" value="google" label="Google" />
+                    <sh-radio v-model="searchEngine" size="small" value="bing" label="Bing" />
+                    <sh-radio v-model="searchEngine" size="small" value="google" label="Google" />
                 </div>
                 <div class="setting-item">
                     <label>书签：</label>
