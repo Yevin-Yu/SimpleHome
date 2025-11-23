@@ -43,6 +43,7 @@ const handleClick = () => {
     margin: 0 4px;
     width: 24px;
     height: 24px;
+    border-radius: 2px;
     background-color: var(--sh-radio-color);
     cursor: pointer;
     border: 1.5px solid transparent;

@@ -57,12 +57,13 @@ defineExpose({ show, hide })
     box-shadow: 2px 2px 0px var(--sh-menu-shadow-color);
     z-index: 1000;
     min-width: 100px;
+    border-radius: 2px;
 }
 
 .menu-list {
     list-style: none;
     margin: 0;
-    padding: 4px 4px;
+    padding: 4px;
 }
 
 .menu-item {
@@ -70,6 +71,7 @@ defineExpose({ show, hide })
     cursor: pointer;
     font-size: 14px;
     color: var(--sh-menu-color);
+    border-radius: 2px;
 }
 
 .menu-item:hover {

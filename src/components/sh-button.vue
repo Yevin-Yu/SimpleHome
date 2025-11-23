@@ -16,6 +16,7 @@ defineProps({
 .sh-button {
     border: none;
     outline: none;
+    border-radius: 2px;
     padding: 6px 16px;
     font-size: 14px;
     cursor: pointer;

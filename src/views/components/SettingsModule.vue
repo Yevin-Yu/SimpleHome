@@ -88,6 +88,7 @@ defineExpose({
     position: fixed;
     top: 64px;
     right: 14px;
+    border-radius: 2px;
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     padding: 6px;

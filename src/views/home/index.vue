@@ -168,6 +168,7 @@ const currentItem = ref(null)
             height: 54px;
             padding: 10px;
             font-size: 20px;
+            border-radius: 2px;
             color: var(--text-color);
             border: 2px solid var(--default-color);
             outline: none;

@@ -18,6 +18,7 @@ defineProps({
     cursor: pointer;
     display: inline-block;
     margin: 4px 8px;
+    border-radius: 2px;
     font-size: 14px;
     padding: 6px 16px;
     color: var(--sh-tag-color);

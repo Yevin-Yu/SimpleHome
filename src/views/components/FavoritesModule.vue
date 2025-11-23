@@ -120,6 +120,7 @@ onBeforeUnmount(() => {
     top: 50%;
     left: 50%;
     padding: 12px;
+    border-radius: 2px;
     transform: translate(-50%, -50%);
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);

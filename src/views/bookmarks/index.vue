@@ -327,6 +327,7 @@ h3 {
     height: 50%;
     max-height: 420px;
     padding: 12px;
+    border-radius: 2px;
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
@@ -343,7 +344,7 @@ h3 {
     width: calc(100% - 24px);
     max-width: 800px;
     margin: 0 auto 24px;
-
+    border-radius: 2px;
     padding: 12px;
     margin-top: 24px;
     background-color: var(--default-bgColor);
@@ -429,10 +430,10 @@ h3 {
     margin: 0 auto 24px;
     padding: 12px;
     margin-top: 24px;
+    border-radius: 2px;
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
-
     ol {
         li {
             line-height: 24px;
@@ -448,6 +449,7 @@ h3 {
     margin: 0 auto 24px;
     padding: 12px;
     margin-top: 24px;
+    border-radius: 2px;
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
