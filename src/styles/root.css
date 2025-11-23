@@ -27,6 +27,11 @@
     --sh-tag-color: var(--theme-color-text);
     --sh-tag-bg-color: #f1f5ff;
     --sh-tag-shadow-color: var(--shadow-color);
+    /* sh-dialog */
+    --sh-dialog-color: #f9fbff;
+    /* sh-input */
+    --sh-input-bgColor: #dfe8f5;
+    --sh-input-border-color: #b4c2d8;
 }
 
 [data-theme="dark-theme"] {
@@ -49,4 +54,9 @@
     /* sh-radio */
     /* sh-tag */
     --sh-tag-bg-color: #232831;
+    /* sh-dialog */
+    --sh-dialog-color: #1a1e24;
+    /* sh-input */
+    --sh-input-bgColor: #131518;
+    --sh-input-border-color: #2e394a;
 }

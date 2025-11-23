@@ -8,6 +8,11 @@
                     :items="tabsData" />
                 <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
+            <!-- <sh-dialog ref="dialog" :title="dialogTitle">
+                <div>
+                    <sh-input placeholder="请输入书签名称"></sh-input>
+                </div>
+            </sh-dialog> -->
         </div>
         <div class="upload-bookmarks">
             <div class="left-upload">
@@ -50,6 +55,8 @@
 import shTree from "@/components/sh-tree.vue";
 import shButton from "@/components/sh-button.vue";
 import shMenu from "@/components/sh-menu.vue";
+import shDialog from "@/components/sh-dialog.vue";
+import shInput from "@/components/sh-input.vue";
 // 修改网页标题
 import { onMounted, ref, computed, nextTick } from "vue";
 import { useMessage } from '@/Hooks/useMessage'
