@@ -375,7 +375,7 @@ h3 {
             text-align: center;
             transition: all 0.3s;
             cursor: pointer;
-            background-color: var(--default-bgColor2);
+            background-color: var(--card-bg-color);
             box-shadow: 2px 2px 0px var(--shadow-color);
         }
 
@@ -434,6 +434,7 @@ h3 {
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+
     ol {
         li {
             line-height: 24px;
@@ -456,7 +457,7 @@ h3 {
 }
 
 .json-container {
-    background: var(--default-bgColor2);
+    background: var(--card-bg-color);
     color: var(--text-color);
     border-radius: 8px;
     padding: 20px;

@@ -35,8 +35,8 @@ input[type="search"] {
   margin: 4px 8px;
   padding: 6px 12px;
   font-size: 14px;
-  color: var(--text-color3);
-  background-color: var(--default-bgColor2);
+  color: var(--theme-color-text);
+  background-color: var(--card-bg-color);
   box-shadow: 0 4px 0px var(--shadow-color);
   user-select: none;
   z-index: 9999;
