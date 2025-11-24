@@ -25,7 +25,7 @@
         </Transition>
         <!-- 收藏夹模块 -->
         <Transition name="rotate">
-            <FavoritesModule ref="favoritesRef" />
+            <BookmarkModule ref="bookmarkRef" />
         </Transition>
     </div>
 </template>
@@ -33,7 +33,7 @@
 import shButton from "@/components/sh-button.vue";
 import shTag from "@/components/sh-tag.vue";
 import SettingsModule from "@/views/components/SettingsModule.vue";
-import FavoritesModule from "@/views/components/FavoritesModule.vue";
+import BookmarkModule from "@/views/components/BookmarkModule.vue";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 

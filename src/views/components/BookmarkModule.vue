@@ -1,30 +1,27 @@
 <template>
-    <div v-if="isShow" class="favorites-module" ref="favoritesModule">
+    <div v-if="isShow" class="bookmark-module" ref="favoritesModule">
         <div class="bookmarks">
-            <sh-tag @click="goToLink(item.url)" v-for="item in favorites" :key="item.id">{{ item.title }}</sh-tag>
+            <sh-tag @click="goToLink(item)" v-for="item in flatBookmarks" :key="item.id">{{ item.title }}</sh-tag>
         </div>
     </div>
 </template>
 
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from "vue";
+import { storeToRefs } from "pinia";
 import shTag from "@/components/sh-tag.vue";
 const isShow = ref(false);
-const favorites = ref([]);
+// 加载收藏夹
+import { useBookmarksStore } from "@/stores/useBookmarksStore";
+const bookmarksStore = useBookmarksStore();
+const { flatBookmarks } = storeToRefs(bookmarksStore);
+// 跳转链接
+const goToLink = (item) => {
+    window.open(item.url, "_blank");
+}
+
 // 收藏夹模块元素
 const favoritesModule = ref(null);
-// 从本地存储加载收藏夹
-
-const bookmarks = localStorage.getItem("sh_bookmarks");
-if (bookmarks) {
-    favorites.value = JSON.parse(bookmarks).flat;
-}
-
-// 跳转链接
-const goToLink = (url) => {
-    window.open(url, "_blank");
-}
-
 // 触发向上事件
 const handleScrollUp = () => {
     isShow.value = true;
@@ -33,18 +30,15 @@ const handleScrollUp = () => {
 const handleScrollDown = () => {
     isShow.value = false;
 }
-
 // 鼠标拖动事件
 let isLeftBtnDown = false
 let startYMouse = 0
-
 const onMouseDown = (event) => {
     if (event.button === 0) {          // 只响应左键
         isLeftBtnDown = true
         startYMouse = event.clientY
     }
 }
-
 const onMouseMove = (event) => {
     if (!isLeftBtnDown) return
     const diff = event.clientY - startYMouse
@@ -56,16 +50,13 @@ const onMouseMove = (event) => {
         startYMouse = event.clientY
     }
 }
-
 const onMouseUp = () => {
     isLeftBtnDown = false
 }
-
 // 手机触摸滑动
 const onTouchStart = (event) => {
     startYMouse = event.touches[0].clientY
 }
-
 const onTouchMove = (event) => {
     // 如果收藏夹模块包含事件目标则不响应
     if (favoritesModule.value && favoritesModule.value.contains(event.target)) return
@@ -107,11 +98,9 @@ onBeforeUnmount(() => {
     window.removeEventListener('touchstart', onTouchStart)
     window.removeEventListener('touchmove', onTouchMove)
 })
-
 </script>
-
 <style scoped>
-.favorites-module {
+.bookmark-module {
     width: calc(100% - 24px);
     max-width: 800px;
     height: 50%;
