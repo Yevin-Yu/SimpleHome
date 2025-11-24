@@ -11,10 +11,22 @@
             <Transition name="fade">
                 <sh-dialog ref="dialog" v-if="dialogVisible" :title="dialogTitle">
                     <div class="dialog-content">
-                        <label>{{ currentItem.type === 'folder' ? '文件夹' : '书签' }}名称</label>
-                        <sh-input v-model="currentItem.title"></sh-input>
-                        <label v-if="currentItem.type === 'bookmark'">书签URL</label>
-                        <sh-input v-model="currentItem.url" v-if="currentItem.type === 'bookmark'"></sh-input>
+                        <template v-if="currentAction === 'edit'">
+                            <label>{{ currentItem.type === 'folder' ? '文件夹' : '书签' }}名称</label>
+                            <sh-input v-model="currentItem.title"></sh-input>
+                            <label v-if="currentItem.type === 'bookmark'">书签URL</label>
+                            <sh-input v-model="currentItem.url" v-if="currentItem.type === 'bookmark'"></sh-input>
+                        </template>
+                        <template v-if="currentAction === 'new-bookmark'">
+                            <label>书签名称</label>
+                            <sh-input v-model="form.title"></sh-input>
+                            <label>书签URL</label>
+                            <sh-input v-model="form.url"></sh-input>
+                        </template>
+                        <template v-if="currentAction === 'new-folder'">
+                            <label>文件夹名称</label>
+                            <sh-input v-model="form.title"></sh-input>
+                        </template>
                     </div>
                     <div class="dialog-btn">
                         <sh-button @click="dialogVisible = false" size="small">取消</sh-button>
@@ -86,11 +98,14 @@ const currentItem = ref(null)
 const currentItems = ref([])
 const currentAction = ref(null)
 const handleContextMenu = (e, item, items) => {
+    console.log('123123')
+    console.log(e.clientX, e.clientY)
     menu.value.show(e.clientX, e.clientY)
     currentItem.value = item
     currentItems.value = items
 }
 const onMenuSelect = (selected) => {
+    currentAction.value = selected.action
     // 根据选中的 action 处理业务逻辑
     switch (selected.action) {
         case 'edit':
@@ -98,6 +113,12 @@ const onMenuSelect = (selected) => {
             break
         case 'del':
             onDeleteBookmark()
+            break
+        case 'new-bookmark':
+            onAddBookmark()
+            break
+        case 'new-folder':
+            onAddFolder()
             break
     }
 }
@@ -109,23 +130,67 @@ const onEditBookmark = () => {
     dialogVisible.value = true
 }
 const confirmBookmark = () => {
+    // 新增书签
+    if (currentAction.value === 'new-bookmark') {
+        if (!form.value.title || !form.value.url) return
+        let newBookmark = {
+            title: form.value.title,
+            url: form.value.url,
+            type: 'bookmark'
+        }
+        if (currentItems.value.children) {
+            currentItems.value.children.push(newBookmark)
+        } else {
+            currentItems.value.push(newBookmark)
+        }
+        form.value.title = ''
+        form.value.url = ''
+    }
+    // 新增文件夹
+    if (currentAction.value === 'new-folder') {
+        if (!form.value.title) return
+        let newFolder = {
+            title: form.value.title,
+            type: 'folder',
+        }
+        if (currentItems.value.children) {
+            currentItems.value.children.push(newFolder)
+        } else {
+            currentItems.value.push(newFolder)
+        }
+        form.value.title = ''
+        console.log(currentItems.value)
+    }
     dialogVisible.value = false
 }
 // 删除书签
 const onDeleteBookmark = () => {
-    console.log(currentItem.value, currentItems.value)
-    // 从数组里找出第几项 然后删除掉 查看是否有children 有的化 删除children
-    // 如果是文件夹 则删除children
-    // if (currentItem.value.children) {
-    //     return
-    // } else {
-    //     const index = currentItems.value.findIndex(item => item.title === currentItem.value.title)
-    //     if (index !== -1) {
-    //         currentItems.value.splice(index, 1)
-    //     }
-    // }
+    if (!currentItem.value.title) return
+    if (!currentItems.value.length && !currentItems.value.children.length) return
+    if (currentItems.value.children) {
+        const index = currentItems.value.children.findIndex(item => item.title === currentItem.value.title)
+        if (index !== -1) {
+            currentItems.value.children.splice(index, 1)
+        }
+        return
+    } else {
+        const index = currentItems.value.findIndex(item => item.title === currentItem.value.title)
+        if (index !== -1) {
+            currentItems.value.splice(index, 1)
+        }
+    }
 }
-
+const form = ref({ title: '', url: '' })
+// 新增书签
+const onAddBookmark = () => {
+    dialogTitle.value = '新增书签'
+    dialogVisible.value = true
+}
+// 新增文件夹
+const onAddFolder = () => {
+    dialogTitle.value = '新增文件夹'
+    dialogVisible.value = true
+}
 
 // 书签解析器
 const BookmarkParser = {

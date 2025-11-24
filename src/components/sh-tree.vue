@@ -1,10 +1,12 @@
 <template>
     <div class="sh-tree">
         <!-- 右击事件 -->
-        <sh-tag @contextmenu.prevent="onShowMenu($event, item, items)" v-if="!hasChildren" size="small">
+        <sh-tag @click.prevent.stop="onShowMenu($event, item, items)"
+            @contextmenu.prevent="onShowMenu($event, item, items)" v-if="item.type === 'bookmark'" size="small">
             {{ item.title }}
         </sh-tag>
-        <sh-button @contextmenu.prevent="onShowMenu($event, item, items)" v-else class="tabs-item-title" size="small">
+        <sh-button @click.prevent.stop="onShowMenu($event, item, items)"
+            @contextmenu.prevent="onShowMenu($event, item, items)" v-else class="tabs-item-title" size="small">
             {{ item.title }}
         </sh-button>
         <!-- 子节点（递归） -->
@@ -22,7 +24,8 @@ import shTag from './sh-tag.vue';
 import shTree from "@/components/sh-tree.vue";
 
 interface TabItem {
-    title: string
+    title: string,
+    type: string,
     children?: TabItem[]
 }
 const props = defineProps<{ item: TabItem, items: TabItem }>()
