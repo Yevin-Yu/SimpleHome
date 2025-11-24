@@ -8,11 +8,20 @@
                     :items="tabsData" />
                 <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
-            <!-- <sh-dialog ref="dialog" :title="dialogTitle">
-                <div>
-                    <sh-input placeholder="请输入书签名称"></sh-input>
-                </div>
-            </sh-dialog> -->
+            <Transition name="fade">
+                <sh-dialog ref="dialog" v-if="dialogVisible" :title="dialogTitle">
+                    <div class="dialog-content">
+                        <label>{{ currentItem.type === 'folder' ? '文件夹' : '书签' }}名称</label>
+                        <sh-input v-model="currentItem.title"></sh-input>
+                        <label v-if="currentItem.type === 'bookmark'">书签URL</label>
+                        <sh-input v-model="currentItem.url" v-if="currentItem.type === 'bookmark'"></sh-input>
+                    </div>
+                    <div class="dialog-btn">
+                        <sh-button @click="dialogVisible = false" size="small">取消</sh-button>
+                        <sh-button @click="confirmBookmark" size="small">确认</sh-button>
+                    </div>
+                </sh-dialog>
+            </Transition>
         </div>
         <div class="upload-bookmarks">
             <div class="left-upload">
@@ -75,19 +84,48 @@ const menuItems = [
 ]
 const currentItem = ref(null)
 const currentItems = ref([])
+const currentAction = ref(null)
 const handleContextMenu = (e, item, items) => {
     menu.value.show(e.clientX, e.clientY)
     currentItem.value = item
     currentItems.value = items
 }
-function onMenuSelect(selected) {
+const onMenuSelect = (selected) => {
     // 根据选中的 action 处理业务逻辑
     switch (selected.action) {
+        case 'edit':
+            onEditBookmark()
+            break
         case 'del':
-            currentItems.value.children = currentItems.value.children.filter(item => item !== currentItem.value)
+            onDeleteBookmark()
             break
     }
 }
+const dialogVisible = ref(false)
+const dialogTitle = ref('编辑书签')
+// 编辑书签
+const onEditBookmark = () => {
+    dialogTitle.value = currentItem.value.type === 'folder' ? '编辑文件夹' : '编辑书签'
+    dialogVisible.value = true
+}
+const confirmBookmark = () => {
+    dialogVisible.value = false
+}
+// 删除书签
+const onDeleteBookmark = () => {
+    console.log(currentItem.value, currentItems.value)
+    // 从数组里找出第几项 然后删除掉 查看是否有children 有的化 删除children
+    // 如果是文件夹 则删除children
+    // if (currentItem.value.children) {
+    //     return
+    // } else {
+    //     const index = currentItems.value.findIndex(item => item.title === currentItem.value.title)
+    //     if (index !== -1) {
+    //         currentItems.value.splice(index, 1)
+    //     }
+    // }
+}
+
 
 // 书签解析器
 const BookmarkParser = {
@@ -313,6 +351,8 @@ const applyBookmarks = () => {
 }
 </script>
 <style scoped lang="less">
+@import url("@/styles/animation.css");
+
 .bookmarks {
     width: 100%;
     height: 100%;
@@ -355,6 +395,29 @@ h3 {
         height: calc(100% - 48px);
         overflow-y: auto;
         scrollbar-width: none;
+    }
+
+    .dialog-content {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        label {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+    }
+
+    .dialog-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .sh-button {
+            margin: 12px;
+        }
     }
 }
 

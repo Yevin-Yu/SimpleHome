@@ -1,9 +1,11 @@
 <template>
-    <input type="text" class="sh-input" :placeholder="placeholder" :class="size">
+    <input type="text" :value="modelValue" class="sh-input" :placeholder="placeholder" :class="size"
+        @input="(e) => emit('update:modelValue', e.target.value)">
 </template>
 <script setup>
+import { watch } from 'vue'
 // 接收size
-defineProps({
+const props = defineProps({
     size: {
         type: String,
         default: 'medium'
@@ -12,6 +14,17 @@ defineProps({
         type: String,
         default: ''
     }
+    ,
+    modelValue: {
+        type: String,
+        default: ''
+    }
+})
+// 定义事件
+const emit = defineEmits(['update:modelValue'])
+// 监听modelValue变化
+watch(() => props.modelValue, (newValue) => {
+    emit('update:modelValue', newValue)
 })
 </script>
 <style scoped lang="less">
