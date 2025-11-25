@@ -25,7 +25,11 @@
         </Transition>
         <!-- 收藏夹模块 -->
         <Transition name="rotate">
-            <BookmarkModule ref="bookmarkRef" />
+            <BookmarkModule v-if="showMode === 'flat'" ref="bookmarkRef" />
+        </Transition>
+        <!-- 收藏夹模块 -->
+        <Transition name="fade">
+            <AsideBookmarkModule v-if="showMode === 'file'" ref="asideBookmarkRef" />
         </Transition>
     </div>
 </template>
@@ -34,6 +38,7 @@ import shButton from "@/components/sh-button.vue";
 import shTag from "@/components/sh-tag.vue";
 import SettingsModule from "@/views/components/SettingsModule.vue";
 import BookmarkModule from "@/views/components/BookmarkModule.vue";
+import AsideBookmarkModule from "@/views/components/AsideBookmarkModule.vue";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 
@@ -78,6 +83,11 @@ const settingHandler = (e) => {
     e.stopPropagation();
     settingRef.value.isShow = !settingRef.value.isShow;
 };
+
+// 书签展示模式
+import { useBookmarksStore } from "@/stores/useBookmarksStore";
+const bookmarksStore = useBookmarksStore()
+const { showMode } = storeToRefs(bookmarksStore)
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

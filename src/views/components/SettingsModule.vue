@@ -21,6 +21,8 @@
                 </div>
                 <div class="setting-item">
                     <label>书签：</label>
+                    <sh-radio v-model="showMode" size="small" value="flat" label="平铺" />
+                    <sh-radio v-model="showMode" size="small" value="file" label="文件" />
                     <shTag @click="handleImportBookmarks" size="small">导入设置</shTag>
                     <p class="tips">提示：空格键 与 鼠标左击 上下滑动，可以打开关闭书签</p>
                 </div>
@@ -33,6 +35,10 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import ShRadio from "@/components/sh-radio.vue";
 import ShTag from "@/components/sh-tag.vue";
+// 书签展示模式
+import { useBookmarksStore } from "@/stores/useBookmarksStore";
+const bookmarksStore = useBookmarksStore()
+const { showMode } = storeToRefs(bookmarksStore)
 
 // 设置弹窗 点击其他区域关闭设置模块
 const isShow = ref(false);

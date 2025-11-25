@@ -12,6 +12,8 @@ interface Bookmark {
 // 加载导入默认json
 
 export const useBookmarksStore = defineStore('sh-bookmarks-store', () => {
+    // 展示模式
+    const showMode = ref('flat')
     // 书签
     const bookmarks = ref<Bookmark[]>(defaultData)
     const flatBookmarks = ref<Bookmark[]>([])
@@ -92,6 +94,7 @@ export const useBookmarksStore = defineStore('sh-bookmarks-store', () => {
     })
 
     return {
+        showMode,
         bookmarks,
         flatBookmarks,
         setBookmarks,
