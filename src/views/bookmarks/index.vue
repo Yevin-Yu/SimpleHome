@@ -17,13 +17,13 @@
                             <label v-if="currentItem.type === 'bookmark'">书签URL</label>
                             <sh-input v-model="currentItem.url" v-if="currentItem.type === 'bookmark'"></sh-input>
                         </template>
-                        <template v-if="currentAction === 'new-bookmark'">
+                        <template v-if="currentAction === 'new-bookmark' || currentAction === 'new-bookmark-next'">
                             <label>书签名称</label>
                             <sh-input v-model="form.title"></sh-input>
                             <label>书签URL</label>
                             <sh-input v-model="form.url"></sh-input>
                         </template>
-                        <template v-if="currentAction === 'new-folder'">
+                        <template v-if="currentAction === 'new-folder' || currentAction === 'new-folder-next'">
                             <label>文件夹名称</label>
                             <sh-input v-model="form.title"></sh-input>
                         </template>
@@ -88,18 +88,30 @@ onMounted(() => {
 
 // 处理右击事件
 const menu = ref(null)
-const menuItems = [
+const menuItems = ref([])
+const menuItems1 = [
     { label: '编辑', action: 'edit' },
     { label: '删除', action: 'del' },
     { label: '新增书签', action: 'new-bookmark' },
     { label: '新增文件夹', action: 'new-folder' },
 ]
+const menuItems2 = [
+    { label: '编辑', action: 'edit' },
+    { label: '删除', action: 'del' },
+    { label: '新增书签', action: 'new-bookmark' },
+    { label: '新增文件夹', action: 'new-folder' },
+    { label: '新增下级书签', action: 'new-bookmark-next' },
+    { label: '新增下级文件夹', action: 'new-folder-next' },
+]
 const currentItem = ref(null)
 const currentItems = ref([])
 const currentAction = ref(null)
 const handleContextMenu = (e, item, items) => {
-    console.log('123123')
-    console.log(e.clientX, e.clientY)
+    if (item.type === 'folder') {
+        menuItems.value = menuItems2
+    } else {
+        menuItems.value = menuItems1
+    }
     menu.value.show(e.clientX, e.clientY)
     currentItem.value = item
     currentItems.value = items
@@ -119,6 +131,12 @@ const onMenuSelect = (selected) => {
             break
         case 'new-folder':
             onAddFolder()
+            break
+        case 'new-bookmark-next':
+            onAddBookmarkNext()
+            break
+        case 'new-folder-next':
+            onAddFolderNext()
             break
     }
 }
@@ -161,6 +179,37 @@ const confirmBookmark = () => {
         form.value.title = ''
         console.log(currentItems.value)
     }
+    // 新增下级书签
+    if (currentAction.value === 'new-bookmark-next') {
+        if (!form.value.title || !form.value.url) return
+        let newBookmark = {
+            title: form.value.title,
+            url: form.value.url,
+            type: 'bookmark'
+        }
+        if (currentItem.value.children) {
+            currentItem.value.children.push(newBookmark)
+        } else {
+            currentItem.value.children = [newBookmark]
+        }
+        form.value.title = ''
+        form.value.url = ''
+    }
+    // 新增下级文件夹
+    if (currentAction.value === 'new-folder-next') {
+        if (!form.value.title) return
+        let newFolder = {
+            title: form.value.title,
+            type: 'folder',
+        }
+        if (currentItem.value.children) {
+            currentItem.value.children.push(newFolder)
+        } else {
+            currentItem.value.children = [newFolder]
+        }
+        form.value.title = ''
+        console.log(currentItem.value.children)
+    }
     dialogVisible.value = false
 }
 // 删除书签
@@ -189,6 +238,15 @@ const onAddBookmark = () => {
 // 新增文件夹
 const onAddFolder = () => {
     dialogTitle.value = '新增文件夹'
+    dialogVisible.value = true
+}
+const onAddBookmarkNext = () => {
+    dialogTitle.value = '新增下级书签'
+    dialogVisible.value = true
+}
+// 新增下级文件夹
+const onAddFolderNext = () => {
+    dialogTitle.value = '新增下级文件夹'
     dialogVisible.value = true
 }
 

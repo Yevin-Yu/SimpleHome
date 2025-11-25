@@ -112,7 +112,7 @@ defineExpose({
     h3 {
         margin: 0;
         padding: 6px 10px;
-        font-size: 16px;
+        font-size: 14px;
         color: var(--text-color);
         border-bottom: 2px solid var(--border-color);
     }
@@ -126,7 +126,7 @@ defineExpose({
     }
 
     .setting-item {
-        font-size: 16px;
+        font-size: 14px;
         color: var(--text-color);
         padding-left: 12px;
         margin-bottom: 12px;
