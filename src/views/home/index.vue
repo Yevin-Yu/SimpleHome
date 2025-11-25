@@ -1,4 +1,5 @@
 <template>
+    <!-- Simple Home 主页 -->
     <div class="simple-home">
         <div class="header">
             <sh-button @click="settingHandler">耶温</sh-button>
@@ -8,30 +9,26 @@
         </div>
         <div class="search">
             <input type="search" v-model="searchKey" @keyup.enter="onSearchHandler(searchKey)" />
-            <!-- 搜索记录 -->
             <div class="search-history">
                 <sh-tag v-for="key in searchHistory" @contextmenu.prevent="onShowMenu($event, key)"
-                    @click="onSearchHandler(key)" :key="key">
-                    {{ key }}
+                    @click="onSearchHandler(key)" :key="key"> {{ key }}
                 </sh-tag>
-                <!-- 添加右击弹出菜单删除 -->
                 <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
         </div>
         <div class="footer"></div>
-        <!-- 设置模块 -->
-        <Transition name="fade">
-            <SettingsModule ref="settingRef" />
-        </Transition>
-        <!-- 收藏夹模块 -->
-        <Transition name="rotate">
-            <BookmarkModule v-if="showMode === 'flat'" ref="bookmarkRef" />
-        </Transition>
-        <!-- 收藏夹模块 -->
-        <Transition name="fade">
-            <AsideBookmarkModule v-if="showMode === 'file'" ref="asideBookmarkRef" />
-        </Transition>
     </div>
+
+    <!-- 加载设置&书签模块 -->
+    <Transition name="fade">
+        <SettingsModule ref="settingRef" />
+    </Transition>
+    <Transition name="rotate">
+        <BookmarkModule v-if="showMode === 'flat'" ref="bookmarkRef" />
+    </Transition>
+    <Transition name="fade">
+        <AsideBookmarkModule v-if="showMode === 'file'" ref="asideBookmarkRef" />
+    </Transition>
 </template>
 <script setup>
 import shButton from "@/components/sh-button.vue";
@@ -52,7 +49,7 @@ const onSearchHandler = (key) => {
     searchKey.value = "";
 };
 
-// 删除搜索记录
+// 操作搜索记录
 import shMenu from '@/components/sh-menu.vue'
 const menu = ref(null)
 const menuItems = [
@@ -88,6 +85,7 @@ const settingHandler = (e) => {
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
 const bookmarksStore = useBookmarksStore()
 const { showMode } = storeToRefs(bookmarksStore)
+
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");
@@ -129,7 +127,7 @@ const { showMode } = storeToRefs(bookmarksStore)
         flex-direction: column;
         align-items: center;
         user-select: none;
-        
+
         input {
             width: 100%;
             max-width: 600px;

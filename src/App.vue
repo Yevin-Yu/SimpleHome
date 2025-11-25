@@ -3,7 +3,6 @@
 </template>
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-
 // 切换主题
 import { useThemeStore } from "@/stores/useThemeStore";
 useThemeStore();

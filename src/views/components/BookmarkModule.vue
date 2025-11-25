@@ -5,34 +5,26 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from "vue";
 import { storeToRefs } from "pinia";
 import shTag from "@/components/sh-tag.vue";
-const isShow = ref(false);
+
 // 加载收藏夹
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
 const bookmarksStore = useBookmarksStore();
 const { flatBookmarks } = storeToRefs(bookmarksStore);
-// 跳转链接
 const goToLink = (item) => {
     window.open(item.url, "_blank");
 }
 
 // 收藏夹模块元素
+const isShow = ref(false);
 const favoritesModule = ref(null);
-// 触发向上事件
-const handleScrollUp = () => {
-    isShow.value = true;
-}
-// 触发向下事件
-const handleScrollDown = () => {
-    isShow.value = false;
-}
-// 鼠标拖动事件
+// 鼠标拖动&空格键 控制收藏夹显示隐藏
 let isLeftBtnDown = false
 let startYMouse = 0
+// 鼠标拖动
 const onMouseDown = (event) => {
     if (event.button === 0) {          // 只响应左键
         isLeftBtnDown = true
@@ -43,10 +35,10 @@ const onMouseMove = (event) => {
     if (!isLeftBtnDown) return
     const diff = event.clientY - startYMouse
     if (diff < -10) {
-        handleScrollUp(event)
+        isShow.value = true;
         startYMouse = event.clientY
     } else if (diff > 10) {
-        handleScrollDown(event)
+        isShow.value = false;
         startYMouse = event.clientY
     }
 }
@@ -62,26 +54,25 @@ const onTouchMove = (event) => {
     if (favoritesModule.value && favoritesModule.value.contains(event.target)) return
     const diff = event.touches[0].clientY - startYMouse
     if (diff < -10) {
-        handleScrollUp(event)
+        isShow.value = true;
         startYMouse = event.touches[0].clientY
     } else if (diff > 10) {
-        handleScrollDown(event)
+        isShow.value = false;
         startYMouse = event.touches[0].clientY
     }
 }
-// 监听键盘空格键
+// 键盘空格键
 const onKeyDown = (event) => {
-    // 如果input或textarea聚焦则不触发
     const activeElement = document.activeElement;
     if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
         return;
     }
-    // 空格键切换显示隐藏
     if (event.code === "Space") {
         isShow.value = !isShow.value;
     }
 };
 
+// 挂载&卸载事件监听
 onMounted(() => {
     window.addEventListener('keydown', onKeyDown, { passive: true })
     window.addEventListener('mousedown', onMouseDown, { passive: true })
@@ -103,7 +94,7 @@ onBeforeUnmount(() => {
 .bookmark-module {
     width: calc(100% - 24px);
     max-width: 800px;
-    height: 50%;
+    height: 60%;
     max-height: 420px;
     position: absolute;
     top: 50%;

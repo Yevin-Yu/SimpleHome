@@ -9,13 +9,11 @@ interface Bookmark {
     children?: Bookmark[]
 }
 
-// 加载导入默认json
-
 export const useBookmarksStore = defineStore('sh-bookmarks-store', () => {
     // 展示模式
     const showMode = ref('flat')
     // 书签
-    const bookmarks = ref<Bookmark[]>(defaultData)
+    const bookmarks = ref<Bookmark[]>(defaultData) // 加载导入默认json
     const flatBookmarks = ref<Bookmark[]>([])
 
     // 多级嵌套书签 根据id查找所在的节点 返回组件所在的父节点   
@@ -76,12 +74,12 @@ export const useBookmarksStore = defineStore('sh-bookmarks-store', () => {
         if (currentNodes?.length) {
             currentNodes.forEach(item => {
                 if (item.id === id && item.type === 'folder') {
+                    if (!item.children) item.children = []
                     item.children?.push(bookmark)
                 }
             })
         }
     }
-
     // 设置书签
     const setBookmarks = (newBookmarks: Bookmark[]) => {
         bookmarks.value = newBookmarks

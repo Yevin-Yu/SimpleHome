@@ -1,5 +1,6 @@
 <template>
     <div class="settings-module" ref="settingsModuleRef" v-if="isShow">
+        <!-- 推荐应用与设置 -->
         <div class="container">
             <h3>应用</h3>
             <div class="app">
@@ -40,7 +41,7 @@ import { useBookmarksStore } from "@/stores/useBookmarksStore";
 const bookmarksStore = useBookmarksStore()
 const { showMode } = storeToRefs(bookmarksStore)
 
-// 设置弹窗 点击其他区域关闭设置模块
+// 设置弹窗
 const isShow = ref(false);
 const settingsModuleRef = ref(null);
 onMounted(() => {
@@ -77,10 +78,9 @@ import { useThemeStore } from "@/stores/useThemeStore";
 const themeStore = useThemeStore();
 const { theme } = storeToRefs(themeStore);
 
-// 导入router
+// 打开新页面
 import { useRouter } from "vue-router";
 const router = useRouter();
-// 导入设置 新窗口打开页面
 const handleImportBookmarks = () => {
     const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
     window.open(url, '_blank');

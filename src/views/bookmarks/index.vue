@@ -86,7 +86,7 @@ import shMenu from "@/components/sh-menu.vue";
 import shDialog from "@/components/sh-dialog.vue";
 import shInput from "@/components/sh-input.vue";
 // 修改网页标题
-import { onMounted, ref, computed, nextTick } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useMessage } from '@/Hooks/useMessage'
 const { showMessage } = useMessage()
@@ -276,12 +276,10 @@ const BookmarkParser = {
         }
     }
 }
-
 // 响应式数据
 const selectedFile = ref(null)
 const fileInput = ref(null)
 const bookmarksData = ref([])
-
 // 计算属性
 const formattedJSON = computed(() => {
     return JSON.stringify(bookmarksData.value, null, 2)
@@ -306,7 +304,6 @@ const handleDragLeave = (e) => {
 }
 const handleDrop = (e) => {
     e.preventDefault()
-
     const files = e.dataTransfer.files
     if (files.length > 0) {
         handleFileSelection(files[0])
