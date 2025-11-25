@@ -17,7 +17,7 @@ const { bookmarks } = storeToRefs(bookmarksStore);
 
 // 跳转链接
 const handleContextMenu = (e,item) => {
-    console.log('123123')
+    if(!item.url) return
     window.open(item.url, "_blank");
 }
 
@@ -116,6 +116,7 @@ onBeforeUnmount(() => {
     transition: all 0.4s;
     overflow-y: auto;
     scrollbar-width: none;
+    user-select: none;
 }
 
 .aside-bookmark-module.show {

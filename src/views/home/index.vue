@@ -128,7 +128,8 @@ const { showMode } = storeToRefs(bookmarksStore)
         display: flex;
         flex-direction: column;
         align-items: center;
-
+        user-select: none;
+        
         input {
             width: 100%;
             max-width: 600px;
@@ -155,6 +156,7 @@ const { showMode } = storeToRefs(bookmarksStore)
             max-width: 600px;
             display: flex;
             flex-wrap: wrap;
+            user-select: none;
         }
 
         .sh-tag {
