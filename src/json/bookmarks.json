@@ -1,0 +1,77 @@
+[
+    {
+        "id": 1,
+        "title": "Chat AI",
+        "type": "folder",
+        "children": [
+            {
+                "id": 11,
+                "title": "Duck.ai",
+                "type": "bookmark",
+                "url": "https://www.duck.ai"
+            },
+            {
+                "id": 12,
+                "title": "DeepSeek",
+                "type": "bookmark",
+                "url": "https://chat.deepseek.com/"
+            },
+            {
+                "id": 13,
+                "title": "豆包",
+                "type": "bookmark",
+                "url": "https://www.doubao.com/chat/"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "工具",
+        "type": "folder", 
+        "children":[
+            {
+                "id": 21,
+                "title": "Github",
+                "type": "bookmark",
+                "url": "https://www.github.com/"
+            },
+            {
+                "id": 22,
+                "title": "Reddit",
+                "type": "bookmark",
+                "url": "https://www.reddit.com/"
+            },
+            {
+                "id": 23,
+                "title": "X",
+                "type": "bookmark",
+                "url": "https://www.x.com/"
+            },
+            {
+                "id": 24,
+                "title": "Telegram",
+                "type": "bookmark",
+                "url": "https://web.telegram.org"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "title": "短视频",
+        "type": "folder",
+        "children": [
+            {
+                "id": 31,
+                "title": "抖音",
+                "type": "bookmark",
+                "url": "https://www.douyin.com/"
+            },
+            {
+                "id": 32,
+                "title": "B站",
+                "type": "bookmark",
+                "url": "https://www.bilibili.com/"
+            }
+        ]
+    }
+]

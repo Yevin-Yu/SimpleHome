@@ -4,10 +4,11 @@
         <div class="current-bookmarks">
             <h3>当前书签 [右击可以新增、删除、编辑]</h3>
             <div class="bookmarks-tree">
-                <sh-tree @treeContextmenu="handleContextMenu" v-for="child in tabsData" :key="child.title" :item="child"
-                    :items="tabsData" />
+                <sh-tree @treeContextmenu="handleContextMenu" v-for="child in bookmarks" :key="child.title"
+                    :item="child" :items="bookmarks" />
                 <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
+            <!-- 书签操作弹窗 -->
             <Transition name="fade">
                 <sh-dialog ref="dialog" v-if="dialogVisible" :title="dialogTitle">
                     <div class="dialog-content">
@@ -29,12 +30,18 @@
                         </template>
                     </div>
                     <div class="dialog-btn">
-                        <sh-button @click="dialogVisible = false" size="small">取消</sh-button>
-                        <sh-button @click="confirmBookmark" size="small">确认</sh-button>
+                        <template v-if="currentAction !== 'edit'">
+                            <sh-button @click="dialogVisible = false" size="small">取消</sh-button>
+                            <sh-button @click="confirmBookmark" size="small">确认</sh-button>
+                        </template>
+                        <template v-else>
+                            <sh-button @click="dialogVisible = false" size="small">关闭</sh-button>
+                        </template>
                     </div>
                 </sh-dialog>
             </Transition>
         </div>
+        <!-- 上传书签部分 -->
         <div class="upload-bookmarks">
             <div class="left-upload">
                 <div class="upload-area" @click="triggerFileInput" @dragover="handleDragOver"
@@ -48,18 +55,18 @@
             <div class="right-button">
                 <sh-button class="parse-button" @click="parseBookmarks">解析数据</sh-button>
                 <p>解析上传的书签HTML文件，查看解析结果</p>
-                <sh-button class="parse-button" @click="previewBookmarks">查看书签</sh-button>
-                <p>根据解析结果，预览书签数据</p>
                 <sh-button class="apply-button" @click="applyBookmarks">应用数据</sh-button>
                 <p>根据解析结果，应用书签数据</p>
             </div>
         </div>
+        <!-- 解析结果 -->
         <div class="bookmarks-result">
             <h3>解析结果</h3>
             <div class="json-container">
                 {{ formattedJSON }}
             </div>
         </div>
+        <!-- 使用说明 -->
         <div class="bookmarks-notes">
             <h3>使用说明</h3>
             <ol>
@@ -80,12 +87,17 @@ import shDialog from "@/components/sh-dialog.vue";
 import shInput from "@/components/sh-input.vue";
 // 修改网页标题
 import { onMounted, ref, computed, nextTick } from "vue";
+import { storeToRefs } from "pinia";
 import { useMessage } from '@/Hooks/useMessage'
 const { showMessage } = useMessage()
 onMounted(() => {
     document.title = "书签管理 - SimpleHome";
 });
 
+// 引入useBookmarks
+import { useBookmarksStore } from "@/stores/useBookmarksStore"
+const { setBookmarks, deleteBookmarkById, addBookmarkByIdInCurrentNode, addBookmarkByIdInCurrentFolder } = useBookmarksStore()
+const { bookmarks } = storeToRefs(useBookmarksStore())
 // 处理右击事件
 const menu = ref(null)
 const menuItems = ref([])
@@ -107,11 +119,8 @@ const currentItem = ref(null)
 const currentItems = ref([])
 const currentAction = ref(null)
 const handleContextMenu = (e, item, items) => {
-    if (item.type === 'folder') {
-        menuItems.value = menuItems2
-    } else {
-        menuItems.value = menuItems1
-    }
+    if (item.type === 'folder') menuItems.value = menuItems2
+    else menuItems.value = menuItems1
     menu.value.show(e.clientX, e.clientY)
     currentItem.value = item
     currentItems.value = items
@@ -147,87 +156,28 @@ const onEditBookmark = () => {
     dialogTitle.value = currentItem.value.type === 'folder' ? '编辑文件夹' : '编辑书签'
     dialogVisible.value = true
 }
-const confirmBookmark = () => {
-    // 新增书签
-    if (currentAction.value === 'new-bookmark') {
-        if (!form.value.title || !form.value.url) return
-        let newBookmark = {
-            title: form.value.title,
-            url: form.value.url,
-            type: 'bookmark'
-        }
-        if (currentItems.value.children) {
-            currentItems.value.children.push(newBookmark)
-        } else {
-            currentItems.value.push(newBookmark)
-        }
-        form.value.title = ''
-        form.value.url = ''
-    }
-    // 新增文件夹
-    if (currentAction.value === 'new-folder') {
-        if (!form.value.title) return
-        let newFolder = {
-            title: form.value.title,
-            type: 'folder',
-        }
-        if (currentItems.value.children) {
-            currentItems.value.children.push(newFolder)
-        } else {
-            currentItems.value.push(newFolder)
-        }
-        form.value.title = ''
-        console.log(currentItems.value)
-    }
-    // 新增下级书签
-    if (currentAction.value === 'new-bookmark-next') {
-        if (!form.value.title || !form.value.url) return
-        let newBookmark = {
-            title: form.value.title,
-            url: form.value.url,
-            type: 'bookmark'
-        }
-        if (currentItem.value.children) {
-            currentItem.value.children.push(newBookmark)
-        } else {
-            currentItem.value.children = [newBookmark]
-        }
-        form.value.title = ''
-        form.value.url = ''
-    }
-    // 新增下级文件夹
-    if (currentAction.value === 'new-folder-next') {
-        if (!form.value.title) return
-        let newFolder = {
-            title: form.value.title,
-            type: 'folder',
-        }
-        if (currentItem.value.children) {
-            currentItem.value.children.push(newFolder)
-        } else {
-            currentItem.value.children = [newFolder]
-        }
-        form.value.title = ''
-        console.log(currentItem.value.children)
-    }
-    dialogVisible.value = false
-}
 // 删除书签
 const onDeleteBookmark = () => {
-    if (!currentItem.value.title) return
-    if (!currentItems.value.length && !currentItems.value.children.length) return
-    if (currentItems.value.children) {
-        const index = currentItems.value.children.findIndex(item => item.title === currentItem.value.title)
-        if (index !== -1) {
-            currentItems.value.children.splice(index, 1)
-        }
-        return
-    } else {
-        const index = currentItems.value.findIndex(item => item.title === currentItem.value.title)
-        if (index !== -1) {
-            currentItems.value.splice(index, 1)
-        }
+    deleteBookmarkById(currentItem.value.id, bookmarks.value)
+}
+const confirmBookmark = () => {
+    let newFolder = {
+        id: Math.random().toString(32).substring(2),
+        title: form.value.title,
+        type: 'folder',
     }
+    if (currentAction.value.includes('bookmark')) {
+        newFolder.url = form.value.url
+        newFolder.type = 'bookmark'
+    }
+    if (currentAction.value.includes('next')) {
+        addBookmarkByIdInCurrentFolder(currentItem.value.id, newFolder, bookmarks.value)
+    } else {
+        addBookmarkByIdInCurrentNode(currentItem.value.id, newFolder, bookmarks.value)
+    }
+    form.value.title = ''
+    form.value.url = ''
+    dialogVisible.value = false
 }
 const form = ref({ title: '', url: '' })
 // 新增书签
@@ -252,39 +202,19 @@ const onAddFolderNext = () => {
 
 // 书签解析器
 const BookmarkParser = {
-    // 解析HTML字符串，提取书签数据
-    parseHTML(htmlString) {
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(htmlString, 'text/html')
-
-        // 查找所有书签链接
-        const links = doc.querySelectorAll('a')
-        const bookmarks = []
-
-        links.forEach(link => {
-            const title = link.textContent.trim()
-            const url = link.getAttribute('href')
-            if (title && url) {
-                bookmarks.push({ title, url })
-            }
-        })
-
-        return bookmarks
-    },
-
     // 解析文件夹结构
     parseFolders(htmlString) {
         const parser = new DOMParser()
         const doc = parser.parseFromString(htmlString, 'text/html')
-
         // 递归解析文件夹和书签
         function parseNode(node) {
             const result = {
+                // 随机数
+                id: Math.random().toString(32).substring(2),
                 title: '',
                 type: '',
                 children: []
             }
-
             // 处理文件夹 (DT元素)
             if (node.tagName === 'DT') {
                 const folder = node.querySelector('h3')
@@ -325,7 +255,6 @@ const BookmarkParser = {
             } else {
                 return null
             }
-
             return result
         }
 
@@ -341,37 +270,21 @@ const BookmarkParser = {
     // 解析书签HTML文件
     parse(htmlString) {
         try {
-            const flatBookmarks = this.parseHTML(htmlString)
-            const structuredBookmarks = this.parseFolders(htmlString)
-
-            return {
-                flat: flatBookmarks,
-                structured: structuredBookmarks,
-            }
+            return this.parseFolders(htmlString)
         } catch (error) {
             throw new Error(`解析失败: ${error.message}`)
         }
     }
 }
-// 书签列表
-const tabsData = ref([])
+
 // 响应式数据
 const selectedFile = ref(null)
 const fileInput = ref(null)
-const bookmarksData = ref({
-    flat: [],
-    structured: null,
-})
+const bookmarksData = ref([])
 
-// 读取本地书签数据
-const localBookmarks = localStorage.getItem('sh_bookmarks');
-if (localBookmarks) {
-    bookmarksData.value = JSON.parse(localBookmarks);
-    tabsData.value = bookmarksData.value.structured[0].children;
-}
 // 计算属性
 const formattedJSON = computed(() => {
-    return JSON.stringify(bookmarksData.value.structured, null, 2)
+    return JSON.stringify(bookmarksData.value, null, 2)
 })
 const uploadIcon = computed(() => {
     return selectedFile.value ? '✅' : '📁'
@@ -421,15 +334,9 @@ const parseBookmarks = async () => {
     }
     try {
         const htmlContent = await readFileAsText(selectedFile.value)
-        bookmarksData.value = BookmarkParser.parse(htmlContent)
+        let parsedData = BookmarkParser.parse(htmlContent)
+        bookmarksData.value = parsedData[0].children
         showMessage('解析成功！')
-
-        // 滚动到结果区域
-        await nextTick()
-        const resultSection = document.querySelector('.result-section')
-        if (resultSection) {
-            resultSection.scrollIntoView({ behavior: 'smooth' })
-        }
     } catch (error) {
         showMessage('解析失败: ' + error.message)
     }
@@ -447,30 +354,18 @@ const resetApp = () => {
     if (fileInput.value) {
         fileInput.value.value = ''
     }
-    bookmarksData.value = {
-        flat: [],
-        structured: null,
-    }
+    bookmarksData.value = []
 }
 
 // 数据操作
-const previewBookmarks = () => {
-    // 预览书签数据
-    if (!bookmarksData.value.structured?.length) {
-        showMessage('请先解析数据！')
-        return
-    }
-    tabsData.value = bookmarksData.value.structured[0].children
-    showMessage('已更新预览书签数据！')
-}
 const applyBookmarks = () => {
-    if (!bookmarksData.value.structured?.length && !bookmarksData.value.flat?.length) {
+    if (!bookmarksData.value?.length) {
         showMessage('请先解析数据！')
         return
     }
-    // 应用书签数据到本地存储
-    localStorage.setItem('sh_bookmarks', JSON.stringify(bookmarksData.value))
-    showMessage('书签数据已应用到本地存储！')
+    // 直接设置书签数据
+    setBookmarks(bookmarksData.value)
+    showMessage('已更新预览书签数据！')
 }
 </script>
 <style scoped lang="less">
