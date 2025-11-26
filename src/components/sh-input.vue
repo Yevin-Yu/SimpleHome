@@ -45,7 +45,7 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .sh-input:focus {
-    outline: 2px solid var(--default-color);
+    outline: 1.5px solid var(--default-color);
 }
 
 .sh-input.small {

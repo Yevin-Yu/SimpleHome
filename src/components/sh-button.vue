@@ -17,8 +17,10 @@ defineProps({
     border: none;
     outline: none;
     border-radius: 2px;
+    margin: 4px 8px;
     padding: 6px 16px;
     font-size: 14px;
+    line-height: 1.5;
     cursor: pointer;
     color: var(--sh-button-color);
     background-color: var(--sh-button-bg-color);

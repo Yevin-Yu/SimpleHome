@@ -9,16 +9,10 @@
         </div>
         <div class="search">
             <input type="search" v-model="searchKey" @keyup.enter="onSearchHandler(searchKey)" />
-            <div class="search-history">
-                <sh-tag v-for="key in searchHistory" @contextmenu.prevent="onShowMenu($event, key)"
-                    @click="onSearchHandler(key)" :key="key"> {{ key }}
-                </sh-tag>
-                <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
-            </div>
+            <SearchHistoryModule />
         </div>
         <div class="footer"></div>
     </div>
-
     <!-- 加载设置&书签模块 -->
     <Transition name="fade">
         <SettingsModule ref="settingRef" />
@@ -32,47 +26,21 @@
 </template>
 <script setup>
 import shButton from "@/components/sh-button.vue";
-import shTag from "@/components/sh-tag.vue";
 import SettingsModule from "@/views/components/SettingsModule.vue";
 import BookmarkModule from "@/views/components/BookmarkModule.vue";
 import AsideBookmarkModule from "@/views/components/AsideBookmarkModule.vue";
+import SearchHistoryModule from "@/views/components/SearchHistoryModule.vue";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 
-// 搜索&历史记录
+// 搜索跳转
 import { useSearchStore } from "@/stores/useSearchStore";
-const searchStore = useSearchStore()
-const { searchHistory } = storeToRefs(searchStore)
+const { searchJump } = useSearchStore()
 const searchKey = ref("");
 const onSearchHandler = (key) => {
-    searchStore.searchJump(key)
+    searchJump({ title: key, type: 'search' })
     searchKey.value = "";
 };
-
-// 操作搜索记录
-import shMenu from '@/components/sh-menu.vue'
-const menu = ref(null)
-const menuItems = [
-    { label: '删除', action: 'current' },
-    { label: '清空历史', action: 'clear' },
-]
-// 搜索记录右击弹出菜单
-const currentItem = ref(null)
-function onShowMenu(event, item) {
-    currentItem.value = item
-    menu.value.show(event.clientX, event.clientY)
-}
-function onMenuSelect(selected) {
-    // 根据选中的 action 处理业务逻辑
-    switch (selected.action) {
-        case 'current':
-            searchStore.removeSearchHistory(currentItem.value)
-            break
-        case 'clear':
-            searchStore.clearSearchHistory()
-            break
-    }
-}
 
 // 打开设置模块
 const settingRef = ref(null);
@@ -102,7 +70,7 @@ const { showMode } = storeToRefs(bookmarksStore)
         display: flex;
         justify-content: end;
         align-items: center;
-        padding: 0 14px;
+        padding: 0 6px;
     }
 
     .logo {

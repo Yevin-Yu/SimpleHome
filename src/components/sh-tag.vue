@@ -20,6 +20,7 @@ defineProps({
     margin: 4px 8px;
     border-radius: 2px;
     font-size: 14px;
+    line-height: 1.5;
     padding: 6px 16px;
     color: var(--sh-tag-color);
     background-color: var(--sh-tag-bg-color);

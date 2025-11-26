@@ -1,6 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+interface SearchHistoryItem {
+    id: number
+    title: string
+    type: string
+    url?: string
+}
 
 export const useSearchStore = defineStore('sh-search-store', () => {
     // 引擎
@@ -9,28 +15,22 @@ export const useSearchStore = defineStore('sh-search-store', () => {
     const switchEngine = (newEngine: string) => {
         engine.value = newEngine
     }
-
     // 搜索记录
-    const searchHistory = ref<string[]>([])
+    const searchHistory = ref<SearchHistoryItem[]>([])
     // 添加搜索记录
-    const addSearchHistory = (keyword: string) => {
-        // 从首部添加 判断是否重复 重复删除之前的 然后再添加
-        const index = searchHistory.value.indexOf(keyword)
-        if (index !== -1) {
-            searchHistory.value.splice(index, 1)
-        }
-        searchHistory.value.unshift(keyword)
-        // 只保留最近的10条记录
+    const addSearchHistory = (searchItem: SearchHistoryItem) => {
+        const { title, type, url } = searchItem
+        // 去重新增
+        searchHistory.value = searchHistory.value.filter(item => item.title !== title || item.type !== type)
+        searchHistory.value.unshift({ id: Date.now(), title, type, url })
+        // 保留20条
         if (searchHistory.value.length > 20) {
             searchHistory.value.pop()
         }
     }
     // 删除搜索记录
-    const removeSearchHistory = (keyword: string) => {
-        const index = searchHistory.value.indexOf(keyword)
-        if (index !== -1) {
-            searchHistory.value.splice(index, 1)
-        }
+    const removeSearchHistory = (id: number) => {
+        searchHistory.value = searchHistory.value.filter(item => item.id !== id)
     }
     // 清空搜索记录
     const clearSearchHistory = () => {
@@ -38,21 +38,28 @@ export const useSearchStore = defineStore('sh-search-store', () => {
     }
 
     // 搜索跳转
-    const searchJump = (keyword: string) => {
-        const isURL = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/.test(keyword);
-        if (isURL) {
-            let url = keyword;
-            if (!/^https?:\/\//.test(url)) {
-                url = "http://" + url;
-            }
+    const searchJump = (searchItem: SearchHistoryItem) => {
+        const { title, type, url } = searchItem
+        if (type === 'bookmark' && url) {
+            // 书签跳转
             window.open(url, "_blank");
         } else {
-            // 普通搜索
-            const query = encodeURIComponent(keyword);
-            window.open(`https://www.${engine.value}.com/search?q=${query}`, "_blank");
+            // 普通跳转
+            const isURL = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/.test(title);
+            if (isURL) {
+                let url = title;
+                if (!/^https?:\/\//.test(url)) {
+                    url = "http://" + url;
+                }
+                window.open(url, "_blank");
+            } else {
+                // 普通搜索
+                const query = encodeURIComponent(title);
+                window.open(`https://www.${engine.value}.com/search?q=${query}`, "_blank");
+            }
         }
         // 记录搜索记录
-        addSearchHistory(keyword)
+        addSearchHistory(searchItem)
     }
     return {
         engine,
