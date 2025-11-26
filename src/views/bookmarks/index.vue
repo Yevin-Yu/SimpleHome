@@ -4,7 +4,7 @@
         <div class="current-bookmarks">
             <h3>当前书签 [右击可以新增、删除、编辑]</h3>
             <div class="bookmarks-tree">
-                <sh-tree @treeContextmenu="handleContextMenu" v-for="child in bookmarks" :key="child.title"
+                <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title"
                     :item="child" :items="bookmarks" />
                 <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
@@ -88,7 +88,7 @@ import shMenu from "@/components/sh-menu.vue";
 import shDialog from "@/components/sh-dialog.vue";
 import shInput from "@/components/sh-input.vue";
 // 修改网页标题
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useMessage } from '@/Hooks/useMessage'
 const { showMessage } = useMessage()
@@ -120,7 +120,7 @@ const menuItems2 = [
 const currentItem = ref(null)
 const currentItems = ref([])
 const currentAction = ref(null)
-const handleContextMenu = (e, item, items) => {
+const onContextMenu = (e, item, items) => {
     if (item.type === 'folder') menuItems.value = menuItems2
     else menuItems.value = menuItems1
     menu.value.show(e.clientX, e.clientY)

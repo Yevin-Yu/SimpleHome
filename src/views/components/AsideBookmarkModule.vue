@@ -7,7 +7,7 @@
 <script setup>
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import shTree from "@/components/sh-tree2.vue";
+import shTree from "@/components/sh-tree.vue";
 
 // 加载书签
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
@@ -33,9 +33,9 @@ const { isShowBookmark } = useEventHandler(bookmarkRef);
 <style scoped lang="less">
 .aside-bookmark-module {
     position: absolute;
-    left: -241px;
+    left: -281px;
     top: 12px;
-    width: 240px;
+    width: 280px;
     height: calc(100% - 24px);
     border-radius: 2px;
     background-color: var(--default-bgColor);
