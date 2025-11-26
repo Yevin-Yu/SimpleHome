@@ -27,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
 import shTree from "@/components/sh-tree2.vue";
 import shButton from './sh-button.vue';
 import shTag from './sh-tag.vue';

@@ -1,7 +1,10 @@
 <template>
     <div v-if="isShowBookmark" class="bookmark-module" ref="bookmarkRef">
         <div class="bookmarks">
-            <sh-tag @click="searchJump(item)" v-for="item in flatBookmarks" :key="item.id">{{ item.title }}</sh-tag>
+            <sh-tag @click="searchJump(item)" v-for="item in flatBookmarks" :key="item.id">
+                <span class="icon">🏷️</span>
+                {{ item.title }}
+            </sh-tag>
         </div>
     </div>
 </template>
@@ -45,8 +48,23 @@ const { isShowBookmark } = useEventHandler(bookmarkRef);
 
 .bookmarks {
     width: 100%;
-    height: 100%;
+    max-height: 100%;
     overflow-y: auto;
     scrollbar-width: none;
+    display: flex;
+    flex-wrap: wrap;
+    user-select: none;
+
+    .sh-tag {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 6px 12px;
+
+        .icon {
+            font-size: 14px;
+        }
+    }
 }
 </style>

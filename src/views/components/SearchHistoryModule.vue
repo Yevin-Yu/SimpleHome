@@ -55,10 +55,9 @@ const onMenuSelect = (selected) => {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        padding: 6px 12px;
 
         .icon {
-            font-size: 12px;
+            font-size: 14px;
         }
     }
 }
