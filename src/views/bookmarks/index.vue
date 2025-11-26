@@ -65,7 +65,7 @@
         <div class="bookmarks-result">
             <h3>解析结果</h3>
             <div class="json-container">
-                {{ JSON.stringify(bookmarksData.value, null, 2) }}
+                {{ JSON.stringify(bookmarksData, null, 2) }}
             </div>
         </div>
         <!-- 使用说明 -->
@@ -428,7 +428,7 @@ h3 {
     color: var(--text-color);
     border-radius: 8px;
     padding: 20px;
-    height: 400px;
+    height: 260px;
     overflow-y: auto;
     font-family: Consolas, 'Courier New', monospace;
     font-size: 14px;
