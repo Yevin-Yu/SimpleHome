@@ -46,8 +46,10 @@
             <div class="left-upload">
                 <div class="upload-area" @click="triggerFileInput" @dragover="handleDragOver"
                     @dragleave="handleDragLeave" @drop="handleDrop">
-                    <div class="upload-icon">{{ uploadIcon }}</div>
-                    <p class="upload-text"> {{ uploadText }}</p>
+                    <div class="upload-icon">{{ currentFile ? '✅' : '📁' }}</div>
+                    <p class="upload-text">
+                        {{ currentFile ? `已选择文件: ${currentFile.name}` : '点击或拖拽文件到此处上传' }}
+                    </p>
                     <p class="upload-hint">支持Chrome和Edge浏览器导出的书签HTML文件</p>
                     <input type="file" ref="fileInput" class="file-input" accept=".html" @change="handleFileChange">
                 </div>
@@ -63,7 +65,7 @@
         <div class="bookmarks-result">
             <h3>解析结果</h3>
             <div class="json-container">
-                {{ formattedJSON }}
+                {{ JSON.stringify(bookmarksData.value, null, 2) }}
             </div>
         </div>
         <!-- 使用说明 -->
@@ -200,160 +202,29 @@ const onAddFolderNext = () => {
     dialogVisible.value = true
 }
 
-// 书签解析器
-const BookmarkParser = {
-    // 解析文件夹结构
-    parseFolders(htmlString) {
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(htmlString, 'text/html')
-        // 递归解析文件夹和书签
-        function parseNode(node) {
-            const result = {
-                // 随机数
-                id: Math.random().toString(32).substring(2),
-                title: '',
-                type: '',
-                children: []
-            }
-            // 处理文件夹 (DT元素)
-            if (node.tagName === 'DT') {
-                const folder = node.querySelector('h3')
-                if (folder) {
-                    result.title = folder.textContent.trim()
-                    result.type = 'folder'
-                    // 递归处理子节点
-                    const dl = node.querySelector('dl')
-                    if (dl) {
-                        Array.from(dl.children).forEach(child => {
-                            const childResult = parseNode(child)
-                            if (childResult) {
-                                result.children.push(childResult)
-                            }
-                        })
-                    }
-                } else {
-                    // 处理书签 (A元素)
-                    const link = node.querySelector('a')
-                    if (link) {
-                        result.title = link.textContent.trim()
-                        result.type = 'bookmark'
-                        result.url = link.getAttribute('href')
-                    } else {
-                        return null
-                    }
-                }
-            } else if (node.tagName === 'DL') {
-                // 处理DL元素，返回其子节点
-                const children = []
-                Array.from(node.children).forEach(child => {
-                    const childResult = parseNode(child)
-                    if (childResult) {
-                        children.push(childResult)
-                    }
-                })
-                return children
-            } else {
-                return null
-            }
-            return result
-        }
 
-        // 从根DL开始解析
-        const rootDL = doc.querySelector('dl')
-        if (rootDL) {
-            return parseNode(rootDL)
-        }
-
-        return null
-    },
-
-    // 解析书签HTML文件
-    parse(htmlString) {
-        try {
-            return this.parseFolders(htmlString)
-        } catch (error) {
-            throw new Error(`解析失败: ${error.message}`)
-        }
-    }
-}
 // 响应式数据
-const selectedFile = ref(null)
 const fileInput = ref(null)
 const bookmarksData = ref([])
-// 计算属性
-const formattedJSON = computed(() => {
-    return JSON.stringify(bookmarksData.value, null, 2)
-})
-const uploadIcon = computed(() => {
-    return selectedFile.value ? '✅' : '📁'
-})
-const uploadText = computed(() => {
-    return selectedFile.value
-        ? `已选择文件: ${selectedFile.value.name}`
-        : '点击或拖拽文件到此处上传'
-})
-// 方法
-const triggerFileInput = () => {
-    fileInput.value?.click()
-}
-const handleDragOver = (e) => {
-    e.preventDefault()
-}
-const handleDragLeave = (e) => {
-    e.preventDefault()
-}
-const handleDrop = (e) => {
-    e.preventDefault()
-    const files = e.dataTransfer.files
-    if (files.length > 0) {
-        handleFileSelection(files[0])
-    }
-}
-const handleFileChange = (e) => {
-    const files = e.target.files
-    if (files.length > 0) {
-        handleFileSelection(files[0])
-    }
-}
-const handleFileSelection = (file) => {
-    if (file.type === 'text/html' || file.name.endsWith('.html')) {
-        selectedFile.value = file
-        showMessage(`已选择文件: ${file.name}`)
-    } else {
-        showMessage('请选择有效的HTML文件！')
-        resetApp()
-    }
-}
-const parseBookmarks = async () => {
-    if (!selectedFile.value) {
-        showMessage('请先上传有效的HTML文件！')
-        return
-    }
-    try {
-        const htmlContent = await readFileAsText(selectedFile.value)
-        let parsedData = BookmarkParser.parse(htmlContent)
-        bookmarksData.value = parsedData[0].children
-        showMessage('解析成功！')
-    } catch (error) {
-        showMessage('解析失败: ' + error.message)
-    }
-}
-const readFileAsText = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = (e) => resolve(e.target.result)
-        reader.onerror = (e) => reject(new Error('读取文件失败'))
-        reader.readAsText(file)
-    })
-}
-const resetApp = () => {
-    selectedFile.value = null
-    if (fileInput.value) {
-        fileInput.value.value = ''
-    }
-    bookmarksData.value = []
-}
 
+// 上传文件
+import { useUploadFile } from '@/Hooks/useUploadFile'
+const { currentFile,
+    triggerFileInput,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleFileChange } = useUploadFile(fileInput)
+
+
+// 使用书签解析器
+import { useBookmarkParser } from '@/Hooks/useBookmarkParser'
+const { bookmarkParser } = useBookmarkParser()
+const parseBookmarks = async () => {
+    bookmarksData.value = await bookmarkParser(currentFile.value)
+    console.log(bookmarksData.value)
+    showMessage('解析成功！')
+}
 // 数据操作
 const applyBookmarks = () => {
     if (!bookmarksData.value?.length) {

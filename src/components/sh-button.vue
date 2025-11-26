@@ -34,19 +34,19 @@ defineProps({
 
 .sh-button.small {
     font-size: 12px;
-    padding: 4px 12px;
+    padding: 4px 8px;
     box-shadow: 1.5px 1.5px 0px var(--sh-button-shadow-color);
 }
 
 .sh-button.medium {
     font-size: 14px;
-    padding: 6px 16px;
+    padding: 6px 12px;
     box-shadow: 2px 2px 0px var(--sh-button-shadow-color);
 }
 
 .sh-button.large {
     font-size: 16px;
-    padding: 8px 20px;
+    padding: 8px 16px;
     box-shadow: 3px 3px 0px var(--sh-button-shadow-color);
 }
 </style>

@@ -2,7 +2,7 @@
     <div class="search-history-module">
         <sh-tag v-for="item in searchHistory" @contextmenu.prevent="onShowMenu($event, item)"
             @click="searchStore.searchJump(item)" :key="item.id">
-            <span class="icon">{{ item.type === 'search' ? '🔍' : '⭐' }}</span>
+            <span class="icon">{{ item.type === 'search' ? '🔍' : '🏷️' }}</span>
             {{ item.title }}
         </sh-tag>
         <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>

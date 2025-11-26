@@ -42,7 +42,7 @@ const handleContextMenu = (e: MouseEvent, item: TabItem, items: TabItem) => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .sh-tree-child {
     padding-left: 24px;
 }

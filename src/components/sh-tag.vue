@@ -32,17 +32,17 @@ defineProps({
 
 .sh-tag.small {
     font-size: 12px;
-    padding: 4px 12px;
+    padding: 4px 8px;
 }
 
 .sh-tag.medium {
     font-size: 14px;
-    padding: 6px 16px;
+    padding: 6px 12px;
 }
 
 .sh-tag.large {
     font-size: 16px;
-    padding: 8px 20px;
+    padding: 8px 16px;
 }
 
 .sh-tag:hover {

@@ -1,13 +1,13 @@
 <template>
     <div class="aside-bookmark-module" :class="{ 'show': isShowBookmark }">
-        <sh-tree @treeContextmenu="handleContextMenu" v-for="child in bookmarks" :key="child.title" :item="child"
+        <sh-tree @onHandleClick="onHandleClick" v-for="child in bookmarks" :key="child.title" :item="child"
             :items="bookmarks" />
     </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import shTree from "@/components/sh-tree.vue";
+import shTree from "@/components/sh-tree2.vue";
 
 // 加载书签
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
@@ -18,7 +18,7 @@ const { bookmarks } = storeToRefs(bookmarksStore);
 import { useSearchStore } from "@/stores/useSearchStore";
 const searchStore = useSearchStore();
 const { searchJump } = searchStore;
-const handleContextMenu = (event, item) => {
+const onHandleClick = (event, item) => {
     event.preventDefault()
     if (item.type === 'bookmark') {
         searchJump(item)
