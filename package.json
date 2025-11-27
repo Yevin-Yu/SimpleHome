@@ -1,6 +1,6 @@
 {
   "name": "simple-home",
-  "version": "5.1.3",
+  "version": "5.1.5",
   "private": true,
   "type": "module",
   "scripts": {

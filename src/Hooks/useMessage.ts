@@ -1,10 +1,10 @@
 // src/composables/useMessage.ts
-import { ref, onUnmounted } from "vue";
-
+import { ref } from "vue";
+let timer: number | null = null
 export function useMessage() {
     // 保存当前弹出的元素
     const messageEl = ref<HTMLElement | null>(null);
-    const timer = ref<number | null>(null);
+    timer = null
     // 关闭并清理元素（在组件卸载时也会调用）
     const clearMessage = () => {
         // 1️⃣ 移除上一次残留的提示 查询所有sh-message-default元素
@@ -29,10 +29,11 @@ export function useMessage() {
         // 3️⃣ 保存引用，3 s 后自动销毁
         messageEl.value = el;
         // 4️⃣ 保存定时器引用，用于组件卸载时清除
-        if (timer.value) {
-            clearTimeout(timer.value);
+        console.log(timer)
+        if (timer) {
+            clearTimeout(timer);
         }
-        timer.value = setTimeout(() => clearMessage(), 3000);
+        timer = setTimeout(() => clearMessage(), 3000);
     };
 
     return { showMessage, clearMessage };

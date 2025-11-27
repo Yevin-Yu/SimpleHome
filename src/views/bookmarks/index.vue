@@ -4,8 +4,8 @@
         <div class="current-bookmarks">
             <h3>当前书签 [右击可以新增、删除、编辑]</h3>
             <div class="bookmarks-tree">
-                <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title"
-                    :item="child" :items="bookmarks" />
+                <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title" :item="child"
+                    :items="bookmarks" />
                 <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
             </div>
             <!-- 书签操作弹窗 -->
@@ -100,6 +100,7 @@ onMounted(() => {
 import { useBookmarksStore } from "@/stores/useBookmarksStore"
 const { setBookmarks, deleteBookmarkById, addBookmarkByIdInCurrentNode, addBookmarkByIdInCurrentFolder } = useBookmarksStore()
 const { bookmarks } = storeToRefs(useBookmarksStore())
+
 // 处理右击事件
 const menu = ref(null)
 const menuItems = ref([])
@@ -203,29 +204,29 @@ const onAddFolderNext = () => {
 }
 
 
-// 响应式数据
-const fileInput = ref(null)
-const bookmarksData = ref([])
-
 // 上传文件
+const fileInput = ref(null)
 import { useUploadFile } from '@/Hooks/useUploadFile'
-const { currentFile,
+const {
+    currentFile,
     triggerFileInput,
     handleDragOver,
     handleDragLeave,
     handleDrop,
-    handleFileChange } = useUploadFile(fileInput)
+    handleFileChange
+} = useUploadFile(fileInput)
 
 
-// 使用书签解析器
+// 书签解析器
+const bookmarksData = ref([])
 import { useBookmarkParser } from '@/Hooks/useBookmarkParser'
 const { bookmarkParser } = useBookmarkParser()
 const parseBookmarks = async () => {
     bookmarksData.value = await bookmarkParser(currentFile.value)
-    console.log(bookmarksData.value)
     showMessage('解析成功！')
 }
-// 数据操作
+
+// 解析数据应该
 const applyBookmarks = () => {
     if (!bookmarksData.value?.length) {
         showMessage('请先解析数据！')
@@ -264,17 +265,25 @@ h3 {
     margin-bottom: 12px;
 }
 
-.current-bookmarks {
+
+.current-bookmarks,
+.upload-bookmarks,
+.bookmarks-notes,
+.bookmarks-result {
+    margin: 24px auto;
+    padding: 12px;
     width: calc(100% - 24px);
     max-width: 800px;
-    margin: 0 auto;
-    height: 50%;
-    max-height: 420px;
-    padding: 12px;
     border-radius: 2px;
     background-color: var(--default-bgColor);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+}
+
+.current-bookmarks {
+    margin: 0 auto;
+    height: 50%;
+    max-height: 420px;
 
     .bookmarks-tree {
         width: 100%;
@@ -308,15 +317,7 @@ h3 {
 }
 
 .upload-bookmarks {
-    width: calc(100% - 24px);
-    max-width: 800px;
-    margin: 0 auto 24px;
-    border-radius: 2px;
-    padding: 12px;
     margin-top: 24px;
-    background-color: var(--default-bgColor);
-    border: 2px solid var(--default-color);
-    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -392,15 +393,6 @@ h3 {
 }
 
 .bookmarks-notes {
-    width: calc(100% - 24px);
-    max-width: 800px;
-    margin: 0 auto 24px;
-    padding: 12px;
-    margin-top: 24px;
-    border-radius: 2px;
-    background-color: var(--default-bgColor);
-    border: 2px solid var(--default-color);
-    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
 
     ol {
         li {
@@ -412,28 +404,19 @@ h3 {
 }
 
 .bookmarks-result {
-    width: calc(100% - 24px);
-    max-width: 800px;
-    margin: 0 auto 24px;
-    padding: 12px;
-    margin-top: 24px;
-    border-radius: 2px;
-    background-color: var(--default-bgColor);
-    border: 2px solid var(--default-color);
-    box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
-}
 
-.json-container {
-    background: var(--card-bg-color);
-    color: var(--text-color);
-    border-radius: 8px;
-    padding: 20px;
-    height: 260px;
-    overflow-y: auto;
-    font-family: Consolas, 'Courier New', monospace;
-    font-size: 14px;
-    white-space: pre-wrap;
-    word-break: break-all;
-    line-height: 1.4;
+    .json-container {
+        background: var(--card-bg-color);
+        color: var(--text-color);
+        border-radius: 8px;
+        padding: 20px;
+        height: 260px;
+        overflow-y: auto;
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        line-height: 1.4;
+    }
 }
 </style>
