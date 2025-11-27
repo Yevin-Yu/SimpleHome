@@ -6,40 +6,9 @@
             <div class="bookmarks-tree">
                 <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title" :item="child"
                     :items="bookmarks" />
-                <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect"></sh-menu>
+                <!-- 上下文菜单模块 -->
+                <BookMarkHandleModule ref="bookMarkHandleModule" />
             </div>
-            <!-- 书签操作弹窗 -->
-            <Transition name="fade">
-                <sh-dialog ref="dialog" v-if="dialogVisible" :title="dialogTitle">
-                    <div class="dialog-content">
-                        <template v-if="currentAction === 'edit'">
-                            <label>{{ currentItem.type === 'folder' ? '文件夹' : '书签' }}名称</label>
-                            <sh-input v-model="currentItem.title"></sh-input>
-                            <label v-if="currentItem.type === 'bookmark'">书签URL</label>
-                            <sh-input v-model="currentItem.url" v-if="currentItem.type === 'bookmark'"></sh-input>
-                        </template>
-                        <template v-if="currentAction === 'new-bookmark' || currentAction === 'new-bookmark-next'">
-                            <label>书签名称</label>
-                            <sh-input v-model="form.title"></sh-input>
-                            <label>书签URL</label>
-                            <sh-input v-model="form.url"></sh-input>
-                        </template>
-                        <template v-if="currentAction === 'new-folder' || currentAction === 'new-folder-next'">
-                            <label>文件夹名称</label>
-                            <sh-input v-model="form.title"></sh-input>
-                        </template>
-                    </div>
-                    <div class="dialog-btn">
-                        <template v-if="currentAction !== 'edit'">
-                            <sh-button @click="dialogVisible = false" size="small">取消</sh-button>
-                            <sh-button @click="confirmBookmark" size="small">确认</sh-button>
-                        </template>
-                        <template v-else>
-                            <sh-button @click="dialogVisible = false" size="small">关闭</sh-button>
-                        </template>
-                    </div>
-                </sh-dialog>
-            </Transition>
         </div>
         <!-- 上传书签部分 -->
         <div class="upload-bookmarks">
@@ -55,9 +24,9 @@
                 </div>
             </div>
             <div class="right-button">
-                <sh-button class="parse-button" @click="parseBookmarks">解析数据</sh-button>
+                <sh-button class="parse-button" @click="bookmarkParser(currentFile)">解析数据</sh-button>
                 <p>解析上传的书签HTML文件，查看解析结果</p>
-                <sh-button class="apply-button" @click="applyBookmarks">应用数据</sh-button>
+                <sh-button class="apply-button" @click="setBookmarks(bookmarksData)">应用数据</sh-button>
                 <p>根据解析结果，应用书签数据</p>
             </div>
         </div>
@@ -84,126 +53,20 @@
 <script setup>
 import shTree from "@/components/sh-tree.vue";
 import shButton from "@/components/sh-button.vue";
-import shMenu from "@/components/sh-menu.vue";
-import shDialog from "@/components/sh-dialog.vue";
-import shInput from "@/components/sh-input.vue";
+import BookMarkHandleModule from "./components/BookMarkHandleModule.vue";
 // 修改网页标题
 import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useMessage } from '@/Hooks/useMessage'
-const { showMessage } = useMessage()
 onMounted(() => {
     document.title = "书签管理 - SimpleHome";
 });
-
-// 引入useBookmarks
+// 书签存储操作
 import { useBookmarksStore } from "@/stores/useBookmarksStore"
-const { setBookmarks, deleteBookmarkById, addBookmarkByIdInCurrentNode, addBookmarkByIdInCurrentFolder } = useBookmarksStore()
+const { setBookmarks } = useBookmarksStore()
 const { bookmarks } = storeToRefs(useBookmarksStore())
-
-// 处理右击事件
-const menu = ref(null)
-const menuItems = ref([])
-const menuItems1 = [
-    { label: '编辑', action: 'edit' },
-    { label: '删除', action: 'del' },
-    { label: '新增书签', action: 'new-bookmark' },
-    { label: '新增文件夹', action: 'new-folder' },
-]
-const menuItems2 = [
-    { label: '编辑', action: 'edit' },
-    { label: '删除', action: 'del' },
-    { label: '新增书签', action: 'new-bookmark' },
-    { label: '新增文件夹', action: 'new-folder' },
-    { label: '新增下级书签', action: 'new-bookmark-next' },
-    { label: '新增下级文件夹', action: 'new-folder-next' },
-]
-const currentItem = ref(null)
-const currentItems = ref([])
-const currentAction = ref(null)
-const onContextMenu = (e, item, items) => {
-    if (item.type === 'folder') menuItems.value = menuItems2
-    else menuItems.value = menuItems1
-    menu.value.show(e.clientX, e.clientY)
-    currentItem.value = item
-    currentItems.value = items
-}
-const onMenuSelect = (selected) => {
-    currentAction.value = selected.action
-    // 根据选中的 action 处理业务逻辑
-    switch (selected.action) {
-        case 'edit':
-            onEditBookmark()
-            break
-        case 'del':
-            onDeleteBookmark()
-            break
-        case 'new-bookmark':
-            onAddBookmark()
-            break
-        case 'new-folder':
-            onAddFolder()
-            break
-        case 'new-bookmark-next':
-            onAddBookmarkNext()
-            break
-        case 'new-folder-next':
-            onAddFolderNext()
-            break
-    }
-}
-const dialogVisible = ref(false)
-const dialogTitle = ref('编辑书签')
-// 编辑书签
-const onEditBookmark = () => {
-    dialogTitle.value = currentItem.value.type === 'folder' ? '编辑文件夹' : '编辑书签'
-    dialogVisible.value = true
-}
-// 删除书签
-const onDeleteBookmark = () => {
-    deleteBookmarkById(currentItem.value.id, bookmarks.value)
-}
-const confirmBookmark = () => {
-    let newFolder = {
-        id: Math.random().toString(32).substring(2),
-        title: form.value.title,
-        type: 'folder',
-    }
-    if (currentAction.value.includes('bookmark')) {
-        newFolder.url = form.value.url
-        newFolder.type = 'bookmark'
-    }
-    if (currentAction.value.includes('next')) {
-        addBookmarkByIdInCurrentFolder(currentItem.value.id, newFolder, bookmarks.value)
-    } else {
-        addBookmarkByIdInCurrentNode(currentItem.value.id, newFolder, bookmarks.value)
-    }
-    form.value.title = ''
-    form.value.url = ''
-    dialogVisible.value = false
-}
-const form = ref({ title: '', url: '' })
-// 新增书签
-const onAddBookmark = () => {
-    dialogTitle.value = '新增书签'
-    dialogVisible.value = true
-}
-// 新增文件夹
-const onAddFolder = () => {
-    dialogTitle.value = '新增文件夹'
-    dialogVisible.value = true
-}
-const onAddBookmarkNext = () => {
-    dialogTitle.value = '新增下级书签'
-    dialogVisible.value = true
-}
-// 新增下级文件夹
-const onAddFolderNext = () => {
-    dialogTitle.value = '新增下级文件夹'
-    dialogVisible.value = true
-}
-
-
+// 书签解析器
+import { useBookmarkParser } from '@/Hooks/useBookmarkParser'
+const { bookmarksData, bookmarkParser } = useBookmarkParser()
 // 上传文件
 const fileInput = ref(null)
 import { useUploadFile } from '@/Hooks/useUploadFile'
@@ -215,26 +78,10 @@ const {
     handleDrop,
     handleFileChange
 } = useUploadFile(fileInput)
-
-
-// 书签解析器
-const bookmarksData = ref([])
-import { useBookmarkParser } from '@/Hooks/useBookmarkParser'
-const { bookmarkParser } = useBookmarkParser()
-const parseBookmarks = async () => {
-    bookmarksData.value = await bookmarkParser(currentFile.value)
-    showMessage('解析成功！')
-}
-
-// 解析数据应该
-const applyBookmarks = () => {
-    if (!bookmarksData.value?.length) {
-        showMessage('请先解析数据！')
-        return
-    }
-    // 直接设置书签数据
-    setBookmarks(bookmarksData.value)
-    showMessage('已更新预览书签数据！')
+// 上下文菜单
+const bookMarkHandleModule = ref(null)
+const onContextMenu = (e, item, items) => {
+    bookMarkHandleModule.value.onContextMenu(e, item, items)
 }
 </script>
 <style scoped lang="less">
@@ -290,29 +137,6 @@ h3 {
         height: calc(100% - 48px);
         overflow-y: auto;
         scrollbar-width: none;
-    }
-
-    .dialog-content {
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        label {
-            font-size: 14px;
-            color: var(--text-color);
-        }
-    }
-
-    .dialog-btn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .sh-button {
-            margin: 12px;
-        }
     }
 }
 

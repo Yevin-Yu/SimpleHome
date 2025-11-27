@@ -1,6 +1,8 @@
 import { defineStore } from "pinia"
 import { ref, watch } from "vue"
-import defaultData from '@/json/bookmarks.json' 
+import { useMessage } from '@/Hooks/useMessage'
+const { showMessage } = useMessage()
+import defaultData from '@/json/bookmarks.json'
 interface Bookmark {
     id: number,
     title: string,
@@ -82,7 +84,12 @@ export const useBookmarksStore = defineStore('sh-bookmarks-store', () => {
     }
     // 设置书签
     const setBookmarks = (newBookmarks: Bookmark[]) => {
+        if (!newBookmarks?.length) {
+            showMessage('请先解析数据！')
+            return
+        }
         bookmarks.value = newBookmarks
+        showMessage('已更新书签数据！')
     }
 
     watch(bookmarks, (newBookmarks) => {

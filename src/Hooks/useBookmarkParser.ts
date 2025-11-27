@@ -1,4 +1,5 @@
 import { useMessage } from '@/Hooks/useMessage'
+import { ref } from 'vue'
 const { showMessage } = useMessage()
 
 type BookmarkNode = {
@@ -14,6 +15,7 @@ function uuId() {
 }
 
 export function useBookmarkParser() {
+    const bookmarksData = ref<BookmarkNode[]>([])
     // 解析书签文件
     function parseFolders(htmlString: string): BookmarkNode[] {
         const parser = new DOMParser()
@@ -100,7 +102,8 @@ export function useBookmarkParser() {
         }
         try {
             const htmlContent = await readFileAsText(file)
-            return parse(htmlContent as string)
+            bookmarksData.value = parse(htmlContent as string)
+            showMessage('解析成功！')
         } catch (error) {
             showMessage('解析失败')
             return error
@@ -108,6 +111,7 @@ export function useBookmarkParser() {
     }
 
     return {
+        bookmarksData,
         bookmarkParser
     }
 }
