@@ -41,8 +41,13 @@ export const useSearchStore = defineStore('sh-search-store', () => {
     const searchJump = (searchItem: SearchHistoryItem) => {
         const { title, type, url } = searchItem
         if (type === 'bookmark' && url) {
+            // 判断url是否带http或https
+            let newUrl = url
+            if (!/^https?:\/\//.test(url)) {
+                newUrl = "http://" + url;
+            }
             // 书签跳转
-            window.open(url, "_blank");
+            window.open(newUrl, "_blank");
         } else {
             // 普通跳转
             const isURL = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/.test(title);
