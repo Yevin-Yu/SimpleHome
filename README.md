@@ -9,7 +9,7 @@
 
 可以借助 `New Tab Redirect`  优化，新打开的Tabs为本主页。
 
-![Image](https://yuwb.cn/images/image_1764299778913.png)
+![Image](_image/image_1764299778913.png)
 
 ## 搜索功能 
 
@@ -20,7 +20,7 @@
    - 搜索记录会保存到本地，最多保存20条。
 2. 搜索记录可以点击搜索。同时也会判断是否为 URL，如果是 URL，会直接跳转。
 
-![Image](https://yuwb.cn/images/image_1764299793239.png)
+![Image](_image/image_1764299793239.png)
 
 ## 搜索记录
 
@@ -31,13 +31,13 @@
    - 右击搜索记录可以删除单条记录和清空所有搜索记录。
 2. 点击搜索记录，会根据记录内容，判断是否为 URL，如果是 URL，会直接跳转。如果不是 URL，会根据设置，跳转为 `Bing` 或 `Google` 搜索。
 
-![Image](https://yuwb.cn/images/image_1764299810377.png)
+![Image](_image/image_1764299810377.png)
 
 ## 设置功能
 
 1. 推荐应用：点击推荐应用，会直接跳转。
    
-![Image](https://yuwb.cn/images/image_1764299858176.png)
+![Image](_image/image_1764299858176.png)
 
 2. 设置功能：
 
@@ -49,23 +49,23 @@
 
 深色主题：
 
-![Image](https://yuwb.cn/images/image_1764299873587.png)
+![Image](_image/image_1764299873587.png)
 
 平铺模式：
-![Image](https://yuwb.cn/images/image_1764299895779.png)
+![Image](_image/image_1764299895779.png)
 
 树状结构：
-![Image](https://yuwb.cn/images/image_1764299950019.png)
+![Image](_image/image_1764299950019.png)
 
 ## 导入设置
 
 1. 可以在该页面修改书签页，可以新增、删除、编辑。
    
-![Image](https://yuwb.cn/images/image_1764299995415.png)
+![Image](_image/image_1764299995415.png)
 
 2. 支持导入 `Google` 或者 `Edge` 浏览器导出的 `html` 书签文件。
    
-![Image](https://yuwb.cn/images/image_1764300011744.png)
+![Image](_image/image_1764300011744.png)
 
 ## 后续功能
 
