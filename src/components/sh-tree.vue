@@ -2,7 +2,7 @@
     <div class="sh-tree">
         <!--书签 -->
         <sh-tag @click="onHandleClick($event, item, items)" @contextmenu.prevent="onContextMenu($event, item, items)"
-            v-if="item.type === 'bookmark'">
+            v-if="item.type === 'bookmark'" size="small">
             <div class="sh-tag-content">
                 <span class="icon">🏷️</span>
                 {{ item.title }}
@@ -10,7 +10,7 @@
         </sh-tag>
         <!-- 文件夹 -->
         <sh-button v-else @click="item.open = !item.open" @contextmenu.prevent="onContextMenu($event, item, items)"
-            class="tabs-item-title">
+            class="tabs-item-title" size="small">
             <div class="sh-button-content">
                 <span v-if="item.open" class="icon">📂</span>
                 <span v-else="item.open" class="icon">📁</span>
@@ -49,7 +49,7 @@ const getChildHeight = (item: TabItem): number => {
     const childrenHeight = item.children
         .filter(child => child.open)
         .reduce((sum, child) => sum + getChildHeight(child), 0);
-    return item.children.length * 41 + childrenHeight;
+    return item.children.length * 34 + childrenHeight;
 };
 </script>
 
