@@ -92,8 +92,8 @@ const {
 
 const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | null>(null);
 
-const onContextMenu = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]): void => {
-    bookMarkHandleModule.value?.onContextMenu(e, item, items);
+const onContextMenu = (e: MouseEvent, item: Bookmark): void => {
+    bookMarkHandleModule.value?.onContextMenu(e, item);
 };
 
 const onDragStart = (): void => {};

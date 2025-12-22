@@ -51,7 +51,7 @@ const onHandleClick = (event: MouseEvent, item: Bookmark): void => {
 };
 
 const onContextMenu = (event: MouseEvent, item: Bookmark): void => {
-    bookMarkHandleModule.value?.onContextMenu(event, item, bookmarks.value);
+    bookMarkHandleModule.value?.onContextMenu(event, item);
 };
 
 const onDragStart = (): void => {};
