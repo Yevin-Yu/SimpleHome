@@ -16,4 +16,4 @@ export interface SearchHistoryItem {
 
 export type Theme = "auto" | "light-theme" | "dark-theme";
 export type ShowMode = "flat" | "file";
-export type SearchEngine = "bing" | "google";
+export type SearchEngine = "bing" | "google" | "baidu" | "duckduckgo" | "yahoo" | "yandex";

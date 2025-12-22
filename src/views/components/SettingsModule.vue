@@ -11,14 +11,22 @@
                 </div>
                 <div class="setting-item">
                     <label>搜索：</label>
-                    <sh-radio v-model="engine" size="small" value="bing" label="Bing" />
-                    <sh-radio v-model="engine" size="small" value="google" label="Google" />
+                    <div class="engine-options">
+                        <sh-radio v-model="engine" size="small" value="bing" label="Bing" />
+                        <sh-radio v-model="engine" size="small" value="google" label="Google" />
+                        <sh-radio v-model="engine" size="small" value="baidu" label="百度" />
+                        <sh-radio v-model="engine" size="small" value="duckduckgo" label="DuckDuckGo" />
+                        <sh-radio v-model="engine" size="small" value="yahoo" label="Yahoo" />
+                        <sh-radio v-model="engine" size="small" value="yandex" label="Yandex" />
+                    </div>
                 </div>
                 <div class="setting-item">
                     <label>书签：</label>
-                    <sh-radio v-model="showMode" size="small" value="flat" label="平铺" />
-                    <sh-radio v-model="showMode" size="small" value="file" label="文件" />
-                    <shTag @click="handleImportBookmarks" size="small">导入设置</shTag>
+                    <div class="bookmark-options">
+                        <sh-radio v-model="showMode" size="small" value="flat" label="平铺" />
+                        <sh-radio v-model="showMode" size="small" value="file" label="文件" />
+                        <shTag @click="handleImportBookmarks" size="small">导入设置</shTag>
+                    </div>
                     <p class="tips">提示：空格键 与 鼠标左击 上下滑动，可以打开关闭书签</p>
                 </div>
             </div>
@@ -123,6 +131,38 @@ defineExpose({
         color: var(--text-color);
         padding-left: 12px;
         margin-bottom: 12px;
+
+        label {
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .engine-options {
+            display: inline-block;
+            vertical-align: top;
+            max-width: calc(100% - 60px);
+            margin-top: 4px;
+            margin-bottom: 4px;
+
+            :deep(.sh-radio) {
+                margin-bottom: 4px;
+            }
+        }
+
+        .bookmark-options {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: calc(100% - 60px);
+            vertical-align: middle;
+
+            :deep(.sh-tag) {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
     }
 
     .tips {

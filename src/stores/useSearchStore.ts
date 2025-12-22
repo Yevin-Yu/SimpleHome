@@ -10,6 +10,16 @@ const normalizeUrl = (url: string): string => {
     return URL_PATTERN.test(url) ? url : `http://${url}`;
 };
 
+// 搜索引擎URL配置
+const SEARCH_ENGINE_URLS: Record<SearchEngine, string> = {
+    bing: "https://www.bing.com/search?q=",
+    google: "https://www.google.com/search?q=",
+    baidu: "https://www.baidu.com/s?wd=",
+    duckduckgo: "https://duckduckgo.com/?q=",
+    yahoo: "https://search.yahoo.com/search?p=",
+    yandex: "https://yandex.com/search/?text=",
+};
+
 export const useSearchStore = defineStore(
     "sh-search-store",
     () => {
@@ -46,7 +56,8 @@ export const useSearchStore = defineStore(
                 window.open(normalizeUrl(title), "_blank");
             } else {
                 const query = encodeURIComponent(title);
-                window.open(`https://www.${engine.value}.com/search?q=${query}`, "_blank");
+                const searchUrl = SEARCH_ENGINE_URLS[engine.value] + query;
+                window.open(searchUrl, "_blank");
             }
 
             addSearchHistory(searchItem);
