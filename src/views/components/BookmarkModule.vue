@@ -35,7 +35,7 @@ const { isShowBookmark } = useEventHandler(bookmarkRef);
 
 const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | null>(null);
 
-const handleBookmarkClick = (item: Bookmark) => {
+const handleBookmarkClick = (item: Bookmark): void => {
     if (item.type === 'bookmark' && item.url) {
         searchJump({
             id: typeof item.id === 'number' ? item.id : Date.now(),
@@ -46,7 +46,7 @@ const handleBookmarkClick = (item: Bookmark) => {
     }
 };
 
-const onContextMenu = (event: MouseEvent, item: Bookmark) => {
+const onContextMenu = (event: MouseEvent, item: Bookmark): void => {
     bookMarkHandleModule.value?.onContextMenu(event, item, bookmarks.value);
 };
 </script>

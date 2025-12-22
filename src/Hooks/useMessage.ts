@@ -1,32 +1,39 @@
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 
-let timer: ReturnType<typeof setTimeout> | null = null;
+const MESSAGE_DURATION = 3000;
+const MESSAGE_CLASS = "sh-message-default";
 
-export function useMessage() {
+export const useMessage = () => {
     const messageEl = ref<HTMLElement | null>(null);
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
-    const clearMessage = () => {
-        const oldMessages = document.querySelectorAll(".sh-message-default");
-        oldMessages.forEach((el) => el.remove());
+    const clearMessage = (): void => {
+        document.querySelectorAll(`.${MESSAGE_CLASS}`).forEach(el => el.remove());
         if (messageEl.value?.parentNode) {
             messageEl.value.remove();
             messageEl.value = null;
         }
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
     };
 
-    const showMessage = (msg: string) => {
+    const showMessage = (msg: string): void => {
         clearMessage();
+        
         const el = document.createElement("div");
-        el.className = "sh-message-default";
-        el.textContent = "🔔 " + msg;
+        el.className = MESSAGE_CLASS;
+        el.textContent = `🔔 ${msg}`;
         document.body.appendChild(el);
         messageEl.value = el;
 
-        if (timer) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(() => clearMessage(), 3000);
+        timer = setTimeout(() => clearMessage(), MESSAGE_DURATION);
     };
 
+    onBeforeUnmount(() => {
+        clearMessage();
+    });
+
     return { showMessage, clearMessage };
-}
+};

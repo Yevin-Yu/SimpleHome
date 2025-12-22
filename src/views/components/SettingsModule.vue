@@ -29,6 +29,13 @@
                     </div>
                     <p class="tips">提示：空格键 与 鼠标左击 上下滑动，可以打开关闭书签</p>
                 </div>
+                <div class="setting-item">
+                    <label>配置：</label>
+                    <div class="config-options">
+                        <shTag @click="exportConfig" size="small">配置导出</shTag>
+                        <shTag @click="importConfig" size="small">配置导入</shTag>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -43,32 +50,10 @@ import ShTag from "@/components/sh-tag.vue";
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
 import { useSearchStore } from "@/stores/useSearchStore";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { useConfigImportExport } from "@/hooks/useConfigImportExport";
 
 const bookmarksStore = useBookmarksStore();
 const { showMode } = storeToRefs(bookmarksStore);
-
-const isShow = ref(false);
-const settingsModuleRef = ref<HTMLElement | null>(null);
-
-const handleClickOutside = (e: MouseEvent) => {
-  if (!isShow.value || !settingsModuleRef.value) return;
-  if (!settingsModuleRef.value.contains(e.target as Node)) {
-    isShow.value = false;
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
-
-interface AppItem {
-  name: string;
-  url: string;
-}
 
 const searchStore = useSearchStore();
 const { engine } = storeToRefs(searchStore);
@@ -76,10 +61,30 @@ const { engine } = storeToRefs(searchStore);
 const themeStore = useThemeStore();
 const { theme } = storeToRefs(themeStore);
 
+const { exportConfig, importConfig } = useConfigImportExport();
+
+const isShow = ref(false);
+const settingsModuleRef = ref<HTMLElement | null>(null);
+
+const handleClickOutside = (e: MouseEvent): void => {
+    if (!isShow.value || !settingsModuleRef.value) return;
+    if (!settingsModuleRef.value.contains(e.target as Node)) {
+        isShow.value = false;
+    }
+};
+
+onMounted(() => {
+    document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("click", handleClickOutside);
+});
+
 const router = useRouter();
-const handleImportBookmarks = () => {
-  const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
-  window.open(url, '_blank');
+const handleImportBookmarks = (): void => {
+    const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
+    window.open(url, '_blank');
 };
 
 defineExpose({
@@ -151,6 +156,20 @@ defineExpose({
         }
 
         .bookmark-options {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: calc(100% - 60px);
+            vertical-align: middle;
+
+            :deep(.sh-tag) {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+
+        .config-options {
             display: inline-flex;
             align-items: center;
             flex-wrap: wrap;

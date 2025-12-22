@@ -2,11 +2,9 @@ import { ref } from "vue";
 import { useMessage } from "@/hooks/useMessage";
 import type { Bookmark } from "@/types";
 
-const { showMessage } = useMessage();
-
-function generateId(): string {
+const generateId = (): string => {
     return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 9)}`.toUpperCase();
-}
+};
 
 interface BookmarkNode {
     id: string;
@@ -16,14 +14,14 @@ interface BookmarkNode {
     children?: BookmarkNode[];
 }
 
-function parseDT(dt: Element): BookmarkNode | null {
+const parseDT = (dt: Element): BookmarkNode | null => {
     const h3 = dt.querySelector("h3");
     if (h3) {
         const title = (h3.textContent || "").trim();
         const node: BookmarkNode = { id: generateId(), title, type: "folder", children: [] };
         const dl = dt.querySelector("dl");
         if (dl) {
-            Array.from(dl.children).forEach((child) => {
+            Array.from(dl.children).forEach(child => {
                 const parsed = parseNode(child);
                 if (parsed) node.children!.push(parsed);
             });
@@ -39,53 +37,53 @@ function parseDT(dt: Element): BookmarkNode | null {
     }
 
     return null;
-}
+};
 
-function parseNode(node: Element): BookmarkNode | null {
-    const tag = node.tagName;
-    if (tag === "DT") return parseDT(node);
-    if (tag === "DL") {
+const parseNode = (node: Element): BookmarkNode | null => {
+    if (node.tagName === "DT") return parseDT(node);
+    
+    if (node.tagName === "DL") {
         const container: BookmarkNode = { id: generateId(), title: "", type: "folder", children: [] };
-        Array.from(node.children).forEach((child) => {
+        Array.from(node.children).forEach(child => {
             const parsed = parseNode(child);
             if (parsed) container.children!.push(parsed);
         });
         return container.children!.length ? container : null;
     }
+    
     return null;
-}
+};
 
-function parseFolders(htmlString: string): BookmarkNode[] {
+const parseFolders = (htmlString: string): BookmarkNode[] => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");
     const rootDL = doc.querySelector("dl");
     if (!rootDL) return [];
 
     const results: BookmarkNode[] = [];
-    Array.from(rootDL.children).forEach((child) => {
+    Array.from(rootDL.children).forEach(child => {
         const parsed = parseNode(child);
-        if (parsed) {
-            if (parsed.type === "folder" && parsed.title === "" && parsed.children?.length) {
-                results.push(...parsed.children);
-            } else {
-                results.push(parsed);
-            }
+        if (!parsed) return;
+
+        if (parsed.type === "folder" && !parsed.title && parsed.children?.length) {
+            results.push(...parsed.children);
+        } else {
+            results.push(parsed);
         }
     });
 
     return results;
-}
+};
 
-function parse(htmlString: string): BookmarkNode[] {
+const parse = (htmlString: string): BookmarkNode[] => {
     try {
         return parseFolders(htmlString);
     } catch (error) {
-        showMessage("解析失败");
         return [];
     }
-}
+};
 
-function readFileAsText(file: File): Promise<string> {
+const readFileAsText = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -99,12 +97,13 @@ function readFileAsText(file: File): Promise<string> {
         reader.onerror = () => reject(new Error("读取文件失败"));
         reader.readAsText(file);
     });
-}
+};
 
-export function useBookmarkParser() {
+export const useBookmarkParser = () => {
+    const { showMessage } = useMessage();
     const bookmarksData = ref<Bookmark[]>([]);
 
-    const bookmarkParser = async (file: File | null) => {
+    const bookmarkParser = async (file: File | null): Promise<void> => {
         if (!file) {
             showMessage("请先上传有效的HTML文件！");
             return;
@@ -122,4 +121,4 @@ export function useBookmarkParser() {
         bookmarksData,
         bookmarkParser,
     };
-}
+};

@@ -7,13 +7,25 @@ export interface Bookmark {
     open?: boolean;
 }
 
+export type SearchHistoryType = "bookmark" | "search";
+
 export interface SearchHistoryItem {
     id: number;
     title: string;
-    type: string;
+    type: SearchHistoryType;
     url?: string;
 }
 
 export type Theme = "auto" | "light-theme" | "dark-theme";
 export type ShowMode = "flat" | "file";
 export type SearchEngine = "bing" | "google" | "baidu" | "duckduckgo" | "yahoo" | "yandex";
+
+export interface ConfigData {
+    version: string;
+    exportTime: string;
+    theme?: Theme;
+    engine?: SearchEngine;
+    showMode?: ShowMode;
+    bookmarks?: Bookmark[];
+    searchHistory?: SearchHistoryItem[];
+}

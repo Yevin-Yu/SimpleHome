@@ -3,10 +3,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { RouterView } from "vue-router";
 import { useThemeStore } from "@/stores/useThemeStore";
 
-useThemeStore();
+const themeStore = useThemeStore();
+
+onMounted(() => {
+    themeStore.initTheme();
+});
 </script>
 
 <style>

@@ -4,15 +4,21 @@ import { useMessage } from "@/hooks/useMessage";
 import type { Bookmark, ShowMode } from "@/types";
 import defaultData from "@/json/bookmarks.json";
 
-const { showMessage } = useMessage();
+interface DragState {
+    isDragging: boolean;
+    draggedId: number | string | null;
+    dragOverId: number | string | null;
+    justMovedId: number | string | null;
+}
 
 export const useBookmarksStore = defineStore(
     "sh-bookmarks-store",
     () => {
+        const { showMessage } = useMessage();
         const showMode = ref<ShowMode>("flat");
         const bookmarks = ref<Bookmark[]>(defaultData as Bookmark[]);
         const flatBookmarks = ref<Bookmark[]>([]);
-        const dragState = ref<{ isDragging: boolean; draggedId: number | string | null; dragOverId: number | string | null; justMovedId: number | string | null }>({
+        const dragState = ref<DragState>({
             isDragging: false,
             draggedId: null,
             dragOverId: null,
@@ -51,18 +57,9 @@ export const useBookmarksStore = defineStore(
 
         const updateBookmarkById = (id: number | string, updates: Partial<Bookmark>): void => {
             const bookmark = findBookmarkObjectById(id, bookmarks.value);
-            if (bookmark) {
-                // 直接修改属性，deep watch 会自动触发 flatBookmarks 更新
-                if (updates.title !== undefined) {
-                    bookmark.title = updates.title;
-                }
-                if (updates.url !== undefined) {
-                    bookmark.url = updates.url;
-                }
-                if (updates.type !== undefined) {
-                    bookmark.type = updates.type;
-                }
-            }
+            if (!bookmark) return;
+
+            Object.assign(bookmark, updates);
         };
 
         const flattenBookmarks = (bookmarks: Bookmark[]): Bookmark[] => {
@@ -78,47 +75,57 @@ export const useBookmarksStore = defineStore(
             return result;
         };
 
-        const deleteBookmarkById = (id: number | string, bookmarks: Bookmark[]): void => {
-            if (!id || !bookmarks.length) return;
-            for (let i = 0; i < bookmarks.length; i++) {
-                if (bookmarks[i].id === id) {
-                    bookmarks.splice(i, 1);
-                    // deep watch 会自动触发 flatBookmarks 更新
-                    return;
-                }
-                if (bookmarks[i].children) {
-                    deleteBookmarkById(id, bookmarks[i].children!);
+        const deleteBookmarkById = (id: number | string, bookmarkList: Bookmark[]): void => {
+            if (!id || !bookmarkList.length) return;
+
+            const index = bookmarkList.findIndex(item => item.id === id);
+            if (index !== -1) {
+                bookmarkList.splice(index, 1);
+                return;
+            }
+
+            for (const item of bookmarkList) {
+                if (item.children?.length) {
+                    deleteBookmarkById(id, item.children);
                 }
             }
         };
 
-        const addBookmarkByIdInCurrentNode = (id: number | string, bookmark: Bookmark, bookmarks: Bookmark[]): void => {
-            if (!bookmark.title) return;
-            if (!id || !bookmarks.length) return;
-            const currentNodes = findBookmarkById(id, bookmarks);
-            if (currentNodes?.length) {
-                const index = currentNodes.findIndex((item) => item.id === id);
-                if (index !== -1) {
-                    currentNodes.splice(index + 1, 0, bookmark);
-                    // deep watch 会自动触发 flatBookmarks 更新
-                }
+        const addBookmarkByIdInCurrentNode = (id: number | string, bookmark: Bookmark, bookmarkList: Bookmark[]): void => {
+            if (!bookmark.title || !id || !bookmarkList.length) return;
+
+            const parentList = findBookmarkById(id, bookmarkList);
+            if (!parentList?.length) return;
+
+            const index = parentList.findIndex(item => item.id === id);
+            if (index !== -1) {
+                parentList.splice(index + 1, 0, bookmark);
             }
         };
 
-        const addBookmarkByIdInCurrentFolder = (id: number | string, bookmark: Bookmark, bookmarks: Bookmark[]): void => {
-            if (!bookmark.title) return;
-            if (!id || !bookmarks.length) return;
-            const currentNodes = findBookmarkById(id, bookmarks);
-            if (currentNodes?.length) {
-                const target = currentNodes.find((item) => item.id === id && item.type === "folder");
-                if (target) {
-                    if (!target.children) {
-                        target.children = [];
-                    }
-                    target.children.push(bookmark);
-                    // deep watch 会自动触发 flatBookmarks 更新
+        const addBookmarkByIdInCurrentFolder = (id: number | string, bookmark: Bookmark, bookmarkList: Bookmark[]): void => {
+            if (!bookmark.title || !id || !bookmarkList.length) return;
+
+            const target = findBookmarkObjectById(id, bookmarkList);
+            if (target?.type !== "folder") return;
+
+            if (!target.children) {
+                target.children = [];
+            }
+            target.children.push(bookmark);
+        };
+
+        const findInChildren = (children: Bookmark[], id: number | string): { item: Bookmark; parent: Bookmark[] } | null => {
+            for (const item of children) {
+                if (item.id === id) {
+                    return { item, parent: children };
+                }
+                if (item.children?.length) {
+                    const found = findInChildren(item.children, id);
+                    if (found) return found;
                 }
             }
+            return null;
         };
 
         const moveBookmark = (
@@ -127,98 +134,37 @@ export const useBookmarksStore = defineStore(
             parentBookmarks: Bookmark[],
             position: "before" | "after" = "after",
         ): boolean => {
-            if (!draggedId || !targetId || draggedId === targetId) return false;
-            if (!parentBookmarks || !Array.isArray(parentBookmarks) || parentBookmarks.length === 0) return false;
-            
-            // 找到被拖拽的书签和它的父级
-            let draggedItem: Bookmark | undefined;
-            let draggedParent: Bookmark[] | undefined;
-            
-            // 在顶层查找
-            for (let i = 0; i < parentBookmarks.length; i++) {
-                if (parentBookmarks[i].id === draggedId) {
-                    draggedItem = parentBookmarks[i];
-                    draggedParent = parentBookmarks;
-                    break;
-                }
-                // 递归查找子级
-                if (parentBookmarks[i].children) {
-                    const found = findInChildren(parentBookmarks[i].children!, draggedId);
-                    if (found) {
-                        draggedItem = found.item;
-                        draggedParent = found.parent;
-                        break;
-                    }
-                }
+            if (!draggedId || !targetId || draggedId === targetId || !parentBookmarks?.length) {
+                return false;
             }
-            
-            if (!draggedItem || !draggedParent) return false;
-            
-            // 找到目标书签的父级（必须是同一个父级）
-            let targetParent: Bookmark[] | undefined;
-            let targetIndex = -1;
-            
-            // 检查是否在同一父级
-            for (let i = 0; i < parentBookmarks.length; i++) {
-                if (parentBookmarks[i].id === targetId) {
-                    targetParent = parentBookmarks;
-                    targetIndex = i;
-                    break;
-                }
-                if (parentBookmarks[i].children) {
-                    const found = findInChildren(parentBookmarks[i].children!, targetId);
-                    if (found) {
-                        targetParent = found.parent;
-                        targetIndex = found.parent.findIndex(item => item.id === targetId);
-                        break;
-                    }
-                }
+
+            const draggedResult = findInChildren(parentBookmarks, draggedId);
+            const targetResult = findInChildren(parentBookmarks, targetId);
+
+            if (!draggedResult || !targetResult || draggedResult.parent !== targetResult.parent) {
+                return false;
             }
-            
-            // 必须是在同一个父级下才能移动
-            if (!targetParent || draggedParent !== targetParent) return false;
-            
-            // 执行移动
-            const draggedIndex = draggedParent.findIndex(item => item.id === draggedId);
-            if (draggedIndex === -1) return false;
-            
-            // 如果已经在目标位置，不需要移动
-            if (draggedIndex === targetIndex) return true;
-            
-            // 移除被拖拽的元素
-            const [movedItem] = draggedParent.splice(draggedIndex, 1);
-            
-            // 计算新的插入位置
-            // 先根据 position 决定目标插入点（before: 目标位置，after: 目标位置+1）
+
+            const { parent, item: draggedItem } = draggedResult;
+            const targetIndex = parent.findIndex(item => item.id === targetId);
+            const draggedIndex = parent.findIndex(item => item.id === draggedId);
+
+            if (targetIndex === -1 || draggedIndex === -1 || draggedIndex === targetIndex) {
+                return draggedIndex === targetIndex;
+            }
+
+            const [movedItem] = parent.splice(draggedIndex, 1);
             let insertIndex = position === "before" ? targetIndex : targetIndex + 1;
-            // 如果拖拽元素原来在目标前面，被移除后目标索引会左移1，需要修正
+            
             if (draggedIndex < targetIndex) {
                 insertIndex -= 1;
             }
-            
-            // 确保插入索引不超出范围
-            insertIndex = Math.min(insertIndex, draggedParent.length);
-            
-            // 插入到新位置
-            draggedParent.splice(insertIndex, 0, movedItem);
-            
+
+            parent.splice(Math.min(insertIndex, parent.length), 0, movedItem);
             return true;
         };
-        
-        const findInChildren = (children: Bookmark[], id: number | string): { item: Bookmark; parent: Bookmark[] } | null => {
-            for (let i = 0; i < children.length; i++) {
-                if (children[i].id === id) {
-                    return { item: children[i], parent: children };
-                }
-                if (children[i].children) {
-                    const found = findInChildren(children[i].children!, id);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
 
-        const setBookmarks = (newBookmarks: Bookmark[]) => {
+        const setBookmarks = (newBookmarks: Bookmark[]): void => {
             if (!newBookmarks?.length) {
                 showMessage("请先解析数据！");
                 return;

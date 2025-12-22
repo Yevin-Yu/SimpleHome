@@ -71,7 +71,7 @@ import { useUploadFile } from '@/hooks/useUploadFile';
 import type { Bookmark } from "@/types";
 
 onMounted(() => {
-  document.title = "书签管理 - SimpleHome";
+    document.title = "书签管理 - SimpleHome";
 });
 
 const bookmarksStore = useBookmarksStore();
@@ -82,27 +82,26 @@ const { bookmarksData, bookmarkParser } = useBookmarkParser();
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const {
-  currentFile,
-  triggerFileInput,
-  handleDragOver,
-  handleDragLeave,
-  handleDrop,
-  handleFileChange
+    currentFile,
+    triggerFileInput,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleFileChange,
 } = useUploadFile(fileInput);
 
 const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | null>(null);
 
-const onContextMenu = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]) => {
-  bookMarkHandleModule.value?.onContextMenu(e, item, items);
+const onContextMenu = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]): void => {
+    bookMarkHandleModule.value?.onContextMenu(e, item, items);
 };
 
-// 拖拽事件处理（事件会冒泡，这里只是占位，实际处理在 sh-tree 组件中）
-const onDragStart = () => {};
-const onDragOver = () => {};
-const onDragEnter = () => {};
-const onDragLeave = () => {};
-const onDrop = () => {};
-const onDragEnd = () => {};
+const onDragStart = (): void => {};
+const onDragOver = (): void => {};
+const onDragEnter = (): void => {};
+const onDragLeave = (): void => {};
+const onDrop = (): void => {};
+const onDragEnd = (): void => {};
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

@@ -37,63 +37,57 @@ const x = ref(0);
 const y = ref(0);
 const menuRef = ref<HTMLElement | null>(null);
 
-function show(posX: number, posY: number) {
-  // 确保坐标是相对于视口的（clientX/clientY 已经是相对于视口的）
-  // 但我们需要在显示后调整位置，防止超出窗口边界
-  x.value = posX;
-  y.value = posY;
-  visible.value = true;
-  
-  // 使用 nextTick 确保 DOM 已渲染，然后调整位置
-  nextTick(() => {
-    adjustPosition();
-  });
-}
+const show = (posX: number, posY: number): void => {
+    x.value = posX;
+    y.value = posY;
+    visible.value = true;
+    
+    nextTick(() => {
+        adjustPosition();
+    });
+};
 
-function adjustPosition() {
-  if (!menuRef.value || !visible.value) return;
-  
-  const menuRect = menuRef.value.getBoundingClientRect();
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  
-  // 调整水平位置，防止超出右边界
-  if (x.value + menuRect.width > windowWidth) {
-    x.value = windowWidth - menuRect.width - 10;
-  }
-  // 调整水平位置，防止超出左边界
-  if (x.value < 0) {
-    x.value = 10;
-  }
-  
-  // 调整垂直位置，防止超出下边界
-  if (y.value + menuRect.height > windowHeight) {
-    y.value = windowHeight - menuRect.height - 10;
-  }
-  // 调整垂直位置，防止超出上边界
-  if (y.value < 0) {
-    y.value = 10;
-  }
-}
+const adjustPosition = (): void => {
+    if (!menuRef.value || !visible.value) return;
+    
+    const menuRect = menuRef.value.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const padding = 10;
+    
+    if (x.value + menuRect.width > windowWidth) {
+        x.value = windowWidth - menuRect.width - padding;
+    }
+    if (x.value < 0) {
+        x.value = padding;
+    }
+    
+    if (y.value + menuRect.height > windowHeight) {
+        y.value = windowHeight - menuRect.height - padding;
+    }
+    if (y.value < 0) {
+        y.value = padding;
+    }
+};
 
-function hide() {
-  visible.value = false;
-}
+const hide = (): void => {
+    visible.value = false;
+};
 
-function handleSelect(item: MenuItem) {
-  hide();
-  emit('select', item);
-}
+const handleSelect = (item: MenuItem): void => {
+    hide();
+    emit('select', item);
+};
 
-function onDocumentClick() {
-  hide();
-}
+const onDocumentClick = (): void => {
+    hide();
+};
 
-function onWindowResize() {
-  if (visible.value) {
-    adjustPosition();
-  }
-}
+const onWindowResize = (): void => {
+    if (visible.value) {
+        adjustPosition();
+    }
+};
 
 onMounted(() => {
   document.addEventListener('click', onDocumentClick);

@@ -37,24 +37,22 @@ import type { SearchHistoryItem } from "@/types";
 
 const searchStore = useSearchStore();
 const { searchJump } = searchStore;
-const searchKey = ref("");
-
-const onSearchHandler = (key: string) => {
-  if (!key.trim()) return;
-  searchJump({ title: key, type: 'search' } as SearchHistoryItem);
-  searchKey.value = "";
-};
-
-const settingRef = ref<InstanceType<typeof SettingsModule> | null>(null);
-const settingHandler = (e: MouseEvent) => {
-  e.stopPropagation();
-  if (settingRef.value) {
-    settingRef.value.isShow = !settingRef.value.isShow;
-  }
-};
-
 const bookmarksStore = useBookmarksStore();
 const { showMode } = storeToRefs(bookmarksStore);
+
+const searchKey = ref("");
+const settingRef = ref<InstanceType<typeof SettingsModule> | null>(null);
+
+const onSearchHandler = (key: string): void => {
+    if (!key.trim()) return;
+    searchJump({ title: key.trim(), type: 'search' } as SearchHistoryItem);
+    searchKey.value = "";
+};
+
+const settingHandler = (e: MouseEvent): void => {
+    e.stopPropagation();
+    settingRef.value && (settingRef.value.isShow = !settingRef.value.isShow);
+};
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

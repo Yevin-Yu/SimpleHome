@@ -10,7 +10,6 @@ const normalizeUrl = (url: string): string => {
     return URL_PATTERN.test(url) ? url : `http://${url}`;
 };
 
-// 搜索引擎URL配置
 const SEARCH_ENGINE_URLS: Record<SearchEngine, string> = {
     bing: "https://www.bing.com/search?q=",
     google: "https://www.google.com/search?q=",
@@ -30,36 +29,39 @@ export const useSearchStore = defineStore(
             engine.value = newEngine;
         };
 
-        const addSearchHistory = (searchItem: SearchHistoryItem) => {
+        const addSearchHistory = (searchItem: SearchHistoryItem): void => {
             const { title, type } = searchItem;
-            searchHistory.value = searchHistory.value.filter((item) => item.title !== title || item.type !== type);
+            searchHistory.value = searchHistory.value.filter(
+                item => item.title !== title || item.type !== type
+            );
             searchHistory.value.unshift({ ...searchItem, id: Date.now() });
+            
             if (searchHistory.value.length > MAX_HISTORY_COUNT) {
-                searchHistory.value.pop();
+                searchHistory.value = searchHistory.value.slice(0, MAX_HISTORY_COUNT);
             }
         };
 
-        const removeSearchHistory = (id: number) => {
-            searchHistory.value = searchHistory.value.filter((item) => item.id !== id);
+        const removeSearchHistory = (id: number): void => {
+            searchHistory.value = searchHistory.value.filter(item => item.id !== id);
         };
 
-        const clearSearchHistory = () => {
+        const clearSearchHistory = (): void => {
             searchHistory.value = [];
         };
 
-        const searchJump = (searchItem: SearchHistoryItem) => {
+        const searchJump = (searchItem: SearchHistoryItem): void => {
             const { title, type, url } = searchItem;
+            let targetUrl: string;
 
             if (type === "bookmark" && url) {
-                window.open(normalizeUrl(url), "_blank");
+                targetUrl = normalizeUrl(url);
             } else if (DOMAIN_PATTERN.test(title)) {
-                window.open(normalizeUrl(title), "_blank");
+                targetUrl = normalizeUrl(title);
             } else {
-                const query = encodeURIComponent(title);
-                const searchUrl = SEARCH_ENGINE_URLS[engine.value] + query;
-                window.open(searchUrl, "_blank");
+                targetUrl = SEARCH_ENGINE_URLS[engine.value] + encodeURIComponent(title);
             }
 
+            window.open(targetUrl, "_blank");
             addSearchHistory(searchItem);
         };
 

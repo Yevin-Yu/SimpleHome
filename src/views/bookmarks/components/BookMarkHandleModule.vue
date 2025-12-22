@@ -78,13 +78,13 @@ const needsUrl = computed(() => currentAction.value.includes('bookmark'));
 const formLabel = computed(() => {
     return currentAction.value.includes('folder') ? '文件夹名称' : '书签名称';
 });
-function onContextMenu(e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]) {
+const onContextMenu = (e: MouseEvent, item: Bookmark): void => {
     menuItems.value = item.type === 'folder' ? [...baseMenu, ...extraMenu] : baseMenu;
     menu.value?.show(e.clientX, e.clientY);
     currentItem.value = item;
-}
+};
 
-function onMenuSelect(selected: { label: string; action?: string; [key: string]: any }) {
+const onMenuSelect = (selected: { label: string; action?: string; [key: string]: any }): void => {
     if (!selected.action || !currentItem.value) return;
     currentAction.value = selected.action;
 
@@ -102,14 +102,14 @@ function onMenuSelect(selected: { label: string; action?: string; [key: string]:
             openAddDialog();
             break;
     }
-}
+};
 
-function openEditDialog() {
+const openEditDialog = (): void => {
     dialogTitle.value = isFolder.value ? '编辑文件夹' : '编辑书签';
     dialogVisible.value = true;
-}
+};
 
-function openAddDialog() {
+const openAddDialog = (): void => {
     const titleMap: Record<string, string> = {
         'new-bookmark': '新增书签',
         'new-folder': '新增文件夹',
@@ -119,54 +119,51 @@ function openAddDialog() {
     dialogTitle.value = titleMap[currentAction.value] ?? '新增';
     form.value = { title: '', url: '' };
     dialogVisible.value = true;
-}
+};
 
-function closeDialog() {
+const closeDialog = (): void => {
     dialogVisible.value = false;
-}
-/* ---- 确认提交 ---- */
-function confirm() {
+};
+
+const confirm = (): void => {
     if (currentAction.value === 'edit') {
-        // 编辑模式：通过 ID 找到原始对象并更新
         if (!currentItem.value) return;
-        // 确保标题不为空
-        if (!currentItem.value.title?.trim()) {
-            return;
-        }
-        // 如果是书签，确保 URL 不为空
+        
+        const title = currentItem.value.title?.trim();
+        if (!title) return;
+        
         if (currentItem.value.type === 'bookmark' && !currentItem.value.url?.trim()) {
             return;
         }
-        // 通过 ID 更新原始 bookmarks 中的对象
+        
         updateBookmarkById(currentItem.value.id, {
-            title: currentItem.value.title.trim(),
+            title,
             url: currentItem.value.type === 'bookmark' ? currentItem.value.url?.trim() : undefined,
         });
     } else {
-        // 新增模式
         if (!form.value.title.trim() || !currentItem.value) return;
 
-        const node: Bookmark = {
+        const newNode: Bookmark = {
             id: Date.now(),
             title: form.value.title.trim(),
             type: currentAction.value.includes('folder') ? 'folder' : 'bookmark',
         };
 
         if (needsUrl.value && form.value.url) {
-            node.url = form.value.url.trim();
+            newNode.url = form.value.url.trim();
         }
 
         if (currentAction.value.includes('next')) {
-            addBookmarkByIdInCurrentFolder(currentItem.value.id, node, bookmarks.value);
+            addBookmarkByIdInCurrentFolder(currentItem.value.id, newNode, bookmarks.value);
         } else {
-            addBookmarkByIdInCurrentNode(currentItem.value.id, node, bookmarks.value);
+            addBookmarkByIdInCurrentNode(currentItem.value.id, newNode, bookmarks.value);
         }
     }
 
     closeDialog();
-}
-/* ---------- 暴露给父组件 ---------- */
-defineExpose({ onContextMenu })
+};
+
+defineExpose({ onContextMenu });
 </script>
 
 <style scoped lang="less">

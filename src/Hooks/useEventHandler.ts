@@ -3,106 +3,78 @@ import { useBookmarksStore } from "@/stores/useBookmarksStore";
 import { storeToRefs } from "pinia";
 
 const DRAG_THRESHOLD = 10;
+const DRAGGABLE_SELECTORS = ['[draggable="true"]', '.sh-tree', '.sh-button', '.sh-tag'];
 
-// 检查是否是可拖拽元素
 const isDraggableElement = (target: HTMLElement | null): boolean => {
     if (!target) return false;
-    return !!(
-        target.closest('[draggable="true"]') ||
-        target.closest('.sh-tree') ||
-        target.closest('.sh-button') ||
-        target.closest('.sh-tag')
-    );
+    return DRAGGABLE_SELECTORS.some(selector => target.closest(selector) !== null);
 };
 
-export function useEventHandler(bookmarkRef: Ref<HTMLElement | null>) {
+const isInputElement = (element: Element | null): boolean => {
+    if (!element) return false;
+    const tagName = element.tagName;
+    return tagName === "INPUT" || tagName === "TEXTAREA";
+};
+
+export const useEventHandler = (bookmarkRef: Ref<HTMLElement | null>) => {
     const isShowBookmark = ref(false);
-    let isLeftBtnDown = false;
-    let startYMouse = 0;
-    
-    // 获取拖拽状态，如果正在拖拽则不触发书签框的打开/关闭
     const bookmarksStore = useBookmarksStore();
     const { dragState } = storeToRefs(bookmarksStore);
+    
+    let isLeftBtnDown = false;
+    let startYMouse = 0;
 
-    const onMouseDown = (event: MouseEvent) => {
-        if (event.button === 0) {
-            // 检查是否在可拖拽元素上（书签或文件夹）
-            const target = event.target as HTMLElement;
-            
-            // 如果在可拖拽元素上，不触发书签框的打开/关闭逻辑
-            if (isDraggableElement(target)) {
-                return;
-            }
-            
-            isLeftBtnDown = true;
-            startYMouse = event.clientY;
+    const handleVerticalDrag = (currentY: number): void => {
+        const diff = currentY - startYMouse;
+        if (Math.abs(diff) > DRAG_THRESHOLD) {
+            isShowBookmark.value = diff < 0;
+            startYMouse = currentY;
         }
     };
 
-    const onMouseMove = (event: MouseEvent) => {
-        if (!isLeftBtnDown) return;
-        
-        // 如果正在拖拽，不触发书签框的打开/关闭
-        if (dragState.value.isDragging) {
-            // 重置状态，避免拖拽结束后误触发
-            isLeftBtnDown = false;
-            return;
-        }
-        
-        // 检查是否在可拖拽元素上
-        const target = event.target as HTMLElement;
-        
-        // 如果在可拖拽元素上，不触发书签框的打开/关闭
-        if (isDraggableElement(target)) {
-            isLeftBtnDown = false;
-            return;
-        }
-        
-        const diff = event.clientY - startYMouse;
-        if (diff < -DRAG_THRESHOLD) {
-            isShowBookmark.value = true;
-            startYMouse = event.clientY;
-        } else if (diff > DRAG_THRESHOLD) {
-            isShowBookmark.value = false;
-            startYMouse = event.clientY;
-        }
-    };
-
-    const onMouseUp = () => {
+    const resetDragState = (): void => {
         isLeftBtnDown = false;
     };
 
-    const onTouchStart = (event: TouchEvent) => {
+    const onMouseDown = (event: MouseEvent): void => {
+        if (event.button !== 0) return;
+        
+        const target = event.target as HTMLElement;
+        if (isDraggableElement(target)) return;
+        
+        isLeftBtnDown = true;
+        startYMouse = event.clientY;
+    };
+
+    const onMouseMove = (event: MouseEvent): void => {
+        if (!isLeftBtnDown) return;
+        
+        if (dragState.value.isDragging || isDraggableElement(event.target as HTMLElement)) {
+            resetDragState();
+            return;
+        }
+        
+        handleVerticalDrag(event.clientY);
+    };
+
+    const onMouseUp = (): void => {
+        resetDragState();
+    };
+
+    const onTouchStart = (event: TouchEvent): void => {
         startYMouse = event.touches[0].clientY;
     };
 
-    const onTouchMove = (event: TouchEvent) => {
-        if (bookmarkRef.value && bookmarkRef.value.contains(event.target as Node)) return;
+    const onTouchMove = (event: TouchEvent): void => {
+        if (bookmarkRef.value?.contains(event.target as Node)) return;
+        if (dragState.value.isDragging || isDraggableElement(event.target as HTMLElement)) return;
         
-        // 如果正在拖拽，不触发书签框的打开/关闭
-        if (dragState.value.isDragging) return;
-        
-        // 检查是否在可拖拽元素上
-        const target = event.target as HTMLElement;
-        
-        // 如果在可拖拽元素上，不触发书签框的打开/关闭
-        if (isDraggableElement(target)) return;
-        
-        const diff = event.touches[0].clientY - startYMouse;
-        if (diff < -DRAG_THRESHOLD) {
-            isShowBookmark.value = true;
-            startYMouse = event.touches[0].clientY;
-        } else if (diff > DRAG_THRESHOLD) {
-            isShowBookmark.value = false;
-            startYMouse = event.touches[0].clientY;
-        }
+        handleVerticalDrag(event.touches[0].clientY);
     };
 
-    const onKeyDown = (event: KeyboardEvent) => {
-        const activeElement = document.activeElement;
-        if (activeElement?.tagName === "INPUT" || activeElement?.tagName === "TEXTAREA") {
-            return;
-        }
+    const onKeyDown = (event: KeyboardEvent): void => {
+        if (isInputElement(document.activeElement)) return;
+        
         if (event.code === "Space") {
             event.preventDefault();
             isShowBookmark.value = !isShowBookmark.value;

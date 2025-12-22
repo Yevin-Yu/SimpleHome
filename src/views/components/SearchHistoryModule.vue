@@ -32,18 +32,17 @@ const menuItems: MenuItem[] = [
 
 const currentItem = ref<SearchHistoryItem | null>(null);
 
-const onShowMenu = (event: MouseEvent, item: SearchHistoryItem) => {
+const onShowMenu = (event: MouseEvent, item: SearchHistoryItem): void => {
     currentItem.value = item;
     menu.value?.show(event.clientX, event.clientY);
 };
 
-const onMenuSelect = (selected: { label: string; action?: string; [key: string]: any }) => {
+const onMenuSelect = (selected: { label: string; action?: string; [key: string]: any }): void => {
     if (!selected.action) return;
+    
     switch (selected.action) {
         case 'current':
-            if (currentItem.value) {
-                searchStore.removeSearchHistory(currentItem.value.id);
-            }
+            currentItem.value && searchStore.removeSearchHistory(currentItem.value.id);
             break;
         case 'clear':
             searchStore.clearSearchHistory();

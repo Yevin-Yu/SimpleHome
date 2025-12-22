@@ -35,28 +35,31 @@ const { searchJump } = searchStore;
 
 const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | null>(null);
 
-const onHandleClick = (event: MouseEvent, item: Bookmark) => {
+const bookmarkRef = ref<HTMLElement | null>(null);
+const { isShowBookmark } = useEventHandler(bookmarkRef);
+
+const onHandleClick = (event: MouseEvent, item: Bookmark): void => {
     event.preventDefault();
-    if (item.type === 'bookmark') {
-        searchJump(item as any);
+    if (item.type === 'bookmark' && item.url) {
+        searchJump({
+            id: typeof item.id === 'number' ? item.id : Date.now(),
+            title: item.title,
+            type: 'bookmark' as const,
+            url: item.url,
+        });
     }
 };
 
-const onContextMenu = (event: MouseEvent, item: Bookmark) => {
+const onContextMenu = (event: MouseEvent, item: Bookmark): void => {
     bookMarkHandleModule.value?.onContextMenu(event, item, bookmarks.value);
 };
 
-// 拖拽事件处理（事件会冒泡，这里只是占位，实际处理在 sh-tree 组件中）
-const onDragStart = () => {};
-const onDragOver = () => {};
-const onDragEnter = () => {};
-const onDragLeave = () => {};
-const onDrop = () => {};
-const onDragEnd = () => {};
-
-const bookmarkRef = ref<HTMLElement | null>(null);
-const { isShowBookmark } = useEventHandler(bookmarkRef);
-// 注意：bookmarkRef 虽然未直接使用，但 useEventHandler 需要它来检测点击外部区域
+const onDragStart = (): void => {};
+const onDragOver = (): void => {};
+const onDragEnter = (): void => {};
+const onDragLeave = (): void => {};
+const onDrop = (): void => {};
+const onDragEnd = (): void => {};
 </script>
 <style scoped lang="less">
 .aside-bookmark-module {
