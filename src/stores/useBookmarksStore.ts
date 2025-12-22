@@ -1,112 +1,116 @@
-import { defineStore } from "pinia"
-import { ref, watch } from "vue"
-import { useMessage } from '@/Hooks/useMessage'
-const { showMessage } = useMessage()
-import defaultData from '@/json/bookmarks.json'
-interface Bookmark {
-    id: number,
-    title: string,
-    url?: string,
-    type: string,
-    children?: Bookmark[]
-}
+import { defineStore } from "pinia";
+import { ref, watch } from "vue";
+import { useMessage } from "@/hooks/useMessage";
+import type { Bookmark, ShowMode } from "@/types";
+import defaultData from "@/json/bookmarks.json";
 
-export const useBookmarksStore = defineStore('sh-bookmarks-store', () => {
-    // 展示模式
-    const showMode = ref('flat')
-    // 书签
-    const bookmarks = ref<Bookmark[]>(defaultData) // 加载导入默认json
-    const flatBookmarks = ref<Bookmark[]>([])
+const { showMessage } = useMessage();
 
-    // 多级嵌套书签 根据id查找所在的节点 返回组件所在的父节点   
-    const findBookmarkById = (id: number, bookmarks: Bookmark[]): Bookmark[] | undefined => {
-        for (const bookmark of bookmarks) {
-            if (bookmark.id === id) {
-                return bookmarks
-            }
-            if (bookmark.children) {
-                const found = findBookmarkById(id, bookmark.children)
-                if (found) {
-                    return found
+export const useBookmarksStore = defineStore(
+    "sh-bookmarks-store",
+    () => {
+        const showMode = ref<ShowMode>("flat");
+        const bookmarks = ref<Bookmark[]>(defaultData as Bookmark[]);
+        const flatBookmarks = ref<Bookmark[]>([]);
+
+        const findBookmarkById = (id: number | string, bookmarks: Bookmark[]): Bookmark[] | undefined => {
+            for (const bookmark of bookmarks) {
+                if (bookmark.id === id) {
+                    return bookmarks;
+                }
+                if (bookmark.children) {
+                    const found = findBookmarkById(id, bookmark.children);
+                    if (found) {
+                        return found;
+                    }
                 }
             }
-        }
-        return undefined
-    }
-    // 多级嵌套书签 flat 展开所有子节点 排除文件夹
-    const flattenBookmarks = (bookmarks: Bookmark[]): Bookmark[] => {
-        let flatBookmarks: Bookmark[] = []
-        for (const bookmark of bookmarks) {
-            if (bookmark.type === 'bookmark') {
-                flatBookmarks.push(bookmark)
-            }
-            if (bookmark.children) {
-                flatBookmarks = flatBookmarks.concat(flattenBookmarks(bookmark.children))
-            }
-        }
-        return flatBookmarks
-    }
-    // 多层嵌套 根据id删除书签 直接改变原数组
-    const deleteBookmarkById = (id: number, bookmarks: Bookmark[]): void => {
-        if (!id || !bookmarks.length) return
-        for (const bookmark of bookmarks) {
-            if (bookmark.id === id) {
-                bookmarks.splice(bookmarks.indexOf(bookmark), 1)
-            }
-            if (bookmark.children) {
-                deleteBookmarkById(id, bookmark.children)
-            }
-        }
-    }
-    // 多层嵌套 根据id在当前书签下方紧挨着
-    const addBookmarkByIdInCurrentNode = (id: number, bookmark: Bookmark, bookmarks: Bookmark[]): void => {
-        if (!bookmark.title) return
-        if (!id || !bookmarks.length) return
-        const currentNodes = findBookmarkById(id, bookmarks)
-        if (currentNodes?.length) {
-            const index = currentNodes.findIndex(item => item.id === id)
-            currentNodes.splice(index + 1, 0, bookmark)
-        }
-    }
-    // 根据id, 在当前文件夹下 新增书签 文件夹
-    const addBookmarkByIdInCurrentFolder = (id: number, bookmark: Bookmark, bookmarks: Bookmark[]): void => {
-        if (!bookmark.title) return
-        if (!id || !bookmarks.length) return
-        const currentNodes = findBookmarkById(id, bookmarks)
-        if (currentNodes?.length) {
-            currentNodes.forEach(item => {
-                if (item.id === id && item.type === 'folder') {
-                    if (!item.children) item.children = []
-                    item.children?.push(bookmark)
+            return undefined;
+        };
+
+        const flattenBookmarks = (bookmarks: Bookmark[]): Bookmark[] => {
+            const result: Bookmark[] = [];
+            for (const bookmark of bookmarks) {
+                if (bookmark.type === "bookmark") {
+                    result.push(bookmark);
                 }
-            })
-        }
-    }
-    // 设置书签
-    const setBookmarks = (newBookmarks: Bookmark[]) => {
-        if (!newBookmarks?.length) {
-            showMessage('请先解析数据！')
-            return
-        }
-        bookmarks.value = newBookmarks
-        showMessage('已更新书签数据！')
-    }
+                if (bookmark.children) {
+                    result.push(...flattenBookmarks(bookmark.children));
+                }
+            }
+            return result;
+        };
 
-    watch(bookmarks, (newBookmarks) => {
-        flatBookmarks.value = flattenBookmarks(newBookmarks)
-    }, {
-        immediate: true
-    })
+        const deleteBookmarkById = (id: number | string, bookmarks: Bookmark[]): void => {
+            if (!id || !bookmarks.length) return;
+            for (let i = 0; i < bookmarks.length; i++) {
+                if (bookmarks[i].id === id) {
+                    bookmarks.splice(i, 1);
+                    return;
+                }
+                if (bookmarks[i].children) {
+                    deleteBookmarkById(id, bookmarks[i].children!);
+                }
+            }
+        };
 
-    return {
-        showMode,
-        bookmarks,
-        flatBookmarks,
-        setBookmarks,
-        deleteBookmarkById,
-        addBookmarkByIdInCurrentNode,
-        addBookmarkByIdInCurrentFolder
-    }
-}, {
-    persist: true,
-})
+        const addBookmarkByIdInCurrentNode = (id: number | string, bookmark: Bookmark, bookmarks: Bookmark[]): void => {
+            if (!bookmark.title) return;
+            if (!id || !bookmarks.length) return;
+            const currentNodes = findBookmarkById(id, bookmarks);
+            if (currentNodes?.length) {
+                const index = currentNodes.findIndex((item) => item.id === id);
+                if (index !== -1) {
+                    currentNodes.splice(index + 1, 0, bookmark);
+                }
+            }
+        };
+
+        const addBookmarkByIdInCurrentFolder = (id: number | string, bookmark: Bookmark, bookmarks: Bookmark[]): void => {
+            if (!bookmark.title) return;
+            if (!id || !bookmarks.length) return;
+            const currentNodes = findBookmarkById(id, bookmarks);
+            if (currentNodes?.length) {
+                const target = currentNodes.find((item) => item.id === id && item.type === "folder");
+                if (target) {
+                    if (!target.children) {
+                        target.children = [];
+                    }
+                    target.children.push(bookmark);
+                }
+            }
+        };
+
+        const setBookmarks = (newBookmarks: Bookmark[]) => {
+            if (!newBookmarks?.length) {
+                showMessage("请先解析数据！");
+                return;
+            }
+            bookmarks.value = newBookmarks;
+            showMessage("已更新书签数据！");
+        };
+
+        watch(
+            bookmarks,
+            (newBookmarks) => {
+                flatBookmarks.value = flattenBookmarks(newBookmarks);
+            },
+            {
+                immediate: true,
+            },
+        );
+
+        return {
+            showMode,
+            bookmarks,
+            flatBookmarks,
+            setBookmarks,
+            deleteBookmarkById,
+            addBookmarkByIdInCurrentNode,
+            addBookmarkByIdInCurrentFolder,
+        };
+    },
+    {
+        persist: true,
+    },
+);

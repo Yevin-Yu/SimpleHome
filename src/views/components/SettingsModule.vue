@@ -1,12 +1,6 @@
 <template>
     <div class="settings-module" ref="settingsModuleRef" v-if="isShow">
-        <!-- 推荐应用与设置 -->
         <div class="container">
-            <h3>应用</h3>
-            <div class="app">
-                <shTag v-for="item in appList" :key="item.url" @click="goApp(item.url)" size="small">{{ item.name }}
-                </shTag>
-            </div>
             <h3>设置</h3>
             <div class="content">
                 <div class="setting-item">
@@ -31,64 +25,57 @@
         </div>
     </div>
 </template>
-<script setup>
+
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 import ShRadio from "@/components/sh-radio.vue";
 import ShTag from "@/components/sh-tag.vue";
-// 书签展示模式
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
-const bookmarksStore = useBookmarksStore()
-const { showMode } = storeToRefs(bookmarksStore)
-
-// 设置弹窗
-const isShow = ref(false);
-const settingsModuleRef = ref(null);
-onMounted(() => {
-    document.addEventListener("click", handleClickOutside);
-});
-onUnmounted(() => {
-    document.removeEventListener("click", handleClickOutside);
-})
-const handleClickOutside = (e) => {
-    if (!isShow.value || !settingsModuleRef.value) return
-    if (!settingsModuleRef.value.contains(e.target)) {
-        isShow.value = false;
-    }
-}
-
-// 推荐应用
-const appList = [
-    {
-        name: '热点新闻',
-        url: 'https://yevin-yu.github.io/hot-news/',
-    },
-]
-const goApp = (url) => {
-    window.open(url, '_blank');
-}
-
-// 搜索引擎
 import { useSearchStore } from "@/stores/useSearchStore";
-const searchStore = useSearchStore()
-const { engine } = storeToRefs(searchStore)
-
-// 切换主题
 import { useThemeStore } from "@/stores/useThemeStore";
+
+const bookmarksStore = useBookmarksStore();
+const { showMode } = storeToRefs(bookmarksStore);
+
+const isShow = ref(false);
+const settingsModuleRef = ref<HTMLElement | null>(null);
+
+const handleClickOutside = (e: MouseEvent) => {
+  if (!isShow.value || !settingsModuleRef.value) return;
+  if (!settingsModuleRef.value.contains(e.target as Node)) {
+    isShow.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+
+interface AppItem {
+  name: string;
+  url: string;
+}
+
+const searchStore = useSearchStore();
+const { engine } = storeToRefs(searchStore);
+
 const themeStore = useThemeStore();
 const { theme } = storeToRefs(themeStore);
 
-// 打开新页面
-import { useRouter } from "vue-router";
 const router = useRouter();
 const handleImportBookmarks = () => {
-    const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
-    window.open(url, '_blank');
-}
+  const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
+  window.open(url, '_blank');
+};
 
-// 暴露给父组件使用
 defineExpose({
-    isShow,
+  isShow,
 });
 </script>
 <style scoped lang="less">

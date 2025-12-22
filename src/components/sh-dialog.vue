@@ -9,15 +9,14 @@
             </div>
         </div>
     </div>
-    <!-- 加个蒙版 -->
 </template>
-<script setup>
-const props = defineProps({
-    title: {
-        type: String,
-        default: '对话框'
-    }
-})
+
+<script setup lang="ts">
+withDefaults(defineProps<{
+    title?: string;
+}>(), {
+    title: '对话框'
+});
 </script>
 <style scoped lang="less">
 .sh-dialog {

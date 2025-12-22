@@ -1,34 +1,33 @@
 <template>
     <div class="aside-bookmark-module" :class="{ 'show': isShowBookmark }">
-        <sh-tree @onHandleClick="onHandleClick" v-for="child in bookmarks" :key="child.title" :item="child"
-            :items="bookmarks" />
+        <sh-tree @onHandleClick="onHandleClick" v-for="child in bookmarks" :key="child.id" :item="child" :items="bookmarks" />
     </div>
 </template>
-<script setup>
+
+<script setup lang="ts">
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import shTree from "@/components/sh-tree.vue";
-
-// 加载书签
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
+import { useSearchStore } from "@/stores/useSearchStore";
+import { useEventHandler } from "@/hooks/useEventHandler";
+import type { Bookmark } from "@/types";
+
 const bookmarksStore = useBookmarksStore();
 const { bookmarks } = storeToRefs(bookmarksStore);
 
-// 跳转书签
-import { useSearchStore } from "@/stores/useSearchStore";
 const searchStore = useSearchStore();
 const { searchJump } = searchStore;
-const onHandleClick = (event, item) => {
-    event.preventDefault()
-    if (item.type === 'bookmark') {
-        searchJump(item)
-    }
-}
 
-// 快捷书签展示
-const bookmarkRef = ref(null);
-import { useEventHandler } from "@/Hooks/useEventHandler";
-const { isShowBookmark } = useEventHandler(bookmarkRef); 
+const onHandleClick = (event: MouseEvent, item: Bookmark) => {
+  event.preventDefault();
+  if (item.type === 'bookmark') {
+    searchJump(item as any);
+  }
+};
+
+const bookmarkRef = ref<HTMLElement | null>(null);
+const { isShowBookmark } = useEventHandler(bookmarkRef);
 </script>
 <style scoped lang="less">
 .aside-bookmark-module {

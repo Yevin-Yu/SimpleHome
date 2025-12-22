@@ -1,80 +1,68 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import type { SearchHistoryItem, SearchEngine } from "@/types";
 
-interface SearchHistoryItem {
-    id: number
-    title: string
-    type: string
-    url?: string
-}
+const MAX_HISTORY_COUNT = 20;
+const URL_PATTERN = /^https?:\/\//;
+const DOMAIN_PATTERN = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
 
-export const useSearchStore = defineStore('sh-search-store', () => {
-    // 引擎
-    const engine = ref('bing')
-    // 切换引擎
-    const switchEngine = (newEngine: string) => {
-        engine.value = newEngine
-    }
-    // 搜索记录
-    const searchHistory = ref<SearchHistoryItem[]>([])
-    // 添加搜索记录
-    const addSearchHistory = (searchItem: SearchHistoryItem) => {
-        const { title, type, url } = searchItem
-        // 去重新增
-        searchHistory.value = searchHistory.value.filter(item => item.title !== title || item.type !== type)
-        searchHistory.value.unshift({ id: Date.now(), title, type, url })
-        // 保留20条
-        if (searchHistory.value.length > 20) {
-            searchHistory.value.pop()
-        }
-    }
-    // 删除搜索记录
-    const removeSearchHistory = (id: number) => {
-        searchHistory.value = searchHistory.value.filter(item => item.id !== id)
-    }
-    // 清空搜索记录
-    const clearSearchHistory = () => {
-        searchHistory.value = []
-    }
+const normalizeUrl = (url: string): string => {
+    return URL_PATTERN.test(url) ? url : `http://${url}`;
+};
 
-    // 搜索跳转
-    const searchJump = (searchItem: SearchHistoryItem) => {
-        const { title, type, url } = searchItem
-        if (type === 'bookmark' && url) {
-            // 判断url是否带http或https
-            let newUrl = url
-            if (!/^https?:\/\//.test(url)) {
-                newUrl = "http://" + url;
+export const useSearchStore = defineStore(
+    "sh-search-store",
+    () => {
+        const engine = ref<SearchEngine>("bing");
+        const searchHistory = ref<SearchHistoryItem[]>([]);
+
+        const switchEngine = (newEngine: SearchEngine) => {
+            engine.value = newEngine;
+        };
+
+        const addSearchHistory = (searchItem: SearchHistoryItem) => {
+            const { title, type } = searchItem;
+            searchHistory.value = searchHistory.value.filter((item) => item.title !== title || item.type !== type);
+            searchHistory.value.unshift({ ...searchItem, id: Date.now() });
+            if (searchHistory.value.length > MAX_HISTORY_COUNT) {
+                searchHistory.value.pop();
             }
-            // 书签跳转
-            window.open(newUrl, "_blank");
-        } else {
-            // 普通跳转
-            const isURL = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/.test(title);
-            if (isURL) {
-                let url = title;
-                if (!/^https?:\/\//.test(url)) {
-                    url = "http://" + url;
-                }
-                window.open(url, "_blank");
+        };
+
+        const removeSearchHistory = (id: number) => {
+            searchHistory.value = searchHistory.value.filter((item) => item.id !== id);
+        };
+
+        const clearSearchHistory = () => {
+            searchHistory.value = [];
+        };
+
+        const searchJump = (searchItem: SearchHistoryItem) => {
+            const { title, type, url } = searchItem;
+
+            if (type === "bookmark" && url) {
+                window.open(normalizeUrl(url), "_blank");
+            } else if (DOMAIN_PATTERN.test(title)) {
+                window.open(normalizeUrl(title), "_blank");
             } else {
-                // 普通搜索
                 const query = encodeURIComponent(title);
                 window.open(`https://www.${engine.value}.com/search?q=${query}`, "_blank");
             }
-        }
-        // 记录搜索记录
-        addSearchHistory(searchItem)
-    }
-    return {
-        engine,
-        switchEngine,
-        searchHistory,
-        addSearchHistory,
-        removeSearchHistory,
-        clearSearchHistory,
-        searchJump
-    }
-}, {
-    persist: true,
-})
+
+            addSearchHistory(searchItem);
+        };
+
+        return {
+            engine,
+            switchEngine,
+            searchHistory,
+            addSearchHistory,
+            removeSearchHistory,
+            clearSearchHistory,
+            searchJump,
+        };
+    },
+    {
+        persist: true,
+    },
+);

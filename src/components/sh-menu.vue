@@ -8,46 +8,55 @@
     </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-const props = defineProps({
-    items: { type: Array, required: true },
-})
-const emit = defineEmits(['select'])
+interface MenuItem {
+  label: string;
+  action?: string;
+  [key: string]: any;
+}
 
-const visible = ref(false)
-const x = ref(0)
-const y = ref(0)
+defineProps<{
+  items: MenuItem[];
+}>();
 
-function show(posX, posY) {
-    x.value = posX
-    y.value = posY
-    visible.value = true
+const emit = defineEmits<{
+  select: [item: MenuItem];
+}>();
+
+const visible = ref(false);
+const x = ref(0);
+const y = ref(0);
+
+function show(posX: number, posY: number) {
+  x.value = posX;
+  y.value = posY;
+  visible.value = true;
 }
 
 function hide() {
-    visible.value = false
+  visible.value = false;
 }
 
-function handleSelect(item) {
-    hide()
-    emit('select', item)
+function handleSelect(item: MenuItem) {
+  hide();
+  emit('select', item);
 }
 
-// 关闭菜单的全局点击监听
 function onDocumentClick() {
-    hide()
+  hide();
 }
 
 onMounted(() => {
-    document.addEventListener('click', onDocumentClick)
-})
-onBeforeUnmount(() => {
-    document.removeEventListener('click', onDocumentClick)
-})
+  document.addEventListener('click', onDocumentClick);
+});
 
-defineExpose({ show, hide })
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocumentClick);
+});
+
+defineExpose({ show, hide });
 </script>
 
 <style scoped>

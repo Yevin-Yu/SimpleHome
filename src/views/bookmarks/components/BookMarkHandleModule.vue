@@ -22,9 +22,7 @@
                 <sh-button @click="closeDialog" size="small">
                     {{ currentAction === 'edit' ? '关闭' : '取消' }}
                 </sh-button>
-                <sh-button v-if="currentAction !== 'edit'" @click="confirm" size="small">
-                    确认
-                </sh-button>
+                <sh-button v-if="currentAction !== 'edit'" @click="confirm" size="small"> 确认 </sh-button>
             </div>
         </sh-dialog>
     </Transition>
@@ -39,108 +37,113 @@ import shInput from '@/components/sh-input.vue'
 import shButton from '@/components/sh-button.vue'
 import { useBookmarksStore } from '@/stores/useBookmarksStore'
 
-/* ---------- Type ---------- */
-interface Bookmark {
-    id: number,
-    title: string,
-    url?: string,
-    type: string,
-    children?: Bookmark[]
+import type { Bookmark } from "@/types";
+
+interface MenuItem {
+    label: string;
+    action: string;
 }
-/* ---------- Store ---------- */
+
+const bookmarksStore = useBookmarksStore();
 const {
     deleteBookmarkById,
     addBookmarkByIdInCurrentNode,
     addBookmarkByIdInCurrentFolder,
-} = useBookmarksStore()
-const { bookmarks } = storeToRefs(useBookmarksStore())
-/* ---------- 常量 ---------- */
-const baseMenu = [
+} = bookmarksStore;
+const { bookmarks } = storeToRefs(bookmarksStore);
+
+const baseMenu: MenuItem[] = [
     { label: '编辑', action: 'edit' },
     { label: '删除', action: 'del' },
     { label: '新增书签', action: 'new-bookmark' },
     { label: '新增文件夹', action: 'new-folder' },
-]
-const extraMenu = [
+];
+
+const extraMenu: MenuItem[] = [
     { label: '新增下级书签', action: 'new-bookmark-next' },
     { label: '新增下级文件夹', action: 'new-folder-next' },
-]
-/* ---------- 响应式状态 ---------- */
-const menu = ref<InstanceType<typeof shMenu> | null>(null)
-const menuItems = ref(baseMenu)
-const dialogVisible = ref(false)
-const dialogTitle = ref('编辑书签')
-const currentAction = ref<string>('')
+];
 
-const currentItem = ref<Bookmark>()
-const form = ref({ title: '', url: '' })
+const menu = ref<InstanceType<typeof shMenu> | null>(null);
+const menuItems = ref<MenuItem[]>(baseMenu);
+const dialogVisible = ref(false);
+const dialogTitle = ref('编辑书签');
+const currentAction = ref<string>('');
+const currentItem = ref<Bookmark>();
+const form = ref({ title: '', url: '' });
 
-/* ---------- 计算属性 ---------- */
-const isFolder = computed(() => currentItem.value?.type === 'folder')
-const needsUrl = computed(() => currentAction.value.includes('bookmark'))
+const isFolder = computed(() => currentItem.value?.type === 'folder');
+const needsUrl = computed(() => currentAction.value.includes('bookmark'));
 const formLabel = computed(() => {
-    if (currentAction.value.includes('folder')) return '文件夹名称'
-    return '书签名称'
-})
-/* ---------- 业务函数 ---------- */
-function onContextMenu(e: MouseEvent, item: any, items: any[]) {
-    menuItems.value = item.type === 'folder' ? [...baseMenu, ...extraMenu] : baseMenu
-    menu.value?.show(e.clientX, e.clientY)
-    currentItem.value = item
+    return currentAction.value.includes('folder') ? '文件夹名称' : '书签名称';
+});
+function onContextMenu(e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]) {
+    menuItems.value = item.type === 'folder' ? [...baseMenu, ...extraMenu] : baseMenu;
+    menu.value?.show(e.clientX, e.clientY);
+    currentItem.value = item;
 }
-function onMenuSelect(selected: { action: string }) {
-    currentAction.value = selected.action
-    if (!currentItem.value) return
+
+function onMenuSelect(selected: { label: string; action?: string; [key: string]: any }) {
+    if (!selected.action || !currentItem.value) return;
+    currentAction.value = selected.action;
+
     switch (selected.action) {
         case 'edit':
-            openEditDialog()
-            break
+            openEditDialog();
+            break;
         case 'del':
-            deleteBookmarkById(currentItem.value.id, bookmarks.value)
-            break
+            deleteBookmarkById(currentItem.value.id, bookmarks.value);
+            break;
         case 'new-bookmark':
         case 'new-folder':
         case 'new-bookmark-next':
         case 'new-folder-next':
-            openAddDialog()
-            break
+            openAddDialog();
+            break;
     }
 }
-/* ---- 对话框相关 ---- */
+
 function openEditDialog() {
-    dialogTitle.value = isFolder.value ? '编辑文件夹' : '编辑书签'
-    dialogVisible.value = true
+    dialogTitle.value = isFolder.value ? '编辑文件夹' : '编辑书签';
+    dialogVisible.value = true;
 }
+
 function openAddDialog() {
-    const map: Record<string, string> = {
+    const titleMap: Record<string, string> = {
         'new-bookmark': '新增书签',
         'new-folder': '新增文件夹',
         'new-bookmark-next': '新增下级书签',
         'new-folder-next': '新增下级文件夹',
-    }
-    dialogTitle.value = map[currentAction.value] ?? '新增'
-    // 重置表单
-    form.value = { title: '', url: '' }
-    dialogVisible.value = true
+    };
+    dialogTitle.value = titleMap[currentAction.value] ?? '新增';
+    form.value = { title: '', url: '' };
+    dialogVisible.value = true;
 }
+
 function closeDialog() {
-    dialogVisible.value = false
+    dialogVisible.value = false;
 }
 /* ---- 确认提交 ---- */
 function confirm() {
-    const node: any = {
-        id: crypto.randomUUID(),
-        title: form.value.title,
+    if (!form.value.title.trim() || !currentItem.value) return;
+
+    const node: Bookmark = {
+        id: Date.now(),
+        title: form.value.title.trim(),
         type: currentAction.value.includes('folder') ? 'folder' : 'bookmark',
+    };
+
+    if (needsUrl.value && form.value.url) {
+        node.url = form.value.url.trim();
     }
-    if (needsUrl.value) node.url = form.value.url
-    if (!currentItem.value) return
+
     if (currentAction.value.includes('next')) {
-        addBookmarkByIdInCurrentFolder(currentItem.value.id, node, bookmarks.value)
+        addBookmarkByIdInCurrentFolder(currentItem.value.id, node, bookmarks.value);
     } else {
-        addBookmarkByIdInCurrentNode(currentItem.value.id, node, bookmarks.value)
+        addBookmarkByIdInCurrentNode(currentItem.value.id, node, bookmarks.value);
     }
-    closeDialog()
+
+    closeDialog();
 }
 /* ---------- 暴露给父组件 ---------- */
 defineExpose({ onContextMenu })

@@ -1,10 +1,9 @@
 <template>
-    <!-- Simple Home 主页 -->
     <div class="simple-home">
         <div class="header">
             <sh-button @click="settingHandler">耶温</sh-button>
         </div>
-        <div class="logo ">
+        <div class="logo">
             <h1>Simple Home</h1>
         </div>
         <div class="search">
@@ -13,7 +12,6 @@
         </div>
         <div class="footer"></div>
     </div>
-    <!-- 加载设置&书签模块 -->
     <Transition name="fade">
         <SettingsModule ref="settingRef" />
     </Transition>
@@ -24,36 +22,39 @@
         <AsideBookmarkModule v-if="showMode === 'file'" ref="asideBookmarkRef" />
     </Transition>
 </template>
-<script setup>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { storeToRefs } from "pinia";
 import shButton from "@/components/sh-button.vue";
 import SettingsModule from "@/views/components/SettingsModule.vue";
 import BookmarkModule from "@/views/components/BookmarkModule.vue";
 import AsideBookmarkModule from "@/views/components/AsideBookmarkModule.vue";
 import SearchHistoryModule from "@/views/components/SearchHistoryModule.vue";
-import { ref } from "vue";
-import { storeToRefs } from "pinia";
-
-// 搜索跳转
 import { useSearchStore } from "@/stores/useSearchStore";
-const { searchJump } = useSearchStore()
-const searchKey = ref("");
-const onSearchHandler = (key) => {
-    searchJump({ title: key, type: 'search' })
-    searchKey.value = "";
-};
-
-// 打开设置模块
-const settingRef = ref(null);
-const settingHandler = (e) => {
-    e.stopPropagation();
-    settingRef.value.isShow = !settingRef.value.isShow;
-};
-
-// 书签展示模式
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
-const bookmarksStore = useBookmarksStore()
-const { showMode } = storeToRefs(bookmarksStore)
+import type { SearchHistoryItem } from "@/types";
 
+const searchStore = useSearchStore();
+const { searchJump } = searchStore;
+const searchKey = ref("");
+
+const onSearchHandler = (key: string) => {
+  if (!key.trim()) return;
+  searchJump({ title: key, type: 'search' } as SearchHistoryItem);
+  searchKey.value = "";
+};
+
+const settingRef = ref<InstanceType<typeof SettingsModule> | null>(null);
+const settingHandler = (e: MouseEvent) => {
+  e.stopPropagation();
+  if (settingRef.value) {
+    settingRef.value.isShow = !settingRef.value.isShow;
+  }
+};
+
+const bookmarksStore = useBookmarksStore();
+const { showMode } = storeToRefs(bookmarksStore);
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

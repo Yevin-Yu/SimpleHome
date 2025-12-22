@@ -1,31 +1,26 @@
 <template>
-    <input type="text" :value="modelValue" class="sh-input" :placeholder="placeholder" :class="size"
-        @input="(e) => emit('update:modelValue', e.target.value)">
+    <input type="text" :value="modelValue" class="sh-input" :placeholder="placeholder" :class="size" @input="handleInput" />
 </template>
-<script setup>
-import { watch } from 'vue'
-// 接收size
-const props = defineProps({
-    size: {
-        type: String,
-        default: 'medium'
-    },
-    placeholder: {
-        type: String,
-        default: ''
-    }
-    ,
-    modelValue: {
-        type: String,
-        default: ''
-    }
-})
-// 定义事件
-const emit = defineEmits(['update:modelValue'])
-// 监听modelValue变化
-watch(() => props.modelValue, (newValue) => {
-    emit('update:modelValue', newValue)
-})
+
+<script setup lang="ts">
+withDefaults(defineProps<{
+    size?: 'small' | 'medium' | 'large';
+    placeholder?: string;
+    modelValue?: string;
+}>(), {
+    size: 'medium',
+    placeholder: '',
+    modelValue: ''
+});
+
+const emit = defineEmits<{
+  'update:modelValue': [value: string];
+}>();
+
+const handleInput = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  emit('update:modelValue', target.value);
+};
 </script>
 <style scoped lang="less">
 .sh-input {

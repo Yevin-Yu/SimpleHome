@@ -4,8 +4,7 @@
         <div class="current-bookmarks">
             <h3>当前书签 [右击可以新增、删除、编辑]</h3>
             <div class="bookmarks-tree">
-                <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title" :item="child"
-                    :items="bookmarks" />
+                <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title" :item="child" :items="bookmarks" />
                 <!-- 上下文菜单模块 -->
                 <BookMarkHandleModule ref="bookMarkHandleModule" />
             </div>
@@ -13,14 +12,13 @@
         <!-- 上传书签部分 -->
         <div class="upload-bookmarks">
             <div class="left-upload">
-                <div class="upload-area" @click="triggerFileInput" @dragover="handleDragOver"
-                    @dragleave="handleDragLeave" @drop="handleDrop">
+                <div class="upload-area" @click="triggerFileInput" @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop">
                     <div class="upload-icon">{{ currentFile ? '✅' : '📁' }}</div>
                     <p class="upload-text">
                         {{ currentFile ? `已选择文件: ${currentFile.name}` : '点击或拖拽文件到此处上传' }}
                     </p>
                     <p class="upload-hint">支持Chrome和Edge浏览器导出的书签HTML文件</p>
-                    <input type="file" ref="fileInput" class="file-input" accept=".html" @change="handleFileChange">
+                    <input type="file" ref="fileInput" class="file-input" accept=".html" @change="handleFileChange" />
                 </div>
             </div>
             <div class="right-button">
@@ -50,39 +48,42 @@
         </div>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import shTree from "@/components/sh-tree.vue";
 import shButton from "@/components/sh-button.vue";
 import BookMarkHandleModule from "./components/BookMarkHandleModule.vue";
-// 修改网页标题
-import { onMounted, ref } from "vue";
-import { storeToRefs } from "pinia";
+import { useBookmarksStore } from "@/stores/useBookmarksStore";
+import { useBookmarkParser } from '@/hooks/useBookmarkParser';
+import { useUploadFile } from '@/hooks/useUploadFile';
+import type { Bookmark } from "@/types";
+
 onMounted(() => {
-    document.title = "书签管理 - SimpleHome";
+  document.title = "书签管理 - SimpleHome";
 });
-// 书签存储操作
-import { useBookmarksStore } from "@/stores/useBookmarksStore"
-const { setBookmarks } = useBookmarksStore()
-const { bookmarks } = storeToRefs(useBookmarksStore())
-// 书签解析器
-import { useBookmarkParser } from '@/Hooks/useBookmarkParser'
-const { bookmarksData, bookmarkParser } = useBookmarkParser()
-// 上传文件
-const fileInput = ref(null)
-import { useUploadFile } from '@/Hooks/useUploadFile'
+
+const bookmarksStore = useBookmarksStore();
+const { setBookmarks } = bookmarksStore;
+const { bookmarks } = storeToRefs(bookmarksStore);
+
+const { bookmarksData, bookmarkParser } = useBookmarkParser();
+
+const fileInput = ref<HTMLInputElement | null>(null);
 const {
-    currentFile,
-    triggerFileInput,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-    handleFileChange
-} = useUploadFile(fileInput)
-// 上下文菜单
-const bookMarkHandleModule = ref(null)
-const onContextMenu = (e, item, items) => {
-    bookMarkHandleModule.value.onContextMenu(e, item, items)
-}
+  currentFile,
+  triggerFileInput,
+  handleDragOver,
+  handleDragLeave,
+  handleDrop,
+  handleFileChange
+} = useUploadFile(fileInput);
+
+const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | null>(null);
+
+const onContextMenu = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]) => {
+  bookMarkHandleModule.value?.onContextMenu(e, item, items);
+};
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

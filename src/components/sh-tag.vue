@@ -3,15 +3,13 @@
         <slot></slot>
     </div>
 </template>
-<script setup>
-// 接收size
-defineProps({
-    size: {
-        type: String,
-        default: 'medium'
-    }
-})
 
+<script setup lang="ts">
+withDefaults(defineProps<{
+    size?: 'small' | 'medium' | 'large';
+}>(), {
+    size: 'medium'
+});
 </script>
 <style scoped lang="less">
 .sh-tag {

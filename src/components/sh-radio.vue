@@ -4,33 +4,33 @@
         <span>{{ label }}</span>
     </label>
 </template>
-<script setup>
-import { toRefs } from "vue";
-const props = defineProps({
-    label: {
-        type: String,
-        default: ""
-    },
-    value: {
-        type: String,
-        default: ""
-    },
-    modelValue: {
-        type: String,
-        default: ""
-    },
-    size: {
-        type: String,
-        default: 'medium'
-    }
-})
 
-const emit = defineEmits(["update:modelValue"]);
+<script setup lang="ts">
+import { toRefs } from "vue";
+
+interface Props {
+  label?: string;
+  value: string;
+  modelValue: string;
+  size?: 'small' | 'medium' | 'large';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  label: "",
+  value: "",
+  modelValue: "",
+  size: 'medium'
+});
+
+const emit = defineEmits<{
+  "update:modelValue": [value: string];
+}>();
+
 const { value } = toRefs(props);
 
 const handleClick = () => {
-    emit("update:modelValue", value.value);
-}
+  emit("update:modelValue", value.value);
+};
 </script>
 <style scoped lang="less">
 .sh-radio {

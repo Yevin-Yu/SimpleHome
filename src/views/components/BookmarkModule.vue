@@ -1,32 +1,42 @@
 <template>
     <div v-if="isShowBookmark" class="bookmark-module" ref="bookmarkRef">
         <div class="bookmarks">
-            <sh-tag @click="searchJump(item)" v-for="item in flatBookmarks" :key="item.id">
+            <sh-tag @click="handleBookmarkClick(item)" v-for="item in flatBookmarks" :key="item.id">
                 <span class="icon">🏷️</span>
                 {{ item.title }}
             </sh-tag>
         </div>
     </div>
 </template>
-<script setup>
+
+<script setup lang="ts">
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import shTag from "@/components/sh-tag.vue";
-
-// 加载书签
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
+import { useSearchStore } from "@/stores/useSearchStore";
+import { useEventHandler } from "@/hooks/useEventHandler";
+import type { Bookmark, SearchHistoryItem } from "@/types";
+
 const bookmarksStore = useBookmarksStore();
 const { flatBookmarks } = storeToRefs(bookmarksStore);
 
-// 跳转书签
-import { useSearchStore } from "@/stores/useSearchStore";
 const searchStore = useSearchStore();
 const { searchJump } = searchStore;
 
-// 快捷书签展示
-const bookmarkRef = ref(null);
-import { useEventHandler } from "@/Hooks/useEventHandler";
-const { isShowBookmark } = useEventHandler(bookmarkRef); 
+const bookmarkRef = ref<HTMLElement | null>(null);
+const { isShowBookmark } = useEventHandler(bookmarkRef);
+
+const handleBookmarkClick = (item: Bookmark) => {
+    if (item.type === 'bookmark' && item.url) {
+        searchJump({
+            id: typeof item.id === 'number' ? item.id : Date.now(),
+            title: item.title,
+            type: 'bookmark',
+            url: item.url
+        } as SearchHistoryItem);
+    }
+};
 </script>
 <style scoped>
 .bookmark-module {
