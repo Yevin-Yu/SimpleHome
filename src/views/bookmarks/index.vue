@@ -4,7 +4,18 @@
         <div class="current-bookmarks">
             <h3>当前书签 [右击可以新增、删除、编辑]</h3>
             <div class="bookmarks-tree">
-                <sh-tree @onContextMenu="onContextMenu" v-for="child in bookmarks" :key="child.title" :item="child" :items="bookmarks" />
+                <sh-tree 
+                    @onContextMenu="onContextMenu" 
+                    @onDragStart="onDragStart"
+                    @onDragOver="onDragOver"
+                    @onDragEnter="onDragEnter"
+                    @onDragLeave="onDragLeave"
+                    @onDrop="onDrop"
+                    @onDragEnd="onDragEnd"
+                    v-for="child in bookmarks" 
+                    :key="child.title" 
+                    :item="child" 
+                    :items="bookmarks" />
                 <!-- 上下文菜单模块 -->
                 <BookMarkHandleModule ref="bookMarkHandleModule" />
             </div>
@@ -84,6 +95,14 @@ const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | nul
 const onContextMenu = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]) => {
   bookMarkHandleModule.value?.onContextMenu(e, item, items);
 };
+
+// 拖拽事件处理（事件会冒泡，这里只是占位，实际处理在 sh-tree 组件中）
+const onDragStart = () => {};
+const onDragOver = () => {};
+const onDragEnter = () => {};
+const onDragLeave = () => {};
+const onDrop = () => {};
+const onDragEnd = () => {};
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

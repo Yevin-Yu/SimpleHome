@@ -19,10 +19,10 @@
             </div>
 
             <div class="dialog-btn">
-                <sh-button @click="closeDialog" size="small">
-                    {{ currentAction === 'edit' ? '关闭' : '取消' }}
+                <sh-button @click="closeDialog" size="small">取消</sh-button>
+                <sh-button @click="confirm" size="small">
+                    {{ currentAction === 'edit' ? '保存' : '确认' }}
                 </sh-button>
-                <sh-button v-if="currentAction !== 'edit'" @click="confirm" size="small"> 确认 </sh-button>
             </div>
         </sh-dialog>
     </Transition>
@@ -49,6 +49,7 @@ const {
     deleteBookmarkById,
     addBookmarkByIdInCurrentNode,
     addBookmarkByIdInCurrentFolder,
+    updateBookmarkById,
 } = bookmarksStore;
 const { bookmarks } = storeToRefs(bookmarksStore);
 
@@ -125,22 +126,41 @@ function closeDialog() {
 }
 /* ---- 确认提交 ---- */
 function confirm() {
-    if (!form.value.title.trim() || !currentItem.value) return;
-
-    const node: Bookmark = {
-        id: Date.now(),
-        title: form.value.title.trim(),
-        type: currentAction.value.includes('folder') ? 'folder' : 'bookmark',
-    };
-
-    if (needsUrl.value && form.value.url) {
-        node.url = form.value.url.trim();
-    }
-
-    if (currentAction.value.includes('next')) {
-        addBookmarkByIdInCurrentFolder(currentItem.value.id, node, bookmarks.value);
+    if (currentAction.value === 'edit') {
+        // 编辑模式：通过 ID 找到原始对象并更新
+        if (!currentItem.value) return;
+        // 确保标题不为空
+        if (!currentItem.value.title?.trim()) {
+            return;
+        }
+        // 如果是书签，确保 URL 不为空
+        if (currentItem.value.type === 'bookmark' && !currentItem.value.url?.trim()) {
+            return;
+        }
+        // 通过 ID 更新原始 bookmarks 中的对象
+        updateBookmarkById(currentItem.value.id, {
+            title: currentItem.value.title.trim(),
+            url: currentItem.value.type === 'bookmark' ? currentItem.value.url?.trim() : undefined,
+        });
     } else {
-        addBookmarkByIdInCurrentNode(currentItem.value.id, node, bookmarks.value);
+        // 新增模式
+        if (!form.value.title.trim() || !currentItem.value) return;
+
+        const node: Bookmark = {
+            id: Date.now(),
+            title: form.value.title.trim(),
+            type: currentAction.value.includes('folder') ? 'folder' : 'bookmark',
+        };
+
+        if (needsUrl.value && form.value.url) {
+            node.url = form.value.url.trim();
+        }
+
+        if (currentAction.value.includes('next')) {
+            addBookmarkByIdInCurrentFolder(currentItem.value.id, node, bookmarks.value);
+        } else {
+            addBookmarkByIdInCurrentNode(currentItem.value.id, node, bookmarks.value);
+        }
     }
 
     closeDialog();
