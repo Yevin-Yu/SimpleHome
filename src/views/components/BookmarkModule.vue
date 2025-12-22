@@ -62,9 +62,20 @@ const onContextMenu = (event: MouseEvent, item: Bookmark): void => {
     padding: 12px;
     border-radius: 2px;
     transform: translate(-50%, -50%);
-    background-color: var(--default-bgColor);
+    background: var(--home-gradient);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color), inset 2px 2px 0px var(--shadow-color);
+    overflow: hidden;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--panel-tint);
+        backdrop-filter: blur(10px);
+    }
 
 }
 

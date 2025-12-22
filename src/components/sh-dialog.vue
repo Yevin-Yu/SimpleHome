@@ -24,7 +24,7 @@ withDefaults(defineProps<{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--default-bgColor);
+    background: var(--home-gradient);
     border: 2px solid var(--shadow-color);
     padding: 4px;
     box-shadow: 3px 3px 0px var(--shadow-color);
@@ -32,6 +32,17 @@ withDefaults(defineProps<{
     border-radius: 2px;
     min-height: 200px;
     z-index: 9999;
+    overflow: hidden;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--panel-tint);
+        backdrop-filter: blur(8px);
+    }
 }
 
 .sh-dialog .header {

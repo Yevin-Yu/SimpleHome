@@ -7,6 +7,9 @@
     --border-color: #ccd6eb;
     --theme-color-text: #ea4262;
     --shadow-color: #e1e9f6;
+    --home-gradient: radial-gradient(120% 120% at 20% 20%, rgba(193, 67, 67, 0.16), transparent 55%), radial-gradient(140% 140% at 85% 10%, rgba(234, 66, 98, 0.12), transparent 52%), linear-gradient(135deg, #f8fbff 0%, #ecf2ff 100%);
+    --home-grid-color: rgba(49, 78, 116, 0.06);
+    --panel-tint: rgba(255, 255, 255, 0.72);
     /* sh-button */
     --sh-button-color: #030101;
     --sh-button-bg-color: var(--default-color);
@@ -42,6 +45,9 @@
     --text-color: #fefefe;
     --border-color: #283344;
     --shadow-color: #0b0f13;
+    --home-gradient: radial-gradient(120% 120% at 20% 20%, rgba(101, 33, 32, 0.35), transparent 55%), radial-gradient(140% 140% at 80% 0%, rgba(234, 66, 98, 0.18), transparent 52%), linear-gradient(145deg, #0f131a 0%, #1b2330 100%);
+    --home-grid-color: rgba(255, 255, 255, 0.04);
+    --panel-tint: rgba(15, 19, 26, 0.78);
     /* sh-button */
     --sh-button-color: #070202;
     --sh-button-shadow-color: #0b0f13;

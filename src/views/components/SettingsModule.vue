@@ -101,10 +101,21 @@ defineExpose({
     top: 64px;
     right: 14px;
     border-radius: 2px;
-    background-color: var(--default-bgColor);
+    background: var(--home-gradient);
     border: 2px solid var(--default-color);
     padding: 6px;
     box-shadow: 2px 2px 0px var(--shadow-color);
+    overflow: hidden;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--panel-tint);
+        backdrop-filter: blur(10px);
+    }
 
     .container {
         width: 100%;

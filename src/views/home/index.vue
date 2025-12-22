@@ -63,6 +63,21 @@ const settingHandler = (e: MouseEvent): void => {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
+    isolation: isolate;
+    background: var(--home-gradient);
+    color: var(--text-color);
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background-image: linear-gradient(90deg, var(--home-grid-color) 1px, transparent 1px), linear-gradient(0deg, var(--home-grid-color) 1px, transparent 1px);
+        background-size: 100px 100px;
+        opacity: 0.6;
+        pointer-events: none;
+    }
 
     .header {
         height: 60px;
