@@ -1,82 +1,105 @@
-
 # SimpleHome 🌐
 
-> 简洁、安全、快速 的浏览器导航页。
-> [Github - Simple Home](https://github.com/Yevin-Yu/SimpleHome)
+> 简洁、安全、快速的浏览器导航页 - 您的专属新标签页
 
-> [!NOTE] 声明
-> 不上传，不收集任何个人信息。开源，透明，支持个人部署。
+![Version](https://img.shields.io/badge/version-6.0.4-blue.svg)
+![Vue](https://img.shields.io/badge/Vue-3.4.29-4FC08D?logo=vue.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-可以借助 `New Tab Redirect`  优化，新打开的Tabs为本主页。
+## ✨ 特性
 
-![Image](_image/image_1764299778913.png)
+- 🔒 **隐私安全** - 不上传、不收集任何个人信息，所有数据存储在本地
+- 🎨 **主题切换** - 支持浅色、深色主题，以及自动跟随系统主题
+- 🔍 **智能搜索** - 支持多个搜索引擎（Bing、Google、Baidu、DuckDuckGo、Yahoo、Yandex）
+- 🔗 **URL 识别** - 自动识别输入内容，URL 直接跳转，文本进行搜索
+- 📚 **书签管理** - 支持树状结构和平铺两种显示模式
+- 📥 **书签导入** - 支持导入 Google Chrome 和 Microsoft Edge 浏览器书签
+- 📝 **搜索历史** - 自动保存搜索记录，最多保存 20 条，支持快速搜索和删除
+- 💾 **配置导出** - 支持配置导入导出，轻松备份和迁移
+- 🚀 **快速轻量** - 基于 Vue 3 + Vite 构建，快速响应
+- 🌐 **开源透明** - 完全开源，代码可审查，支持个人部署
 
-## 搜索功能 
+## 🚀 快速开始
 
-1. 搜索框输入，回车搜索。默认 `Bing` 搜索，也可以设置为 `Google` 搜索。
+### 环境要求
 
-   - 搜索跳转时，会进行判定，如果输入内容为 URL，会直接跳转。
-   - 如果输入内容为普通文本，会根据设置，跳转为 `Bing` 或 `Google` 搜索。
-   - 搜索记录会保存到本地，最多保存20条。
-2. 搜索记录可以点击搜索。同时也会判断是否为 URL，如果是 URL，会直接跳转。
+- Node.js >= 18.x
+- npm 或 yarn 或 pnpm
 
-![Image](_image/image_1764299793239.png)
+### 安装
 
-## 搜索记录
+```bash
+# 克隆仓库
+git clone https://github.com/Yevin-Yu/SimpleHome.git
 
-1. 搜索框搜索内容与点击书签跳转，都会添加到搜索记录中。
+# 进入项目目录
+cd SimpleHome
 
-   - 搜索记录去重后最多保存20条。
-   - 最新搜索记录会显示在列表的最前面。
-   - 右击搜索记录可以删除单条记录和清空所有搜索记录。
-2. 点击搜索记录，会根据记录内容，判断是否为 URL，如果是 URL，会直接跳转。如果不是 URL，会根据设置，跳转为 `Bing` 或 `Google` 搜索。
+# 安装依赖
+npm install
+```
 
-![Image](_image/image_1764299810377.png)
+### 开发
 
-## 设置功能
+```bash
+# 启动开发服务器
+npm run dev
+```
 
-1. 推荐应用：点击推荐应用，会直接跳转。
-   
-![Image](_image/image_1764299858176.png)
+### 构建
 
-2. 设置功能：
+```bash
+# 构建生产版本
+npm run build
 
-   - 主题设置：可以设置为浅色或深色主题。也可以自动根据系统主题切换。
-   - 搜索引擎：可以设置为 `Bing` 或 `Google` 搜索。
-   - 书签设置：
-     - 可以设置为树状结构或平铺模式。
-     - 可以导入 Google 和 Edge 浏览器的书签文件。
+# 预览生产构建
+npm run preview
+```
 
-深色主题：
 
-![Image](_image/image_1764299873587.png)
 
-平铺模式：
-![Image](_image/image_1764299895779.png)
+### 浏览器集成
 
-树状结构：
-![Image](_image/image_1764299950019.png)
+推荐使用浏览器扩展 **New Tab Redirect** 将 SimpleHome 设置为浏览器的新标签页。
 
-## 导入设置
+## 🛠️ 技术栈
 
-1. 可以在该页面修改书签页，可以新增、删除、编辑。
-   
-![Image](_image/image_1764299995415.png)
+- **框架**: Vue 3 (Composition API)
+- **语言**: TypeScript
+- **构建工具**: Vite
+- **状态管理**: Pinia
+- **路由**: Vue Router
+- **UI 组件**: Element Plus
+- **样式**: Less
+- **其他**:
+  - `pinia-plugin-persistedstate` - 状态持久化
+  - `sortablejs` - 拖拽排序
+  - `js-cookie` - Cookie 管理
 
-2. 支持导入 `Google` 或者 `Edge` 浏览器导出的 `html` 书签文件。
-   
-![Image](_image/image_1764300011744.png)
 
-## 后续功能
+## 📝 许可证
 
-- 添加 导入设置 中 书签拖拽排序 功能；
-- 添加 搜索主页 中 平铺书签 中 书签的 删除、编辑 功能；
-- 添加 搜索主页 中 文件书签 中 书签的 新增、修改、编辑 功能；
-- 添加 单独跳转的 笔记记录 功能；
+本项目采用 MIT 许可证。
 
-## ## 反馈支持
+## 💬 反馈与支持
 
-如果你在使用过程中遇到问题或有任何建议，请通过以下方式与我们联系：
+如果您在使用过程中遇到问题或有任何建议，欢迎通过以下方式联系：
 
-- GitHub: [Yevin-Yu](https://github.com/Yevin-Yu)
-- 邮箱: [yuwb0521@yeah.net](mailto:yuwb0521@yeah.net)
+- 🐛 **问题反馈**: [GitHub Issues](https://github.com/Yevin-Yu/SimpleHome/issues)
+- 📧 **邮箱**: [yuwb0521@yeah.net](mailto:yuwb0521@yeah.net)
+- 👤 **作者**: [Yevin-Yu](https://github.com/Yevin-Yu)
+
+## ⚠️ 重要声明
+
+> **隐私承诺**: 本项目完全开源，所有数据存储在您的浏览器本地，不会上传或收集任何个人信息。代码透明可审查，支持个人部署和使用。
+
+---
+
+<div align="center">
+
+**如果这个项目对您有帮助，欢迎 Star ⭐**
+
+Made with ❤️ by [Yevin-Yu](https://github.com/Yevin-Yu)
+
+</div>
