@@ -69,7 +69,7 @@ const onDragEnd = (): void => {};
     width: 280px;
     height: calc(100% - 24px);
     border-radius: 2px;
-    background-color: var(--default-bgColor);
+    background: var(--home-gradient);
     border: 2px solid var(--default-color);
     padding: 12px;
     box-shadow: 2px 2px 0px var(--shadow-color);
@@ -77,6 +77,18 @@ const onDragEnd = (): void => {};
     overflow-y: auto;
     scrollbar-width: none;
     user-select: none;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--panel-tint);
+        backdrop-filter: blur(10px);
+        border-radius: 2px;
+        pointer-events: none;
+    }
 }
 
 .aside-bookmark-module.show {
