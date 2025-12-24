@@ -81,26 +81,26 @@ export const useEventHandler = (bookmarkRef: Ref<HTMLElement | null>) => {
         }
     };
 
-    const keydownOptions = { passive: false };
-    const mouseOptions = { passive: true };
-    const touchOptions = { passive: true };
+    const keydownOptions: AddEventListenerOptions = { passive: false };
+    const mouseOptions: AddEventListenerOptions = { passive: true };
+    const touchOptions: AddEventListenerOptions = { passive: true };
 
     onMounted(() => {
-        window.addEventListener("keydown", onKeyDown, keydownOptions);
-        window.addEventListener("mousedown", onMouseDown, mouseOptions);
-        window.addEventListener("mousemove", onMouseMove, mouseOptions);
-        window.addEventListener("mouseup", onMouseUp, mouseOptions);
-        window.addEventListener("touchstart", onTouchStart, touchOptions);
-        window.addEventListener("touchmove", onTouchMove, touchOptions);
+        window.addEventListener("keydown", onKeyDown as EventListener, keydownOptions);
+        window.addEventListener("mousedown", onMouseDown as EventListener, mouseOptions);
+        window.addEventListener("mousemove", onMouseMove as EventListener, mouseOptions);
+        window.addEventListener("mouseup", onMouseUp as EventListener, mouseOptions);
+        window.addEventListener("touchstart", onTouchStart as EventListener, touchOptions);
+        window.addEventListener("touchmove", onTouchMove as EventListener, touchOptions);
     });
 
     onBeforeUnmount(() => {
-        window.removeEventListener("keydown", onKeyDown, keydownOptions);
-        window.removeEventListener("mousedown", onMouseDown, mouseOptions);
-        window.removeEventListener("mousemove", onMouseMove, mouseOptions);
-        window.removeEventListener("mouseup", onMouseUp, mouseOptions);
-        window.removeEventListener("touchstart", onTouchStart, touchOptions);
-        window.removeEventListener("touchmove", onTouchMove, touchOptions);
+        window.removeEventListener("keydown", onKeyDown as EventListener, keydownOptions);
+        window.removeEventListener("mousedown", onMouseDown as EventListener, mouseOptions);
+        window.removeEventListener("mousemove", onMouseMove as EventListener, mouseOptions);
+        window.removeEventListener("mouseup", onMouseUp as EventListener, mouseOptions);
+        window.removeEventListener("touchstart", onTouchStart as EventListener, touchOptions);
+        window.removeEventListener("touchmove", onTouchMove as EventListener, touchOptions);
     });
 
     return {

@@ -18,7 +18,7 @@ import type { SearchHistoryItem } from "@/types";
 
 interface MenuItem {
     label: string;
-    action: string;
+    action?: string;
 }
 
 const searchStore = useSearchStore();

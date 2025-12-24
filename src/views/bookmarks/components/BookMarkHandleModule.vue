@@ -39,7 +39,7 @@ import type { Bookmark } from "@/types";
 
 interface MenuItem {
     label: string;
-    action: string;
+    action?: string;
 }
 
 const bookmarksStore = useBookmarksStore();

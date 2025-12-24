@@ -27,7 +27,7 @@
         <AsideBookmarkModule v-if="showMode === 'file'" ref="asideBookmarkRef" />
     </Transition>
     <Transition name="modal">
-        <div v-if="hasOpenedOnce && showAISearch" class="ai-search-modal">
+        <div v-show="showAISearch" class="ai-search-modal">
             <button class="ai-close-btn" @click="closeAISearch" title="关闭" aria-label="关闭AI搜索">
                 <span class="close-icon">×</span>
             </button>
@@ -64,7 +64,6 @@ const { showMode } = storeToRefs(bookmarksStore);
 const searchKey = ref("");
 const settingRef = ref<InstanceType<typeof SettingsModule> | null>(null);
 const showAISearch = ref(false);
-const hasOpenedOnce = ref(false);
 
 const aiChatUrl = computed(() => AI_CHAT_URL);
 
@@ -82,7 +81,6 @@ const toggleSettings = (e: MouseEvent): void => {
 };
 
 const openAISearch = (): void => {
-    hasOpenedOnce.value = true;
     showAISearch.value = true;
 };
 
@@ -274,11 +272,11 @@ useKeyboard(KEYBOARD_KEYS.ESCAPE, closeAISearch, showAISearch);
 }
 
 .modal-enter-active {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s linear;
 }
 
 .modal-leave-active {
-    transition: all 0.25s cubic-bezier(0.4, 0, 1, 1);
+    transition: all 0.2s linear;
 }
 
 .modal-enter-from {
@@ -293,7 +291,7 @@ useKeyboard(KEYBOARD_KEYS.ESCAPE, closeAISearch, showAISearch);
 
 .modal-enter-active .ai-close-btn,
 .modal-leave-active .ai-close-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s linear;
 }
 
 .modal-enter-from .ai-close-btn {
