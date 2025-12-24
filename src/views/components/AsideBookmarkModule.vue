@@ -1,19 +1,21 @@
 <template>
     <div class="aside-bookmark-module" :class="{ 'show': isShowBookmark }">
-        <sh-tree
-            v-for="child in bookmarks"
-            :key="child.id"
-            :item="child"
-            :items="bookmarks"
-            @onHandleClick="onHandleClick"
-            @onContextMenu="onContextMenu"
-            @onDragStart="onDragStart"
-            @onDragOver="onDragOver"
-            @onDragEnter="onDragEnter"
-            @onDragLeave="onDragLeave"
-            @onDrop="onDrop"
-            @onDragEnd="onDragEnd" />
-        <BookMarkHandleModule ref="bookMarkHandleModule" />
+        <div class="aside-bookmark-content">
+            <sh-tree
+                v-for="child in bookmarks"
+                :key="child.id"
+                :item="child"
+                :items="bookmarks"
+                @onHandleClick="onHandleClick"
+                @onContextMenu="onContextMenu"
+                @onDragStart="onDragStart"
+                @onDragOver="onDragOver"
+                @onDragEnter="onDragEnter"
+                @onDragLeave="onDragLeave"
+                @onDrop="onDrop"
+                @onDragEnd="onDragEnd" />
+            <BookMarkHandleModule ref="bookMarkHandleModule" />
+        </div>
     </div>
 </template>
 
@@ -71,11 +73,9 @@ const onDragEnd = (): void => {};
     border-radius: 2px;
     background: var(--home-gradient);
     border: 2px solid var(--default-color);
-    padding: 12px;
     box-shadow: 2px 2px 0px var(--shadow-color);
     transition: all 0.5s ease-in-out;
-    overflow-y: auto;
-    scrollbar-width: none;
+    overflow: hidden;
     user-select: none;
     isolation: isolate;
 
@@ -83,11 +83,22 @@ const onDragEnd = (): void => {};
         content: "";
         position: absolute;
         inset: 0;
-        z-index: -1;
+        z-index: 0;
         background: var(--panel-tint);
         backdrop-filter: blur(10px);
         border-radius: 2px;
         pointer-events: none;
+    }
+
+    .aside-bookmark-content {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        padding: 12px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
     }
 }
 
