@@ -22,7 +22,6 @@ withDefaults(defineProps<{
     padding: 6px 16px;
     color: var(--sh-tag-color);
     background-color: var(--sh-tag-bg-color);
-    font-size: 12px;
     box-shadow: 0 2px 0px var(--shadow-color);
     transition: 0.2s;
     user-select: none;

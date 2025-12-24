@@ -6,14 +6,8 @@
             <div class="bookmarks-tree">
                 <sh-tree 
                     @onContextMenu="onContextMenu" 
-                    @onDragStart="onDragStart"
-                    @onDragOver="onDragOver"
-                    @onDragEnter="onDragEnter"
-                    @onDragLeave="onDragLeave"
-                    @onDrop="onDrop"
-                    @onDragEnd="onDragEnd"
                     v-for="child in bookmarks" 
-                    :key="child.title" 
+                    :key="child.id" 
                     :item="child" 
                     :items="bookmarks" />
                 <!-- 上下文菜单模块 -->
@@ -95,13 +89,6 @@ const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | nul
 const onContextMenu = (e: MouseEvent, item: Bookmark): void => {
     bookMarkHandleModule.value?.onContextMenu(e, item);
 };
-
-const onDragStart = (): void => {};
-const onDragOver = (): void => {};
-const onDragEnter = (): void => {};
-const onDragLeave = (): void => {};
-const onDrop = (): void => {};
-const onDragEnd = (): void => {};
 </script>
 <style scoped lang="less">
 @import url("@/styles/animation.css");

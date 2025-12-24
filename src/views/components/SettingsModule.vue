@@ -25,15 +25,15 @@
                     <div class="bookmark-options">
                         <sh-radio v-model="showMode" size="small" value="flat" label="平铺" />
                         <sh-radio v-model="showMode" size="small" value="file" label="文件" />
-                        <shTag @click="handleImportBookmarks" size="small">导入设置</shTag>
+                        <sh-tag @click="handleImportBookmarks" size="small">导入设置</sh-tag>
                     </div>
                     <p class="tips">提示：空格键 与 鼠标左击 上下滑动，可以打开关闭书签</p>
                 </div>
                 <div class="setting-item">
                     <label>配置：</label>
                     <div class="config-options">
-                        <shTag @click="exportConfig" size="small">配置导出</shTag>
-                        <shTag @click="importConfig" size="small">配置导入</shTag>
+                        <sh-tag @click="exportConfig" size="small">配置导出</sh-tag>
+                        <sh-tag @click="importConfig" size="small">配置导入</sh-tag>
                     </div>
                 </div>
             </div>
@@ -121,7 +121,7 @@ defineExpose({
         width: 100%;
         height: 100%;
         border-radius: 4px;
-        box-shadow: 0px 0px px var(--shadow-color);
+        box-shadow: 0px 0px 0px var(--shadow-color);
         overflow-y: auto;
         scrollbar-width: none;
     }

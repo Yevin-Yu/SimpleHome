@@ -25,7 +25,7 @@ import { useEventHandler } from "@/hooks/useEventHandler";
 import type { Bookmark, SearchHistoryItem } from "@/types";
 
 const bookmarksStore = useBookmarksStore();
-const { flatBookmarks, bookmarks } = storeToRefs(bookmarksStore);
+const { flatBookmarks } = storeToRefs(bookmarksStore);
 
 const searchStore = useSearchStore();
 const { searchJump } = searchStore;

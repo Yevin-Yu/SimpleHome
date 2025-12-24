@@ -52,7 +52,7 @@
             tag="div" 
             class="sh-tree-child" 
             :style="{ height: item.open ? `${getChildHeight(item)}px` : '0' }">
-            <shTree 
+            <sh-tree 
                 @onContextMenu="onContextMenu" 
                 @onHandleClick="onHandleClick"
                 @onDragStart="onDragStart"
@@ -98,7 +98,6 @@ const bookmarksStore = useBookmarksStore();
 const { moveBookmark } = bookmarksStore;
 const { bookmarks, dragState } = storeToRefs(bookmarksStore);
 
-// 用于清理定时器
 let moveAnimationTimer: ReturnType<typeof setTimeout> | null = null;
 
 const onContextMenu = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark[]) => {
@@ -110,7 +109,6 @@ const onHandleClick = (e: MouseEvent, item: Bookmark, items: Bookmark | Bookmark
 };
 
 const onFolderClick = (e: MouseEvent, item: Bookmark) => {
-  // 如果正在拖拽，不触发文件夹的展开/折叠
   if (dragState.value.isDragging) {
     e.preventDefault();
     e.stopPropagation();
@@ -120,14 +118,12 @@ const onFolderClick = (e: MouseEvent, item: Bookmark) => {
 };
 
 const onDragStart = (e: DragEvent, item: Bookmark) => {
-  // 立即设置拖拽状态，阻止书签框的打开/关闭
   dragState.value.isDragging = true;
   dragState.value.draggedId = item.id;
   if (e.dataTransfer) {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', String(item.id));
   }
-  // 阻止事件冒泡，避免触发其他事件
   e.stopPropagation();
   emit('onDragStart', e, item);
 };
@@ -152,7 +148,6 @@ const onDragEnter = (e: DragEvent, item: Bookmark) => {
 };
 
 const onDragLeave = (e: DragEvent) => {
-  // 只有当离开到非子元素时才清除
   const target = e.relatedTarget as HTMLElement;
   if (!target || !target.closest('.sh-tree')) {
     dragState.value.dragOverId = null;
@@ -166,48 +161,39 @@ const onDrop = (e: DragEvent, item: Bookmark) => {
     return;
   }
   
-  try {
-    // 确保 bookmarks.value 存在且是数组
-    if (!bookmarks.value || !Array.isArray(bookmarks.value)) {
-      console.error('拖拽排序失败：bookmarks 数据无效');
-      return;
-    }
-    
-    // 判断是插入到目标前还是目标后（基于鼠标位置）
-    const rect = (e.currentTarget as HTMLElement)?.getBoundingClientRect();
-    const isAfter = rect ? e.clientY > rect.top + rect.height / 2 : true;
-
-    // 执行移动
-    const success = moveBookmark(dragState.value.draggedId, item.id, bookmarks.value, isAfter ? 'after' : 'before');
-    
-    if (success) {
-      // 添加过渡效果：标记被移动的元素
-      dragState.value.justMovedId = dragState.value.draggedId;
-      // 清理之前的定时器
-      if (moveAnimationTimer) {
-        clearTimeout(moveAnimationTimer);
+    try {
+      if (!bookmarks.value || !Array.isArray(bookmarks.value)) {
+        console.error('拖拽排序失败：bookmarks 数据无效');
+        return;
       }
-      // 300ms 后清除标记
-      moveAnimationTimer = setTimeout(() => {
-        dragState.value.justMovedId = null;
-        moveAnimationTimer = null;
-      }, 300);
-    } else {
-      console.warn('拖拽排序失败：可能是不同级别的项目或找不到目标');
+      
+      const rect = (e.currentTarget as HTMLElement)?.getBoundingClientRect();
+      const isAfter = rect ? e.clientY > rect.top + rect.height / 2 : true;
+      const success = moveBookmark(dragState.value.draggedId, item.id, bookmarks.value, isAfter ? 'after' : 'before');
+      
+      if (success) {
+        dragState.value.justMovedId = dragState.value.draggedId;
+        if (moveAnimationTimer) {
+          clearTimeout(moveAnimationTimer);
+        }
+        moveAnimationTimer = setTimeout(() => {
+          dragState.value.justMovedId = null;
+          moveAnimationTimer = null;
+        }, 300);
+      } else {
+        console.warn('拖拽排序失败：可能是不同级别的项目或找不到目标');
+      }
+    } catch (error) {
+      console.error('拖拽排序出错：', error);
     }
-  } catch (error) {
-    console.error('拖拽排序出错：', error);
-  }
   
   emit('onDrop', e, item);
 };
 
 const onDragEnd = (e: DragEvent) => {
-  // 拖拽结束时重置状态（无论是否成功）
   dragState.value.isDragging = false;
   dragState.value.draggedId = null;
   dragState.value.dragOverId = null;
-  // 注意：justMovedId 会在 onDrop 中设置，这里不重置
   emit('onDragEnd', e);
 };
 
@@ -219,7 +205,6 @@ const getChildHeight = (item: Bookmark): number => {
   return item.children.length * 34 + childrenHeight;
 };
 
-// 组件卸载时清理定时器
 onBeforeUnmount(() => {
   if (moveAnimationTimer) {
     clearTimeout(moveAnimationTimer);

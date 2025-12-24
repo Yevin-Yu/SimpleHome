@@ -10,3 +10,8 @@ export const Z_INDEX = {
     MODAL_CLOSE_BTN: 10001,
 } as const;
 
+export const ANIMATION_DURATION = {
+    BOOKMARK_SLIDE: 500,
+    BOOKMARK_SCROLL_RESTORE_DELAY: 550,
+} as const;
+

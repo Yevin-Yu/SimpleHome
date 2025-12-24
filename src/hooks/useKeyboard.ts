@@ -1,6 +1,12 @@
-import { onMounted, onBeforeUnmount, type Ref } from 'vue';
+import { onMounted, onBeforeUnmount, type Ref, type ComputedRef } from 'vue';
 
-export const useKeyboard = (key: string, handler: () => void, condition?: Ref<boolean> | (() => boolean)) => {
+type ConditionType = Ref<boolean> | ComputedRef<boolean> | (() => boolean);
+
+export const useKeyboard = (
+    key: string, 
+    handler: () => void, 
+    condition?: ConditionType
+): void => {
     const handleKeyDown = (e: KeyboardEvent): void => {
         if (e.key !== key) return;
         

@@ -1,5 +1,5 @@
 <template>
-    <div class="aside-bookmark-module" :class="{ 'show': isShowBookmark }">
+    <div class="aside-bookmark-module" :class="{ 'show': isShowBookmark }" ref="bookmarkRef">
         <div class="aside-bookmark-content">
             <sh-tree
                 v-for="child in bookmarks"
@@ -7,13 +7,7 @@
                 :item="child"
                 :items="bookmarks"
                 @onHandleClick="onHandleClick"
-                @onContextMenu="onContextMenu"
-                @onDragStart="onDragStart"
-                @onDragOver="onDragOver"
-                @onDragEnter="onDragEnter"
-                @onDragLeave="onDragLeave"
-                @onDrop="onDrop"
-                @onDragEnd="onDragEnd" />
+                @onContextMenu="onContextMenu" />
             <BookMarkHandleModule ref="bookMarkHandleModule" />
         </div>
     </div>
@@ -55,13 +49,6 @@ const onHandleClick = (event: MouseEvent, item: Bookmark): void => {
 const onContextMenu = (event: MouseEvent, item: Bookmark): void => {
     bookMarkHandleModule.value?.onContextMenu(event, item);
 };
-
-const onDragStart = (): void => {};
-const onDragOver = (): void => {};
-const onDragEnter = (): void => {};
-const onDragLeave = (): void => {};
-const onDrop = (): void => {};
-const onDragEnd = (): void => {};
 </script>
 <style scoped lang="less">
 .aside-bookmark-module {
@@ -74,10 +61,11 @@ const onDragEnd = (): void => {};
     background: var(--home-gradient);
     border: 2px solid var(--default-color);
     box-shadow: 2px 2px 0px var(--shadow-color);
-    transition: all 0.5s ease-in-out;
+    transition: left 0.5s ease-in-out;
     overflow: hidden;
     user-select: none;
     isolation: isolate;
+    contain: layout style paint;
 
     &::before {
         content: "";
@@ -99,6 +87,9 @@ const onDragEnd = (): void => {};
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
+        scroll-behavior: auto;
+        will-change: scroll-position;
+        contain: layout style;
     }
 }
 

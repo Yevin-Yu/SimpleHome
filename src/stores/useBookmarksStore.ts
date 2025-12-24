@@ -25,10 +25,10 @@ export const useBookmarksStore = defineStore(
             justMovedId: null,
         });
 
-        const findBookmarkById = (id: number | string, bookmarks: Bookmark[]): Bookmark[] | undefined => {
-            for (const bookmark of bookmarks) {
+        const findBookmarkById = (id: number | string, bookmarkList: Bookmark[]): Bookmark[] | undefined => {
+            for (const bookmark of bookmarkList) {
                 if (bookmark.id === id) {
-                    return bookmarks;
+                    return bookmarkList;
                 }
                 if (bookmark.children) {
                     const found = findBookmarkById(id, bookmark.children);
@@ -40,8 +40,8 @@ export const useBookmarksStore = defineStore(
             return undefined;
         };
 
-        const findBookmarkObjectById = (id: number | string, bookmarks: Bookmark[]): Bookmark | undefined => {
-            for (const bookmark of bookmarks) {
+        const findBookmarkObjectById = (id: number | string, bookmarkList: Bookmark[]): Bookmark | undefined => {
+            for (const bookmark of bookmarkList) {
                 if (bookmark.id === id) {
                     return bookmark;
                 }

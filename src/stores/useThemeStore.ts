@@ -17,6 +17,8 @@ export const useThemeStore = defineStore(
     "sh-theme-store",
     () => {
         const theme = ref<Theme>("auto");
+        let mediaQuery: MediaQueryList | null = null;
+        let handleSystemThemeChange: ((e: MediaQueryListEvent) => void) | null = null;
 
         const setTheme = (newTheme: Theme): void => {
             theme.value = newTheme;
@@ -25,13 +27,21 @@ export const useThemeStore = defineStore(
         const initTheme = (): void => {
             applyThemeToDocument(theme.value);
             
-            const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-            const handleSystemThemeChange = () => {
+            mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+            handleSystemThemeChange = () => {
                 if (theme.value === "auto") {
                     applyThemeToDocument("auto");
                 }
             };
             mediaQuery.addEventListener("change", handleSystemThemeChange);
+        };
+
+        const cleanup = (): void => {
+            if (mediaQuery && handleSystemThemeChange) {
+                mediaQuery.removeEventListener("change", handleSystemThemeChange);
+                mediaQuery = null;
+                handleSystemThemeChange = null;
+            }
         };
 
         watch(theme, (newTheme) => {
@@ -42,6 +52,7 @@ export const useThemeStore = defineStore(
             theme,
             setTheme,
             initTheme,
+            cleanup,
         };
     },
     {

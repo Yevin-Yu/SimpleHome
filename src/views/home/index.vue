@@ -27,7 +27,7 @@
         <AsideBookmarkModule v-if="showMode === 'file'" ref="asideBookmarkRef" />
     </Transition>
     <Transition name="modal">
-        <div v-show="showAISearch" class="ai-search-modal" v-if="hasOpenedOnce">
+        <div v-if="hasOpenedOnce && showAISearch" class="ai-search-modal">
             <button class="ai-close-btn" @click="closeAISearch" title="关闭" aria-label="关闭AI搜索">
                 <span class="close-icon">×</span>
             </button>
