@@ -1,20 +1,22 @@
 <template>
     <div class="aside-bookmark-module" :class="{ 'show': isShowBookmark }" ref="bookmarkRef">
         <div class="aside-bookmark-content">
-            <sh-tree
-                v-for="child in bookmarks"
-                :key="child.id"
-                :item="child"
-                :items="bookmarks"
-                @onHandleClick="onHandleClick"
-                @onContextMenu="onContextMenu" />
+            <TransitionGroup name="bookmark-list" tag="div" class="bookmark-list-wrapper">
+                <sh-tree
+                    v-for="child in bookmarks"
+                    :key="child.id"
+                    :item="child"
+                    :items="bookmarks"
+                    @onHandleClick="onHandleClick"
+                    @onContextMenu="onContextMenu" />
+            </TransitionGroup>
             <BookMarkHandleModule ref="bookMarkHandleModule" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, TransitionGroup } from "vue";
 import { storeToRefs } from "pinia";
 import shTree from "@/components/sh-tree.vue";
 import BookMarkHandleModule from "@/views/bookmarks/components/BookMarkHandleModule.vue";
@@ -37,8 +39,9 @@ const { isShowBookmark } = useEventHandler(bookmarkRef);
 const onHandleClick = (event: MouseEvent, item: Bookmark): void => {
     event.preventDefault();
     if (item.type === 'bookmark' && item.url) {
+        const bookmarkId = typeof item.id === 'number' ? item.id : Date.now();
         searchJump({
-            id: typeof item.id === 'number' ? item.id : Date.now(),
+            id: bookmarkId,
             title: item.title,
             type: 'bookmark' as const,
             url: item.url,
@@ -90,10 +93,21 @@ const onContextMenu = (event: MouseEvent, item: Bookmark): void => {
         scroll-behavior: auto;
         will-change: scroll-position;
         contain: layout style;
+
+        .bookmark-list-wrapper {
+            position: relative;
+        }
     }
 }
 
 .aside-bookmark-module.show {
     left: 12px;
+}
+</style>
+
+<style lang="less">
+.aside-bookmark-module .bookmark-list-wrapper > .sh-tree {
+    display: block !important;
+    width: 100%;
 }
 </style>

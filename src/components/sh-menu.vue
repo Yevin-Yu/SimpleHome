@@ -107,7 +107,7 @@ defineExpose({ show, hide });
     position: fixed;
     background: var(--sh-menu-bg-color);
     box-shadow: 2px 2px 0px var(--sh-menu-shadow-color);
-    z-index: 10000;
+    z-index: var(--z-index-modal);
     min-width: 100px;
     border-radius: 2px;
 }

@@ -81,22 +81,26 @@ export const useEventHandler = (bookmarkRef: Ref<HTMLElement | null>) => {
         }
     };
 
+    const keydownOptions = { passive: false };
+    const mouseOptions = { passive: true };
+    const touchOptions = { passive: true };
+
     onMounted(() => {
-        window.addEventListener("keydown", onKeyDown, { passive: false });
-        window.addEventListener("mousedown", onMouseDown, { passive: true });
-        window.addEventListener("mousemove", onMouseMove, { passive: true });
-        window.addEventListener("mouseup", onMouseUp, { passive: true });
-        window.addEventListener("touchstart", onTouchStart, { passive: true });
-        window.addEventListener("touchmove", onTouchMove, { passive: true });
+        window.addEventListener("keydown", onKeyDown, keydownOptions);
+        window.addEventListener("mousedown", onMouseDown, mouseOptions);
+        window.addEventListener("mousemove", onMouseMove, mouseOptions);
+        window.addEventListener("mouseup", onMouseUp, mouseOptions);
+        window.addEventListener("touchstart", onTouchStart, touchOptions);
+        window.addEventListener("touchmove", onTouchMove, touchOptions);
     });
 
     onBeforeUnmount(() => {
-        window.removeEventListener("keydown", onKeyDown);
-        window.removeEventListener("mousedown", onMouseDown);
-        window.removeEventListener("mousemove", onMouseMove);
-        window.removeEventListener("mouseup", onMouseUp);
-        window.removeEventListener("touchstart", onTouchStart);
-        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("keydown", onKeyDown, keydownOptions);
+        window.removeEventListener("mousedown", onMouseDown, mouseOptions);
+        window.removeEventListener("mousemove", onMouseMove, mouseOptions);
+        window.removeEventListener("mouseup", onMouseUp, mouseOptions);
+        window.removeEventListener("touchstart", onTouchStart, touchOptions);
+        window.removeEventListener("touchmove", onTouchMove, touchOptions);
     });
 
     return {

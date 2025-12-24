@@ -106,3 +106,28 @@
   opacity: 0;
   transform: translate(-50%, -50%) rotate(180deg) scale(0.5);
 }
+
+.bookmark-list-move {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: transform;
+}
+
+.bookmark-list-enter-active,
+.bookmark-list-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bookmark-list-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.bookmark-list-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.bookmark-list-leave-active {
+  position: absolute;
+  width: 100%;
+}

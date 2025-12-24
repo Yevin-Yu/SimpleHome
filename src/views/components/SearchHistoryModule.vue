@@ -16,13 +16,13 @@ import shMenu from '@/components/sh-menu.vue';
 import { useSearchStore } from "@/stores/useSearchStore";
 import type { SearchHistoryItem } from "@/types";
 
-const searchStore = useSearchStore();
-const { searchHistory } = storeToRefs(searchStore);
-
 interface MenuItem {
     label: string;
     action: string;
 }
+
+const searchStore = useSearchStore();
+const { searchHistory } = storeToRefs(searchStore);
 
 const menu = ref<InstanceType<typeof shMenu> | null>(null);
 const menuItems: MenuItem[] = [
@@ -37,12 +37,14 @@ const onShowMenu = (event: MouseEvent, item: SearchHistoryItem): void => {
     menu.value?.show(event.clientX, event.clientY);
 };
 
-const onMenuSelect = (selected: { label: string; action?: string; [key: string]: any }): void => {
+const onMenuSelect = (selected: MenuItem): void => {
     if (!selected.action) return;
     
     switch (selected.action) {
         case 'current':
-            currentItem.value && searchStore.removeSearchHistory(currentItem.value.id);
+            if (currentItem.value) {
+                searchStore.removeSearchHistory(currentItem.value.id);
+            }
             break;
         case 'clear':
             searchStore.clearSearchHistory();

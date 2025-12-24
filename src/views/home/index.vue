@@ -53,7 +53,7 @@ import SearchHistoryModule from "@/views/components/SearchHistoryModule.vue";
 import { useSearchStore } from "@/stores/useSearchStore";
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
-import { AI_CHAT_URL, KEYBOARD_KEYS } from "@/constants";
+import { AI_CHAT_URL, KEYBOARD_KEYS, Z_INDEX } from "@/constants";
 import type { SearchHistoryItem } from "@/types";
 
 const searchStore = useSearchStore();
@@ -211,7 +211,7 @@ useKeyboard(KEYBOARD_KEYS.ESCAPE, closeAISearch, showAISearch);
 .ai-search-modal {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: var(--z-index-modal);
     background: transparent;
 }
 
@@ -231,7 +231,7 @@ useKeyboard(KEYBOARD_KEYS.ESCAPE, closeAISearch, showAISearch);
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    z-index: 10001;
+    z-index: var(--z-index-modal-close-btn);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     opacity: 0.8;
     padding: 0;

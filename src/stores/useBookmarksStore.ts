@@ -145,7 +145,7 @@ export const useBookmarksStore = defineStore(
                 return false;
             }
 
-            const { parent, item: draggedItem } = draggedResult;
+            const { parent } = draggedResult;
             const targetIndex = parent.findIndex(item => item.id === targetId);
             const draggedIndex = parent.findIndex(item => item.id === draggedId);
 
@@ -166,11 +166,11 @@ export const useBookmarksStore = defineStore(
 
         const setBookmarks = (newBookmarks: Bookmark[]): void => {
             if (!newBookmarks?.length) {
-                showMessage("请先解析数据！");
+                showMessage("请先解析数据");
                 return;
             }
             bookmarks.value = newBookmarks;
-            showMessage("已更新书签数据！");
+            showMessage("已更新书签数据");
         };
 
         watch(

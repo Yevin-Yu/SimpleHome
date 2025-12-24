@@ -37,8 +37,9 @@ const bookMarkHandleModule = ref<InstanceType<typeof BookMarkHandleModule> | nul
 
 const handleBookmarkClick = (item: Bookmark): void => {
     if (item.type === 'bookmark' && item.url) {
+        const bookmarkId = typeof item.id === 'number' ? item.id : Date.now();
         searchJump({
-            id: typeof item.id === 'number' ? item.id : Date.now(),
+            id: bookmarkId,
             title: item.title,
             type: 'bookmark',
             url: item.url,

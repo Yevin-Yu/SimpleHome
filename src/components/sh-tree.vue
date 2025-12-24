@@ -76,6 +76,7 @@ import shTree from "@/components/sh-tree.vue";
 import shButton from './sh-button.vue';
 import shTag from './sh-tag.vue';
 import { useBookmarksStore } from '@/stores/useBookmarksStore';
+import { ANIMATION_DURATION, TREE_ITEM_HEIGHT } from '@/constants';
 import type { Bookmark } from "@/types";
 
 const props = defineProps<{
@@ -161,31 +162,29 @@ const onDrop = (e: DragEvent, item: Bookmark) => {
     return;
   }
   
-    try {
-      if (!bookmarks.value || !Array.isArray(bookmarks.value)) {
-        console.error('拖拽排序失败：bookmarks 数据无效');
-        return;
-      }
-      
-      const rect = (e.currentTarget as HTMLElement)?.getBoundingClientRect();
-      const isAfter = rect ? e.clientY > rect.top + rect.height / 2 : true;
-      const success = moveBookmark(dragState.value.draggedId, item.id, bookmarks.value, isAfter ? 'after' : 'before');
-      
-      if (success) {
-        dragState.value.justMovedId = dragState.value.draggedId;
-        if (moveAnimationTimer) {
-          clearTimeout(moveAnimationTimer);
-        }
-        moveAnimationTimer = setTimeout(() => {
-          dragState.value.justMovedId = null;
-          moveAnimationTimer = null;
-        }, 300);
-      } else {
-        console.warn('拖拽排序失败：可能是不同级别的项目或找不到目标');
-      }
-    } catch (error) {
-      console.error('拖拽排序出错：', error);
+  try {
+    if (!bookmarks.value || !Array.isArray(bookmarks.value)) {
+      console.error('拖拽排序失败：bookmarks 数据无效');
+      return;
     }
+    
+    const rect = (e.currentTarget as HTMLElement)?.getBoundingClientRect();
+    const isAfter = rect ? e.clientY > rect.top + rect.height / 2 : true;
+    const success = moveBookmark(dragState.value.draggedId, item.id, bookmarks.value, isAfter ? 'after' : 'before');
+    
+    if (success) {
+      dragState.value.justMovedId = dragState.value.draggedId;
+      if (moveAnimationTimer) {
+        clearTimeout(moveAnimationTimer);
+      }
+      moveAnimationTimer = setTimeout(() => {
+        dragState.value.justMovedId = null;
+        moveAnimationTimer = null;
+      }, ANIMATION_DURATION.HIGHLIGHT);
+    }
+  } catch (error) {
+    console.error('拖拽排序出错：', error);
+  }
   
   emit('onDrop', e, item);
 };
@@ -202,7 +201,7 @@ const getChildHeight = (item: Bookmark): number => {
   const childrenHeight = item.children
     .filter(child => child.open)
     .reduce((sum, child) => sum + getChildHeight(child), 0);
-  return item.children.length * 34 + childrenHeight;
+  return item.children.length * TREE_ITEM_HEIGHT + childrenHeight;
 };
 
 onBeforeUnmount(() => {
@@ -215,6 +214,8 @@ onBeforeUnmount(() => {
 
 <style scoped lang="less">
 .sh-tree {
+    display: block;
+    position: relative;
 
     .sh-tag,
     .sh-button {
@@ -242,7 +243,7 @@ onBeforeUnmount(() => {
     
     .sh-button.just-moved,
     .sh-tag.just-moved {
-        animation: moveHighlight 0.3s ease-out;
+        animation: moveHighlight var(--animation-highlight-duration, 0.3s) ease-out;
     }
     
     @keyframes moveHighlight {
@@ -267,11 +268,13 @@ onBeforeUnmount(() => {
     overflow: hidden;
 }
 
-/* 列表项过渡效果 */
-.list-move,
+.list-move {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .list-enter-active,
 .list-leave-active {
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .list-enter-from {

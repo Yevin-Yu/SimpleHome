@@ -1,6 +1,5 @@
 <template>
     <sh-menu ref="menu" :items="menuItems" @select="onMenuSelect" />
-    <!-- 书签操作弹窗 -->
     <Transition name="fade">
         <sh-dialog v-if="dialogVisible" :title="dialogTitle" ref="dialog">
             <div class="dialog-content">
@@ -35,8 +34,7 @@ import shMenu from '@/components/sh-menu.vue'
 import shDialog from '@/components/sh-dialog.vue'
 import shInput from '@/components/sh-input.vue'
 import shButton from '@/components/sh-button.vue'
-import { useBookmarksStore } from '@/stores/useBookmarksStore'
-
+import { useBookmarksStore } from '@/stores/useBookmarksStore';
 import type { Bookmark } from "@/types";
 
 interface MenuItem {
@@ -84,7 +82,7 @@ const onContextMenu = (e: MouseEvent, item: Bookmark): void => {
     currentItem.value = item;
 };
 
-const onMenuSelect = (selected: { label: string; action?: string; [key: string]: any }): void => {
+const onMenuSelect = (selected: MenuItem): void => {
     if (!selected.action || !currentItem.value) return;
     currentAction.value = selected.action;
 

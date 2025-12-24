@@ -31,7 +31,7 @@ withDefaults(defineProps<{
     min-width: 300px;
     border-radius: 2px;
     min-height: 200px;
-    z-index: 9999;
+    z-index: var(--z-index-modal);
     overflow: hidden;
     isolation: isolate;
 

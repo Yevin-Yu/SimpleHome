@@ -82,8 +82,10 @@ onUnmounted(() => {
 });
 
 const router = useRouter();
+
 const handleImportBookmarks = (): void => {
-    const url = `${window.location.origin}/sh/${router.resolve('/bookmarks').href}`;
+    const bookmarkPath = router.resolve('/bookmarks').href;
+    const url = `${window.location.origin}/sh/${bookmarkPath}`;
     window.open(url, '_blank');
 };
 

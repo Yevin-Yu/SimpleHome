@@ -35,6 +35,9 @@
     /* sh-input */
     --sh-input-bgColor: #dfe8f5;
     --sh-input-border-color: #b4c2d8;
+    --z-index-modal: 10000;
+    --z-index-modal-close-btn: 10001;
+    --animation-highlight-duration: 0.3s;
 }
 
 [data-theme="dark-theme"] {
@@ -65,4 +68,7 @@
     /* sh-input */
     --sh-input-bgColor: #131518;
     --sh-input-border-color: #2e394a;
+    --z-index-modal: 10000;
+    --z-index-modal-close-btn: 10001;
+    --animation-highlight-duration: 0.3s;
 }

@@ -105,13 +105,13 @@ export const useBookmarkParser = () => {
 
     const bookmarkParser = async (file: File | null): Promise<void> => {
         if (!file) {
-            showMessage("请先上传有效的HTML文件！");
+            showMessage("请先上传有效的HTML文件");
             return;
         }
         try {
             const htmlContent = await readFileAsText(file);
             bookmarksData.value = parse(htmlContent) as Bookmark[];
-            showMessage("解析成功！");
+            showMessage("解析成功");
         } catch (error) {
             showMessage("解析失败");
         }

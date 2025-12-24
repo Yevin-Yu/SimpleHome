@@ -13,5 +13,9 @@ export const Z_INDEX = {
 export const ANIMATION_DURATION = {
     BOOKMARK_SLIDE: 500,
     BOOKMARK_SCROLL_RESTORE_DELAY: 550,
+    HIGHLIGHT: 300,
+    TRANSITION: 300,
 } as const;
+
+export const TREE_ITEM_HEIGHT = 34;
 

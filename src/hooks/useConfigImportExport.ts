@@ -76,9 +76,9 @@ export const useConfigImportExport = () => {
             const filename = `simplehome-config-${new Date().toISOString().split("T")[0]}.json`;
             
             downloadFile(jsonStr, filename);
-            showMessage("配置导出成功！");
+            showMessage("配置导出成功");
         } catch (error) {
-            showMessage("配置导出失败！");
+            showMessage("配置导出失败");
             console.error("导出配置失败:", error);
         }
     };
@@ -121,15 +121,15 @@ export const useConfigImportExport = () => {
                 }
 
                 if (importedCount === 0) {
-                    showMessage("配置文件格式正确，但没有可导入的配置项！");
+                    showMessage("配置文件格式正确，但没有可导入的配置项");
                 } else {
-                    showMessage(`配置导入成功！已导入 ${importedCount} 项配置`);
+                    showMessage(`配置导入成功，已导入 ${importedCount} 项配置`);
                 }
             } catch (error) {
                 if (error instanceof SyntaxError) {
-                    showMessage("配置文件格式错误，请检查是否为有效的 JSON 文件！");
+                    showMessage("配置文件格式错误，请检查是否为有效的 JSON 文件");
                 } else {
-                    showMessage("配置导入失败，请检查文件格式！");
+                    showMessage("配置导入失败，请检查文件格式");
                 }
                 console.error("导入配置失败:", error);
             }
