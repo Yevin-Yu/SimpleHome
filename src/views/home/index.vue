@@ -54,6 +54,7 @@ import { useSearchStore } from "@/stores/useSearchStore";
 import { useBookmarksStore } from "@/stores/useBookmarksStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { AI_CHAT_URL, KEYBOARD_KEYS, Z_INDEX } from "@/constants";
+import { isMobile } from "@/utils/tools";
 import type { SearchHistoryItem } from "@/types";
 
 const searchStore = useSearchStore();
@@ -81,7 +82,12 @@ const toggleSettings = (e: MouseEvent): void => {
 };
 
 const openAISearch = (): void => {
-    showAISearch.value = true;
+    // 移动端直接跳转，桌面端使用弹窗
+    if (isMobile()) {
+        window.open(aiChatUrl.value, '_blank');
+    } else {
+        showAISearch.value = true;
+    }
 };
 
 const closeAISearch = (): void => {
