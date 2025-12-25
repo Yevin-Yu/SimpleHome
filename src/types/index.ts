@@ -14,6 +14,7 @@ export interface SearchHistoryItem {
     title: string;
     type: SearchHistoryType;
     url?: string;
+    pinned?: boolean;
 }
 
 export type Theme = "auto" | "light-theme" | "dark-theme";
