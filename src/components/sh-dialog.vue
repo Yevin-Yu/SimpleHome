@@ -1,14 +1,16 @@
 <template>
-    <div class="sh-dialog">
-        <div class="container">
-            <div class="header">
-                <h3>{{ title }}</h3>
-            </div>
-            <div class="content">
-                <slot></slot>
+    <Teleport to="body">
+        <div class="sh-dialog">
+            <div class="container">
+                <div class="header">
+                    <h3>{{ title }}</h3>
+                </div>
+                <div class="content">
+                    <slot></slot>
+                </div>
             </div>
         </div>
-    </div>
+    </Teleport>
 </template>
 
 <script setup lang="ts">
